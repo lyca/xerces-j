@@ -362,80 +362,50 @@ public final class HTMLdtd
      * for character substitution. This method may be called any number of times
      * but will execute only once.
      */
-    private static void initialize()
+    private static synchronized void initialize()
     {
-        InputStream     is = null;
-        BufferedReader  reader = null;
-        int             index;
-        String          name;
-        String          value;
-        int             code;
-        String          line;
-
         // Make sure not to initialize twice.
         if ( _byName != null )
             return;
-        try {
-            _byName = new HashMap<>();
-            _byChar = new HashMap<>();
-            is = HTMLdtd.class.getResourceAsStream( ENTITIES_RESOURCE );
+        try (InputStream is = HTMLdtd.class.getResourceAsStream( ENTITIES_RESOURCE )) {
             if ( is == null ) {
-            	throw new RuntimeException( 
-				    DOMMessageFormatter.formatMessage(
-				    DOMMessageFormatter.SERIALIZER_DOMAIN,
+                throw new RuntimeException( 
+                    DOMMessageFormatter.formatMessage(
+                    DOMMessageFormatter.SERIALIZER_DOMAIN,
                     "ResourceNotFound", new Object[] {ENTITIES_RESOURCE}));
             }    
-            reader = new BufferedReader( new InputStreamReader( is, StandardCharsets.US_ASCII ) );
-            line = reader.readLine();
-            while ( line != null ) {
-                if ( line.length() == 0 || line.charAt( 0 ) == '#' ) {
-                    line = reader.readLine();
-                    continue;
-                }
-                index = line.indexOf( ' ' );
-                if ( index > 1 ) {
-                    name = line.substring( 0, index );
-                    ++index;
-                    if ( index < line.length() ) {
-                        value = line.substring( index );
-                        index = value.indexOf( ' ' );
-                        if ( index > 0 )
-                            value = value.substring( 0, index );
-                        code = Integer.parseInt( value );
-                                        defineEntity( name, (char) code );
+            try (BufferedReader reader = new BufferedReader( new InputStreamReader( is, StandardCharsets.US_ASCII ) )) {
+                _byName = new HashMap<>();
+                _byChar = new HashMap<>();
+                String line;
+                while ( (line = reader.readLine()) != null ) {
+                    if ( line.length() == 0 || line.charAt( 0 ) == '#' ) {
+                        continue;
+                    }
+                    int index = line.indexOf( ' ' );
+                    if ( index > 1 ) {
+                        String name = line.substring( 0, index );
+                        ++index;
+                        if ( index < line.length() ) {
+                            String value = line.substring( index );
+                            index = value.indexOf( ' ' );
+                            if ( index > 0 )
+                                value = value.substring( 0, index );
+                            int code = Integer.parseInt( value );
+                            defineEntity( name, (char) code );
+                        }
                     }
                 }
-                line = reader.readLine();
             }
-            is.close();
-        }  catch ( Exception except ) {
-			throw new RuntimeException( 
-				DOMMessageFormatter.formatMessage(
-				DOMMessageFormatter.SERIALIZER_DOMAIN,
-                "ResourceNotLoaded", new Object[] {ENTITIES_RESOURCE, except.toString()}));        	
-        } finally {
-            if ( is != null ) {
-                try {
-                    is.close();
-                } catch ( Exception except ) { }
-            }
+        } catch ( Exception except ) {
+            throw new RuntimeException( 
+                DOMMessageFormatter.formatMessage(
+                DOMMessageFormatter.SERIALIZER_DOMAIN,
+                "ResourceNotLoaded", new Object[] {ENTITIES_RESOURCE, except.toString()}));
         }
     }
 
 
-    /**
-     * Defines a new character reference. The reference's name and value are
-     * supplied. Nothing happens if the character reference is already defined.
-     * <p>
-     * Unlike internal entities, character references are a string to single
-     * character mapping. They are used to map non-ASCII characters both on
-     * parsing and printing, primarily for HTML documents. '&lt;amp;' is an
-     * example of a character reference.
-     * </p>
-     *
-     * @param name the entity's name
-     * @param value the entity's value
-     */
     private static void defineEntity( String name, char value )
     {
         if ( _byName.get( name ) == null ) {

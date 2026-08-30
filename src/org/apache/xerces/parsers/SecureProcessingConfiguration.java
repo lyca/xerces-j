@@ -363,7 +363,6 @@ public final class SecureProcessingConfiguration extends
             synchronized (SecureProcessingConfiguration.class) {    
 
                 boolean runBlock = false;
-                FileInputStream fis = null;
 
                 try {
                     if (lastModified >= 0) {
@@ -391,10 +390,11 @@ public final class SecureProcessingConfiguration extends
 
                     if (runBlock == true) {
                         // Try to read from $java.home/lib/jaxp.properties
-                        jaxpProperties = new Properties();
-
-                        fis = SecuritySupport.getFileInputStream(f);
-                        jaxpProperties.load(fis);
+                        Properties props = new Properties();
+                        try (FileInputStream fis = SecuritySupport.getFileInputStream(f)) {
+                            props.load(fis);
+                        }
+                        jaxpProperties = props;
                     }       
 
                 }
@@ -404,16 +404,6 @@ public final class SecureProcessingConfiguration extends
                     // assert(x instanceof FileNotFoundException
                     //        || x instanceof SecurityException)
                     // In both cases, ignore and return the default value
-                }
-                finally {
-                    // try to close the input stream if one was opened.
-                    if (fis != null) {
-                        try {
-                            fis.close();
-                        }
-                        // Ignore the exception.
-                        catch (IOException exc) {}
-                    }
                 }
             }
 
@@ -505,7 +495,6 @@ public final class SecureProcessingConfiguration extends
             synchronized (SecureProcessingConfiguration.class) {    
 
                 boolean runBlock = false;
-                FileInputStream fis = null;
 
                 try {
                     if (lastModified >= 0) {
@@ -533,10 +522,11 @@ public final class SecureProcessingConfiguration extends
 
                     if (runBlock == true) {
                         // Try to read from $java.home/lib/jaxp.properties
-                        jaxpProperties = new Properties();
-
-                        fis = SecuritySupport.getFileInputStream(f);
-                        jaxpProperties.load(fis);
+                        Properties props = new Properties();
+                        try (FileInputStream fis = SecuritySupport.getFileInputStream(f)) {
+                            props.load(fis);
+                        }
+                        jaxpProperties = props;
                     }       
 
                 }
@@ -546,16 +536,6 @@ public final class SecureProcessingConfiguration extends
                     // assert(x instanceof FileNotFoundException
                     //        || x instanceof SecurityException)
                     // In both cases, ignore and return the default value
-                }
-                finally {
-                    // try to close the input stream if one was opened.
-                    if (fis != null) {
-                        try {
-                            fis.close();
-                        }
-                        // Ignore the exception.
-                        catch (IOException exc) {}
-                    }
                 }
             }
 
