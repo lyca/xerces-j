@@ -69,8 +69,8 @@ goto fail
 
 @rem Bootstrap Gradle Wrapper JAR if missing (ASF release compliance)
 set WRAPPER_JAR=%APP_HOME%\gradle\wrapper\gradle-wrapper.jar
-set WRAPPER_SHA256=2db75c40782f5e8ba1fc278a5574bab070adccb2d21ca5a6e5ed840888448046
-set WRAPPER_URL=https://raw.githubusercontent.com/gradle/gradle/v8.10.2/gradle/wrapper/gradle-wrapper.jar
+set WRAPPER_SHA256=7d3a4ac4de1c32b59bc6a4eb8ecb8e612ccd0cf1ae1e99f66902da64df296172
+set WRAPPER_URL=https://raw.githubusercontent.com/gradle/gradle/v8.14.5/gradle/wrapper/gradle-wrapper.jar
 
 if not exist "%WRAPPER_JAR%" (
     if not exist "%APP_HOME%\gradle\wrapper" mkdir "%APP_HOME%\gradle\wrapper"
