@@ -63,14 +63,13 @@ final class ObjectFactory {
      * be null; if the file does not exist or we encounter some other error
      * during the read, this will be empty.
      */
-    private static Properties fXercesProperties = null;
+    private static volatile Properties fXercesProperties = null;
 
     /***
      * Cache the time stamp of the xerces.properties file so
      * that we know if it's been modified and can invalidate
-     * the cache when necessary.
-     */
-    private static long fLastModified = -1;
+     * the cache when necessary.\n     */
+    private static volatile long fLastModified = -1;
 
     //
     // static methods
@@ -161,7 +160,6 @@ final class ObjectFactory {
             
             synchronized (ObjectFactory.class) {
                 boolean loadProperties = false;
-                FileInputStream fis = null;
                 try {
                     // file existed last time
                     if(fLastModified >= 0) {
@@ -184,9 +182,11 @@ final class ObjectFactory {
                     }
                     if(loadProperties) {
                         // must never have attempted to read xerces.properties before (or it's outdeated)
-                        fXercesProperties = new Properties();
-                        fis = SecuritySupport.getFileInputStream(propertiesFile);
-                        fXercesProperties.load(fis);
+                        Properties props = new Properties();
+                        try (FileInputStream fis = SecuritySupport.getFileInputStream(propertiesFile)) {
+                            props.load(fis);
+                        }
+                        fXercesProperties = props;
                     }
                 } catch (Exception x) {
                     fXercesProperties = null;
@@ -195,24 +195,12 @@ final class ObjectFactory {
                     //        || x instanceof SecurityException)
                     // In both cases, ignore and continue w/ next location
                 }
-                finally {
-                    // try to close the input stream if one was opened.
-                    if (fis != null) {
-                        try {
-                            fis.close();
-                        }
-                        // Ignore the exception.
-                        catch (IOException exc) {}
-                    }
-                }
             }
             if(fXercesProperties != null) {
                 factoryClassName = fXercesProperties.getProperty(factoryId);
             }
         } else {
-            FileInputStream fis = null;
-            try {
-                fis = SecuritySupport.getFileInputStream(new File(propertiesFilename));
+            try (FileInputStream fis = SecuritySupport.getFileInputStream(new File(propertiesFilename))) {
                 Properties props = new Properties();
                 props.load(fis);
                 factoryClassName = props.getProperty(factoryId);
@@ -220,16 +208,6 @@ final class ObjectFactory {
                 // assert(x instanceof FileNotFoundException
                 //        || x instanceof SecurityException)
                 // In both cases, ignore and continue w/ next location
-            }
-            finally {
-                // try to close the input stream if one was opened.
-                if (fis != null) {
-                    try {
-                        fis.close();
-                    }
-                    // Ignore the exception.
-                    catch (IOException exc) {}
-                }
             }
         }
         if (factoryClassName != null) {
@@ -444,19 +422,7 @@ final class ObjectFactory {
         // Read the service provider name in UTF-8 as specified in
         // the jar spec.  Unfortunately this fails in Microsoft
         // VJ++, which does not implement the UTF-8
-        // encoding. Theoretically, we should simply let it fail in
-        // that case, since the JVM is obviously broken if it
-        // doesn't support such a basic standard.  But since there
-        // are still some users attempting to use VJ++ for
-        // development, we have dropped in a fallback which makes a
-        // second attempt using the platform's default encoding. In
-        // VJ++ this is apparently ASCII, which is a subset of
-        // UTF-8... and since the strings we'll be reading here are
-        // also primarily limited to the 7-bit ASCII range (at
-        // least, in English versions), this should work well
-        // enough to keep us on the air until we're ready to
-        // officially decommit from VJ++. [Edited comment from
-        // jkesselm]
+        // encoding. ...
         String factoryClassName = null;
         try (BufferedReader rd = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8), DEFAULT_LINE_LENGTH)) {
             factoryClassName = rd.readLine();
