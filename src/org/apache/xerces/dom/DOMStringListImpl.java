@@ -47,24 +47,25 @@ public class DOMStringListImpl implements DOMStringList {
     /** 
      * Construct a DOMStringListImpl from an ArrayList of String values
      */ 
-    public DOMStringListImpl(ArrayList params) {
+    public DOMStringListImpl(List<String> params) {
         fStrings = params;    
     }
     
     /** 
      * Construct a DOMStringListImpl from a Vector of String values
      */ 
-    public DOMStringListImpl(Vector params) {
+    public DOMStringListImpl(Vector<String> params) {
         fStrings = new ArrayList<>(params);
     }
         
 	/**
 	 * @see org.w3c.dom.DOMStringList#item(int)
 	 */
+	@Override
 	public String item(int index) {
 	    final int length = getLength();
 	    if (index >= 0 && index < length) {
-	        return (String) fStrings.get(index);
+	        return fStrings.get(index);
 	    }
 	    return null;
 	}
@@ -72,6 +73,7 @@ public class DOMStringListImpl implements DOMStringList {
 	/**
 	 * @see org.w3c.dom.DOMStringList#getLength()
 	 */
+	@Override
 	public int getLength() {
 		return fStrings.size();
 	}
@@ -79,6 +81,7 @@ public class DOMStringListImpl implements DOMStringList {
 	/**
 	 * @see org.w3c.dom.DOMStringList#contains(String)
 	 */
+	@Override
 	public boolean contains(String param) {
 		return fStrings.contains(param);
 	}

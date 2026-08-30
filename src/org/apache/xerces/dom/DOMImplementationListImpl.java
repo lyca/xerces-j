@@ -47,14 +47,14 @@ public class DOMImplementationListImpl implements DOMImplementationList {
     /** 
      * Construct a list of DOMImplementations from an ArrayList of DOMImplementation
      */
-    public DOMImplementationListImpl(ArrayList params) {
+    public DOMImplementationListImpl(List<DOMImplementation> params) {
         fImplementations = params;    
     }
 
     /** 
      * Construct a list of DOMImplementations from a Vector of DOMImplementation
      */
-    public DOMImplementationListImpl(Vector params) {
+    public DOMImplementationListImpl(Vector<DOMImplementation> params) {
         fImplementations = new ArrayList<>(params);
     }
 
@@ -63,6 +63,7 @@ public class DOMImplementationListImpl implements DOMImplementationList {
      * 
      * @param index the index of the DOMImplementation from the list to return
      */
+    @Override
     public DOMImplementation item(int index) {
         final int length = getLength();
         if (index >= 0 && index < length) {
@@ -76,6 +77,7 @@ public class DOMImplementationListImpl implements DOMImplementationList {
      * 
      * @return An integer indicating the number of DOMImplementations.
      */
+    @Override
     public int getLength() {
         return fImplementations.size();
     }

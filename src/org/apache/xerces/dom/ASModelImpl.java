@@ -67,7 +67,7 @@ public class ASModelImpl implements ASModel {
 
     // conceptually, an ASModel may contain grammar information and/or
     // other ASModels.  These two fields divide that function.
-    protected Vector fASModels;
+    protected Vector<ASModel> fASModels;
     protected SchemaGrammar fGrammar = null;
     
     //
@@ -75,11 +75,11 @@ public class ASModelImpl implements ASModel {
     //
     
     public ASModelImpl() {
-    	fASModels = new Vector();
+    	fASModels = new Vector<>();
     }
 
     public ASModelImpl(boolean isNamespaceAware) {
-    	fASModels = new Vector();
+    	fASModels = new Vector<>();
         fNamespaceAware = isNamespaceAware;
     }
     
@@ -489,7 +489,7 @@ public class ASModelImpl implements ASModel {
         fGrammar = grammar;
     }
 
-    public Vector getInternalASModels() {
+    public Vector<ASModel> getInternalASModels() {
         return fASModels;
     }
 

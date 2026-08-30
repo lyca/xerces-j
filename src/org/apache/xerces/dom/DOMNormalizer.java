@@ -1457,8 +1457,8 @@ public class DOMNormalizer implements XMLDocumentHandler {
         protected CoreDocumentImpl fDocument;
         protected ElementImpl fElement;
 
-        protected final Vector fDTDTypes = new Vector(5);
-        protected final Vector fAugmentations = new Vector(5);
+        protected final Vector<String> fDTDTypes = new Vector<>(5);
+        protected final Vector<Augmentations> fAugmentations = new Vector<>(5);
 
         public void setAttributes(AttributeMap attributes, CoreDocumentImpl doc, ElementImpl elem) {
             fDocument = doc;

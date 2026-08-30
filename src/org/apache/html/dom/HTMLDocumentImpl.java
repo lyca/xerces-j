@@ -120,7 +120,7 @@ public class HTMLDocumentImpl
      *
      * @see #createElement
      */
-    private static Hashtable        _elementTypesHTML;
+    private static Hashtable<String, Class<?>> _elementTypesHTML;
 
 
     /**
@@ -500,7 +500,7 @@ public class HTMLDocumentImpl
         // element class. If no class is found, generate a generic HTML element.
         // Do so also if an unexpected exception occurs.
         tagName = tagName.toUpperCase(Locale.ENGLISH);
-        elemClass = (Class) _elementTypesHTML.get( tagName );
+        elemClass = _elementTypesHTML.get( tagName );
         if ( elemClass != null )
         {
             // Get the constructor for the element. The signature specifies an
@@ -754,7 +754,7 @@ public class HTMLDocumentImpl
 
         if ( _elementTypesHTML != null )
             return;
-        _elementTypesHTML = new Hashtable( 63 );
+        _elementTypesHTML = new Hashtable<>( 63 );
         populateElementType( "A", "HTMLAnchorElementImpl" );
         populateElementType( "APPLET", "HTMLAppletElementImpl" );
         populateElementType( "AREA", "HTMLAreaElementImpl" );

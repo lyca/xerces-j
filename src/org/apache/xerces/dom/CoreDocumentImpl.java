@@ -138,7 +138,7 @@ extends ParentNode implements Document  {
     protected Map userData;  // serialized as Hashtable
 
     /** Identifiers. */
-    protected Hashtable identifiers;
+    protected Hashtable<String, Element> identifiers;
 
     // DOM Level 3: normalizeDocument
     transient DOMNormalizer domNormalizer = null;
@@ -1690,10 +1690,10 @@ extends ParentNode implements Document  {
                 // Register element identifier.
                 if (reversedIdentifiers != null) {
                     // Does element have an associated identifier?
-                    Object elementId = reversedIdentifiers.get(source);
+                    String elementId = (String) reversedIdentifiers.get(source);
                     if (elementId != null) {
                         if (identifiers == null)
-                            identifiers = new Hashtable();
+                            identifiers = new Hashtable<>();
 
                         identifiers.put(elementId, newElement);
                     }
@@ -2123,7 +2123,7 @@ extends ParentNode implements Document  {
         }
 
         if (identifiers == null) {
-            identifiers = new Hashtable();
+            identifiers = new Hashtable<>();
         }
 
         identifiers.put(idName, element);
@@ -2149,7 +2149,7 @@ extends ParentNode implements Document  {
         if (identifiers == null) {
             return null;
         }
-        Element elem = (Element) identifiers.get(idName);
+        Element elem = identifiers.get(idName);
         if (elem != null) {
             // check that the element is in the tree
             Node parent = elem.getParentNode();
@@ -2187,14 +2187,14 @@ extends ParentNode implements Document  {
     } // removeIdentifier(String)
 
     /** Returns an enumeration registered of identifier names. */
-    public Enumeration getIdentifiers() {
+    public Enumeration<String> getIdentifiers() {
 
         if (needsSyncData()) {
             synchronizeData();
         }
 
         if (identifiers == null) {
-            identifiers = new Hashtable();
+            identifiers = new Hashtable<>();
         }
 
         return identifiers.keys();

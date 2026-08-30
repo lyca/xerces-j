@@ -76,7 +76,7 @@ public class HTMLBuilder
      * nodes may precede the document element (comment and PI), and they are accumulated
      * in this vector.
      */
-    protected Vector         _preRootNodes;
+    protected Vector<Node> _preRootNodes;
 
     
     public void startDocument()
@@ -201,7 +201,7 @@ public class HTMLBuilder
         if ( _current == null && _document == null )
 	{
 	    if ( _preRootNodes == null )
-		_preRootNodes = new Vector();
+		_preRootNodes = new Vector<>();
 	    _preRootNodes.addElement( new ProcessingInstructionImpl( null, target, instruction ) );
 	}
 	else

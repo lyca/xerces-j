@@ -137,7 +137,7 @@ public class DocumentImpl
      * @see NodeImpl
      * @see LEntry
      */
-    protected Hashtable eventListeners;
+    protected Hashtable<NodeImpl, Vector<LEntry>> eventListeners;
 
     /** Bypass mutation events firing. */
     protected boolean mutationEvents = false;
@@ -619,7 +619,7 @@ public class DocumentImpl
         if (eventListeners == null) {
             return null;
         }
-        return (Vector<LEntry>) eventListeners.get(n);
+        return eventListeners.get(n);
     }
 
     //
