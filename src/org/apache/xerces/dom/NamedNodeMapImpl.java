@@ -17,13 +17,9 @@
 
 package org.apache.xerces.dom;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import org.w3c.dom.DOMException;
 import org.w3c.dom.NamedNodeMap;
@@ -621,28 +617,6 @@ public class NamedNodeMapImpl
         }
     }
     
-    private void readObject(ObjectInputStream in)
-        throws IOException, ClassNotFoundException {
-        in.defaultReadObject();
-        if (nodes != null) {
-            // cast to Vector is required
-            nodes = new ArrayList<Node>((Vector<Node>)nodes);
-        }
-    }
 
-    private void writeObject(ObjectOutputStream out) throws IOException {
-        final List<Node> oldNodes = this.nodes;
-        try {
-            if (oldNodes != null) {
-                this.nodes = new Vector<Node>(oldNodes);
-            }
-            out.defaultWriteObject();
-        }
-        // If the write fails for some reason ensure 
-        // that we restore the original object.
-        finally {
-            this.nodes = oldNodes;
-        }
-    }
     
 } // class NamedNodeMapImpl

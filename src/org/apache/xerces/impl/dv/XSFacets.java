@@ -17,7 +17,7 @@
 
 package org.apache.xerces.impl.dv;
 
-import java.util.Vector;
+import java.util.List;
 import org.apache.xerces.xni.NamespaceContext;
 
 import org.apache.xerces.impl.xs.util.XSObjectListImpl;
@@ -74,14 +74,14 @@ public class XSFacets {
     /**
      * Vector containing values of Enumeration facet, as String's.
      */
-    public Vector<String> enumeration;
+    public List<String> enumeration;
 
     /**
      * An array parallel to "Vector enumeration". It contains namespace context
      * of each enumeration value. Elements of this vector are NamespaceContext
      * objects.
      */
-    public Vector<NamespaceContext> enumNSDecls;
+    public List<NamespaceContext> enumNSDecls;
 
     /**
      * value of maxInclusive facet.

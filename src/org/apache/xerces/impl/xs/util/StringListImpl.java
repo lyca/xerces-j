@@ -19,7 +19,7 @@ package org.apache.xerces.impl.xs.util;
 
 import java.lang.reflect.Array;
 import java.util.AbstractList;
-import java.util.Vector;
+import java.util.List;
 
 import org.apache.xerces.xs.StringList;
 
@@ -46,13 +46,15 @@ public final class StringListImpl extends AbstractList implements StringList {
 
     // REVISIT: this is temp solution. In general we need to use this class
     //          instead of the Vector.
-    private final Vector fVector;
+    private final List fVector;
 
-    public StringListImpl(Vector v) {
-        fVector = v;        
+    public StringListImpl(List v) {
+        fVector = v;
         fLength = (v == null) ? 0 : v.size();
         fArray = null;
     }
+
+
 
     /**
      * Construct an XSObjectList implementation
@@ -106,7 +108,7 @@ public final class StringListImpl extends AbstractList implements StringList {
             return null;
         }
         if (fVector != null) {
-            return (String)fVector.elementAt(index);
+            return (String)fVector.get(index);
         }
         return fArray[index];
     }
@@ -118,7 +120,7 @@ public final class StringListImpl extends AbstractList implements StringList {
     public Object get(int index) {
         if (index >= 0 && index < fLength) {
             if (fVector != null) {
-                return fVector.elementAt(index);
+                return fVector.get(index);
             }
             return fArray[index];
         }

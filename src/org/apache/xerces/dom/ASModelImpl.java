@@ -17,7 +17,8 @@
 
 package org.apache.xerces.dom;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.xerces.dom3.as.ASAttributeDeclaration;
 import org.apache.xerces.dom3.as.ASContentModel;
@@ -67,7 +68,7 @@ public class ASModelImpl implements ASModel {
 
     // conceptually, an ASModel may contain grammar information and/or
     // other ASModels.  These two fields divide that function.
-    protected Vector<ASModel> fASModels;
+    protected List<ASModel> fASModels;
     protected SchemaGrammar fGrammar = null;
     
     //
@@ -75,11 +76,11 @@ public class ASModelImpl implements ASModel {
     //
     
     public ASModelImpl() {
-    	fASModels = new Vector<>();
+    	fASModels = new ArrayList<>();
     }
 
     public ASModelImpl(boolean isNamespaceAware) {
-    	fASModels = new Vector<>();
+    	fASModels = new ArrayList<>();
         fNamespaceAware = isNamespaceAware;
     }
     
@@ -333,7 +334,7 @@ public class ASModelImpl implements ASModel {
      *   the ASModels within the specified <code>ownerASModel</code>. 
      */
     public void addASModel(ASModel abstractSchema) {
-    	fASModels.addElement(abstractSchema);
+    	fASModels.add(abstractSchema);
     }
 
     /**
@@ -352,7 +353,7 @@ public class ASModelImpl implements ASModel {
      * @param as <code>ASModel</code> to be removed
      */
     public void removeAS(ASModel as) {
-    	fASModels.removeElement(as);
+    	fASModels.remove(as);
     }
 
     /**
@@ -489,7 +490,7 @@ public class ASModelImpl implements ASModel {
         fGrammar = grammar;
     }
 
-    public Vector<ASModel> getInternalASModels() {
+    public List<ASModel> getInternalASModels() {
         return fASModels;
     }
 

@@ -22,7 +22,7 @@ import java.util.AbstractList;
 import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
-import java.util.Vector;
+import java.util.List;
 import org.apache.xerces.xni.grammars.Grammar;
 
 import org.apache.xerces.impl.Constants;
@@ -138,7 +138,7 @@ public final class XSModelImpl extends AbstractList implements XSModel, XSNamesp
         }
 
         SchemaGrammar sg1, sg2;
-        Vector<Grammar> gs;
+        List<Grammar> gs;
         int i, j, k;
         // and recursively get all imported grammars, add them to our arrays
         for (i = 0; i < len; i++) {
@@ -147,7 +147,7 @@ public final class XSModelImpl extends AbstractList implements XSModel, XSNamesp
             gs = sg1.getImportedGrammars();
             // for each imported grammar
             for (j = gs == null ? -1 : gs.size() - 1; j >= 0; j--) {
-                sg2 = (SchemaGrammar)gs.elementAt(j);
+                sg2 = (SchemaGrammar)gs.get(j);
                 // check whether this grammar is already in the list
                 for (k = 0; k < len; k++) {
                     if (sg2 == grammarList[k]) {

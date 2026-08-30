@@ -26,7 +26,8 @@ import java.util.Map;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.XMLConstants;
 
@@ -413,14 +414,14 @@ public class XMLSchemaValidator
 
         // store error codes; starting position of the errors for each element;
         // number of element (depth); and whether to record error
-        Vector<String> fErrors = new Vector<>();
+        List<String> fErrors = new ArrayList<>();
         int[] fContext = new int[INITIAL_STACK_SIZE];
         int fContextCount;
 
         // set the external error reporter, clear errors
         public void reset(XMLErrorReporter errorReporter) {
             fErrorReporter = errorReporter;
-            fErrors.removeAllElements();
+            fErrors.clear();
             fContextCount = 0;
         }
 
@@ -456,10 +457,12 @@ public class XMLSchemaValidator
             // copy errors from the list to an string array
             String[] errors = new String[size];
             for (int i = 0; i < size; i++) {
-                errors[i] = (String) fErrors.elementAt(contextPos + i);
+                errors[i] = (String) fErrors.get(contextPos + i);
             }
             // remove errors of the current element
-            fErrors.setSize(contextPos);
+            while (fErrors.size() > contextPos) {
+                fErrors.remove(fErrors.size() - 1);
+            }
             return errors;
         }
 
@@ -480,7 +483,7 @@ public class XMLSchemaValidator
             // copy errors from the list to an string array
             String[] errors = new String[size];
             for (int i = 0; i < size; i++) {
-                errors[i] = (String) fErrors.elementAt(contextPos + i);
+                errors[i] = (String) fErrors.get(contextPos + i);
             }
             // don't resize the vector: leave the errors for this attribute
             // to the containing element
@@ -490,8 +493,8 @@ public class XMLSchemaValidator
         public void reportError(String domain, String key, Object[] arguments, short severity) throws XNIException {
             final String message = fErrorReporter.reportError(domain, key, arguments, severity);
             if (fAugPSVI) {
-                fErrors.addElement(key);
-                fErrors.addElement(message);
+                fErrors.add(key);
+                fErrors.add(message);
             }
         } // reportError(String,String,Object[],short)
 
@@ -502,8 +505,8 @@ public class XMLSchemaValidator
                                 short severity) throws XNIException {
             final String message = fErrorReporter.reportError(location, domain, key, arguments, severity);
             if (fAugPSVI) {
-                fErrors.addElement(key);
-                fErrors.addElement(message);
+                fErrors.add(key);
+                fErrors.add(message);
             }
         } // reportError(XMLLocator,String,String,Object[],short)
     }
@@ -1949,7 +1952,7 @@ public class XMLSchemaValidator
             if (fCurrCMState[0] == XSCMValidator.FIRST_ERROR) {
                 XSComplexTypeDecl ctype = (XSComplexTypeDecl) fCurrentType;
                 //REVISIT: is it the only case we will have particle = null?
-                Vector next;
+                List next;
                 if (ctype.fParticle != null
                     && (next = fCurrentCM.whatCanGoHere(fCurrCMState)).size() > 0) {
                     String expected = expectedStr(next);
@@ -3596,13 +3599,13 @@ public class XMLSchemaValidator
                 XMLErrorReporter.SEVERITY_ERROR);
     }
     
-    private String expectedStr(Vector expected) {
+    private String expectedStr(List expected) {
         StringBuffer ret = new StringBuffer("{");
         int size = expected.size();
         for (int i = 0; i < size; i++) {
             if (i > 0)
                 ret.append(", ");
-            ret.append(expected.elementAt(i).toString());
+            ret.append(expected.get(i).toString());
         }
         ret.append('}');
         return ret.toString();
@@ -3726,9 +3729,9 @@ public class XMLSchemaValidator
         protected boolean fHasValue = false;
 
         /** global data */
-        public final Vector fValues = new Vector();
+        public final List fValues = new ArrayList();
         public ShortVector fValueTypes = null;
-        public Vector fItemValueTypes = null;
+        public List fItemValueTypes = null;
         
         private boolean fUseValueTypeVector = false;
         private int fValueTypesLength = 0; 
@@ -3772,19 +3775,19 @@ public class XMLSchemaValidator
             fUseItemValueTypeVector = false;
             fItemValueTypesLength = 0;
             fItemValueType = null;
-            fValues.setSize(0);
+            fValues.clear();
             if (fValueTypes != null) {
                 fValueTypes.clear();
             }
             if (fItemValueTypes != null) {
-                fItemValueTypes.setSize(0);
+                fItemValueTypes.clear();
             }
         } // end clear():void
 
         // appends the contents of one ValueStore to those of us.
         public void append(ValueStoreBase newVal) {
             for (int i = 0; i < newVal.fValues.size(); i++) {
-                fValues.addElement(newVal.fValues.elementAt(i));
+                fValues.add(newVal.fValues.get(i));
             }
         } // append(ValueStoreBase)
 
@@ -3900,7 +3903,7 @@ public class XMLSchemaValidator
                 checkDuplicateValues();
                 // store values
                 for (i = 0; i < fFieldCount; i++) {
-                    fValues.addElement(fLocalValues[i]);
+                    fValues.add(fLocalValues[i]);
                     addValueType(fLocalValueTypes[i]);
                     addItemValueType(fLocalItemValueTypes[i]);
                 }
@@ -3919,7 +3922,7 @@ public class XMLSchemaValidator
                 next = i + fFieldCount;
                 for (int j = 0; j < fFieldCount; j++) {
                     Object value1 = fLocalValues[j];
-                    Object value2 = fValues.elementAt(i);
+                    Object value2 = fValues.get(i);
                     short valueType1 = fLocalValueTypes[j];
                     short valueType2 = getValueTypeAt(i);
                     if (value1 == null || value2 == null || valueType1 != valueType2 || !(value1.equals(value2))) {
@@ -3947,12 +3950,12 @@ public class XMLSchemaValidator
          */
         public int contains(ValueStoreBase vsb) {
             
-            final Vector values = vsb.fValues;         
+            final List values = vsb.fValues;         
             final int size1 = values.size();
             if (fFieldCount <= 1) {
                 for (int i = 0; i < size1; ++i) {
                     short val = vsb.getValueTypeAt(i);
-                    if (!valueTypeContains(val) || !fValues.contains(values.elementAt(i))) {
+                    if (!valueTypeContains(val) || !fValues.contains(values.get(i))) {
                         return i;
                     }
                     else if(val == XSConstants.LIST_DT || val == XSConstants.LISTOFUNION_DT) {
@@ -3971,8 +3974,8 @@ public class XMLSchemaValidator
                     /** Check whether this set is contained in the value store. **/
                     INNER: for (int j = 0; j < size2; j += fFieldCount) {
                         for (int k = 0; k < fFieldCount; ++k) {
-                            final Object value1 = values.elementAt(i+k);
-                            final Object value2 = fValues.elementAt(j+k);
+                            final Object value1 = values.get(i+k);
+                            final Object value2 = fValues.get(j+k);
                             final short valueType1 = vsb.getValueTypeAt(i+k);
                             final short valueType2 = getValueTypeAt(j+k);
                             if (value1 != value2 && (valueType1 != valueType2 || value1 == null || !value1.equals(value2))) {
@@ -4026,7 +4029,7 @@ public class XMLSchemaValidator
         } // toString(Object[]):String
         
         /** Returns a string of the specified values. */
-        protected String toString(Vector values, int start, int length) {
+        protected String toString(List values, int start, int length) {
 
             // no values
             if (length == 0) {
@@ -4035,7 +4038,7 @@ public class XMLSchemaValidator
             
             // one value
             if (length == 1) {
-                return String.valueOf(values.elementAt(start));
+                return String.valueOf(values.get(start));
             }
 
             // construct value string
@@ -4044,7 +4047,7 @@ public class XMLSchemaValidator
                 if (i > 0) {
                     str.append(',');
                 }
-                str.append(values.elementAt(start + i));
+                str.append(values.get(start + i));
             }
             return str.toString();
 
@@ -4116,7 +4119,7 @@ public class XMLSchemaValidator
                     (fItemValueType != null && fItemValueType.equals(itemValueType)))) {
                 fUseItemValueTypeVector = true;
                 if (fItemValueTypes == null) {
-                    fItemValueTypes = new Vector(fItemValueTypesLength * 2);
+                    fItemValueTypes = new ArrayList(fItemValueTypesLength * 2);
                 }
                 for (int i = 1; i < fItemValueTypesLength; ++i) {
                     fItemValueTypes.add(fItemValueType);
@@ -4127,7 +4130,7 @@ public class XMLSchemaValidator
         
         private ShortList getItemValueTypeAt(int index) {
             if (fUseItemValueTypeVector) {
-                return (ShortList) fItemValueTypes.elementAt(index);
+                return (ShortList) fItemValueTypes.get(index);
             }
             return fItemValueType;
         }

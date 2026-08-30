@@ -23,7 +23,7 @@ import java.util.Locale;
 import java.util.StringTokenizer;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
+import java.util.List;
 
 import org.apache.xerces.impl.Constants;
 import org.apache.xerces.impl.dv.DatatypeException;
@@ -870,22 +870,22 @@ public class XSSimpleTypeDecl implements XSSimpleType, TypeInfo {
             if ((allowedFacet & FACET_ENUMERATION) == 0) {
                 reportError("cos-applicable-facets", new Object[]{"enumeration", fTypeName});
             } else {
-                Vector<String> enumVals = facets.enumeration;
+                List<String> enumVals = facets.enumeration;
                 int size = enumVals.size();
                 fEnumeration = new ValidatedInfo[size];
-                Vector<NamespaceContext> enumNSDecls = facets.enumNSDecls;
+                List<NamespaceContext> enumNSDecls = facets.enumNSDecls;
                 ValidationContextImpl ctx = new ValidationContextImpl(context);
                 enumerationAnnotations = facets.enumAnnotations;
                 fEnumerationSize = 0;
                 for (int i = 0; i < size; i++) {
                     if (enumNSDecls != null)
-                        ctx.setNSContext(enumNSDecls.elementAt(i));
+                        ctx.setNSContext(enumNSDecls.get(i));
                     try {
-                        ValidatedInfo info = getActualEnumValue((String)enumVals.elementAt(i), ctx, null);
+                        ValidatedInfo info = getActualEnumValue((String)enumVals.get(i), ctx, null);
                         // check 4.3.5.c0 must: enumeration values from the value space of base
                         fEnumeration[fEnumerationSize++] = info;
                     } catch (InvalidDatatypeValueException ide) {
-                        reportError("enumeration-valid-restriction", new Object[]{enumVals.elementAt(i), this.getBaseType().getName()});
+                        reportError("enumeration-valid-restriction", new Object[]{enumVals.get(i), this.getBaseType().getName()});
                     }
                 }
                 fFacetsDefined |= FACET_ENUMERATION;

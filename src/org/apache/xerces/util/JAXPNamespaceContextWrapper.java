@@ -21,7 +21,7 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.TreeSet;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import javax.xml.XMLConstants;
 
@@ -39,7 +39,7 @@ public final class JAXPNamespaceContextWrapper implements NamespaceContext {
     private javax.xml.namespace.NamespaceContext fNamespaceContext;
     private SymbolTable fSymbolTable;
     private List<String> fPrefixes;
-    private final Vector<String> fAllPrefixes = new Vector<>();
+    private final List<String> fAllPrefixes = new ArrayList<>();
     
     private int[] fContext = new int[8];
     private int fCurrentContext;
@@ -140,7 +140,10 @@ public final class JAXPNamespaceContextWrapper implements NamespaceContext {
 
     @Override
     public void popContext() {
-        fAllPrefixes.setSize(fContext[fCurrentContext--]);
+        while (fAllPrefixes.size() > fContext[fCurrentContext]) {
+            fAllPrefixes.remove(fAllPrefixes.size() - 1);
+        }
+        fCurrentContext--;
     }
 
     @Override

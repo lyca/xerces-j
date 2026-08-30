@@ -18,7 +18,7 @@
 package org.apache.xerces.impl.dtd;
 
 import java.util.ArrayList;
-import java.util.Vector;
+import java.util.List;
 
 import org.apache.xerces.util.XMLResourceIdentifierImpl;
 import org.apache.xerces.xni.XMLResourceIdentifier;
@@ -92,16 +92,7 @@ public class XMLDTDDescription extends XMLResourceIdentifierImpl
      *
      * @param possibleRoots an ArrayList of string values
      */
-    public void setPossibleRoots(ArrayList<String> possibleRoots) {
-        fPossibleRoots = possibleRoots;
-    }
-
-    /**
-     * Set possible roots.
-     *
-     * @param possibleRoots a Vector of string values
-     */
-    public void setPossibleRoots(Vector<String> possibleRoots) {
+    public void setPossibleRoots(List<String> possibleRoots) {
         fPossibleRoots = (possibleRoots != null) ? new ArrayList<>(possibleRoots) : null;
     }
 

@@ -19,7 +19,8 @@ package org.apache.xerces.impl.xs;
 
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.xerces.impl.XMLErrorReporter;
 import org.apache.xerces.impl.dv.InvalidDatatypeValueException;
@@ -609,8 +610,8 @@ public class XSConstraints {
             boolean checkWCOccurrence)
         throws XMLSchemaException {
 
-        Vector dChildren = null;
-        Vector bChildren = null;
+        List<XSParticleDecl> dChildren = null;
+        List<XSParticleDecl> bChildren = null;
         int dMinEffectiveTotalRange=OCCURRENCE_UNKNOWN;
         int dMaxEffectiveTotalRange=OCCURRENCE_UNKNOWN;
 
@@ -680,7 +681,7 @@ public class XSConstraints {
                     dMaxEffectiveTotalRange = dMaxOccurs;
 
                     // Fill in the vector of children
-                    dChildren = new Vector(subGroup.length+1);
+                    dChildren = new ArrayList<>(subGroup.length+1);
                     for (int i = 0; i < subGroup.length; i++) {
                         addElementToParticleVector(dChildren, subGroup[i]);
                     }
@@ -733,7 +734,7 @@ public class XSConstraints {
                     // Now, set the type to be CHOICE
                     bType = XSModelGroupImpl.MODELGROUP_CHOICE;
 
-                    bChildren = new Vector(bsubGroup.length+1);
+                    bChildren = new ArrayList<>(bsubGroup.length+1);
                     for (int i = 0; i < bsubGroup.length; i++) {
                         addElementToParticleVector(bChildren, bsubGroup[i]);
                     }
@@ -779,8 +780,8 @@ public class XSConstraints {
                     {
                         // Treat the element as if it were in a group of the same type
                         // as the base Particle
-                        dChildren = new Vector();
-                        dChildren.addElement(dParticle);
+                        dChildren = new ArrayList<>();
+                        dChildren.add(dParticle);
 
                         checkRecurseLax(dChildren, 1, 1, dSGHandler,
                                 bChildren, bMinOccurs, bMaxOccurs, bSGHandler);
@@ -791,8 +792,8 @@ public class XSConstraints {
                     {
                         // Treat the element as if it were in a group of the same type
                         // as the base Particle
-                        dChildren = new Vector();
-                        dChildren.addElement(dParticle);
+                        dChildren = new ArrayList<>();
+                        dChildren.add(dParticle);
 
                         checkRecurse(dChildren, 1, 1, dSGHandler,
                                 bChildren, bMinOccurs, bMaxOccurs, bSGHandler);
@@ -987,12 +988,12 @@ public class XSConstraints {
         return bExpansionHappened;
     }
 
-    private static void addElementToParticleVector (Vector v, XSElementDecl d)  {
+    private static void addElementToParticleVector (List<XSParticleDecl> v, XSElementDecl d)  {
 
         XSParticleDecl p = new XSParticleDecl();
         p.fValue = d;
         p.fType = XSParticleDecl.PARTICLE_ELEMENT;
-        v.addElement(p);
+        v.add(p);
 
     }
 
@@ -1009,13 +1010,13 @@ public class XSConstraints {
             return p;
     }
 
-    private static Vector removePointlessChildren(XSParticleDecl p)  {
+    private static List<XSParticleDecl> removePointlessChildren(XSParticleDecl p)  {
 
         if (p.fType == XSParticleDecl.PARTICLE_ELEMENT ||
                 p.fType == XSParticleDecl.PARTICLE_WILDCARD)
             return null;
 
-        Vector children = new Vector();
+        List<XSParticleDecl> children = new ArrayList<>();
 
         XSModelGroupImpl group = (XSModelGroupImpl)p.fValue;
         for (int i = 0; i < group.fParticleCount; i++)
@@ -1025,7 +1026,7 @@ public class XSConstraints {
     }
 
 
-    private static void gatherChildren(int parentType, XSParticleDecl p, Vector children) {
+    private static void gatherChildren(int parentType, XSParticleDecl p, List<XSParticleDecl> children) {
 
         int min = p.fMinOccurs;
         int max = p.fMaxOccurs;
@@ -1035,12 +1036,12 @@ public class XSConstraints {
 
         if (type == XSParticleDecl.PARTICLE_ELEMENT ||
                 type== XSParticleDecl.PARTICLE_WILDCARD) {
-            children.addElement(p);
+            children.add(p);
             return;
         }
 
         if (! (min==1 && max==1)) {
-            children.addElement(p);
+            children.add(p);
         }
         else if (parentType == type) {
             XSModelGroupImpl group = (XSModelGroupImpl)p.fValue;
@@ -1048,7 +1049,7 @@ public class XSConstraints {
                 gatherChildren(type, group.fParticles[i], children);
         }
         else if (!p.isEmpty()) {
-            children.addElement(p);
+            children.add(p);
         }
 
     }
@@ -1212,7 +1213,7 @@ public class XSConstraints {
     }
 
 
-    private static void checkNSRecurseCheckCardinality(Vector children, int min1, int max1,
+    private static void checkNSRecurseCheckCardinality(List children, int min1, int max1,
             SubstitutionGroupHandler dSGHandler,
             XSParticleDecl wildcard, int min2, int max2,
             boolean checkWCOccurrence)
@@ -1232,7 +1233,7 @@ public class XSConstraints {
         int count = children.size();
         try {
             for (int i = 0; i < count; i++) {
-                XSParticleDecl particle1 = (XSParticleDecl)children.elementAt(i);
+                XSParticleDecl particle1 = (XSParticleDecl)children.get(i);
                 particleValidRestriction(particle1, dSGHandler, wildcard, null, false);
 
             }
@@ -1245,9 +1246,9 @@ public class XSConstraints {
 
     }
 
-    private static void checkRecurse(Vector dChildren, int min1, int max1,
+    private static void checkRecurse(List dChildren, int min1, int max1,
             SubstitutionGroupHandler dSGHandler,
-            Vector bChildren, int min2, int max2,
+            List bChildren, int min2, int max2,
             SubstitutionGroupHandler bSGHandler)
         throws XMLSchemaException {
 
@@ -1266,9 +1267,9 @@ public class XSConstraints {
         int current = 0;
         label: for (int i = 0; i<count1; i++) {
 
-            XSParticleDecl particle1 = (XSParticleDecl)dChildren.elementAt(i);
+            XSParticleDecl particle1 = (XSParticleDecl)dChildren.get(i);
             for (int j = current; j<count2; j++) {
-                XSParticleDecl particle2 = (XSParticleDecl)bChildren.elementAt(j);
+                XSParticleDecl particle2 = (XSParticleDecl)bChildren.get(j);
                 current +=1;
                 try {
                     particleValidRestriction(particle1, dSGHandler, particle2, bSGHandler);
@@ -1284,7 +1285,7 @@ public class XSConstraints {
 
         // Now, see if there are some elements in the base we didn't match up
         for (int j=current; j < count2; j++) {
-            XSParticleDecl particle2 = (XSParticleDecl)bChildren.elementAt(j);
+            XSParticleDecl particle2 = (XSParticleDecl)bChildren.get(j);
             if (!particle2.emptiable()) {
                 throw new XMLSchemaException("rcase-Recurse.2", null);
             }
@@ -1292,9 +1293,9 @@ public class XSConstraints {
 
     }
 
-    private static void checkRecurseUnordered(Vector dChildren, int min1, int max1,
+    private static void checkRecurseUnordered(List dChildren, int min1, int max1,
             SubstitutionGroupHandler dSGHandler,
-            Vector bChildren, int min2, int max2,
+            List bChildren, int min2, int max2,
             SubstitutionGroupHandler bSGHandler)
         throws XMLSchemaException {
 
@@ -1314,10 +1315,10 @@ public class XSConstraints {
         boolean foundIt[] = new boolean[count2];
 
         label: for (int i = 0; i<count1; i++) {
-            XSParticleDecl particle1 = (XSParticleDecl)dChildren.elementAt(i);
+            XSParticleDecl particle1 = (XSParticleDecl)dChildren.get(i);
 
             for (int j = 0; j<count2; j++) {
-                XSParticleDecl particle2 = (XSParticleDecl)bChildren.elementAt(j);
+                XSParticleDecl particle2 = (XSParticleDecl)bChildren.get(j);
                 try {
                     particleValidRestriction(particle1, dSGHandler, particle2, bSGHandler);
                     if (foundIt[j])
@@ -1336,7 +1337,7 @@ public class XSConstraints {
 
         // Now, see if there are some elements in the base we didn't match up
         for (int j=0; j < count2; j++) {
-            XSParticleDecl particle2 = (XSParticleDecl)bChildren.elementAt(j);
+            XSParticleDecl particle2 = (XSParticleDecl)bChildren.get(j);
             if (!foundIt[j] && !particle2.emptiable()) {
                 throw new XMLSchemaException("rcase-RecurseUnordered.2", null);
             }
@@ -1344,9 +1345,9 @@ public class XSConstraints {
 
     }
 
-    private static void checkRecurseLax(Vector dChildren, int min1, int max1,
+    private static void checkRecurseLax(List dChildren, int min1, int max1,
             SubstitutionGroupHandler dSGHandler,
-            Vector bChildren, int min2, int max2,
+            List bChildren, int min2, int max2,
             SubstitutionGroupHandler  bSGHandler)
         throws XMLSchemaException {
 
@@ -1365,9 +1366,9 @@ public class XSConstraints {
         int current = 0;
         label: for (int i = 0; i<count1; i++) {
 
-            XSParticleDecl particle1 = (XSParticleDecl)dChildren.elementAt(i);
+            XSParticleDecl particle1 = (XSParticleDecl)dChildren.get(i);
             for (int j = current; j<count2; j++) {
-                XSParticleDecl particle2 = (XSParticleDecl)bChildren.elementAt(j);
+                XSParticleDecl particle2 = (XSParticleDecl)bChildren.get(j);
                 current +=1;
                 try {
                     // IHR: go back one element on b list because the next element may match
@@ -1386,9 +1387,9 @@ public class XSConstraints {
 
     }
 
-    private static void checkMapAndSum(Vector dChildren, int min1, int max1,
+    private static void checkMapAndSum(List dChildren, int min1, int max1,
             SubstitutionGroupHandler dSGHandler,
-            Vector bChildren, int min2, int max2,
+            List bChildren, int min2, int max2,
             SubstitutionGroupHandler bSGHandler)
         throws XMLSchemaException {
 
@@ -1420,9 +1421,9 @@ public class XSConstraints {
 
         label: for (int i = 0; i<count1; i++) {
 
-            XSParticleDecl particle1 = (XSParticleDecl)dChildren.elementAt(i);
+            XSParticleDecl particle1 = (XSParticleDecl)dChildren.get(i);
             for (int j = 0; j<count2; j++) {
-                XSParticleDecl particle2 = (XSParticleDecl)bChildren.elementAt(j);
+                XSParticleDecl particle2 = (XSParticleDecl)bChildren.get(j);
                 try {
                     particleValidRestriction(particle1, dSGHandler, particle2, bSGHandler);
                     continue label;

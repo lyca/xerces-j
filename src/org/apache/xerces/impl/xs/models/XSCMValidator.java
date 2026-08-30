@@ -17,7 +17,7 @@
 
 package org.apache.xerces.impl.xs.models;
 
-import java.util.Vector;
+import java.util.List;
 
 import org.apache.xerces.impl.xs.SubstitutionGroupHandler;
 import org.apache.xerces.impl.xs.XMLSchemaException;
@@ -88,7 +88,7 @@ public interface XSCMValidator {
      * @return       a Vector whose entries are instances of
      *               either XSWildcardDecl or XSElementDecl.
      */
-    public Vector whatCanGoHere(int[] state);
+    public List whatCanGoHere(int[] state);
     
     /**
      * <p>Returns an array containing information about the current repeating term

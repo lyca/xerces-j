@@ -18,7 +18,7 @@
 package org.apache.xerces.impl.xs.traversers;
 
 import java.util.ArrayList;
-import java.util.Vector;
+import java.util.List;
 
 import org.apache.xerces.impl.dv.InvalidDatatypeFacetException;
 import org.apache.xerces.impl.dv.XSSimpleType;
@@ -239,7 +239,7 @@ class XSDSimpleTypeTraverser extends XSDAbstractTraverser {
                 XSAttributeChecker.ATTIDX_BASE :
                     XSAttributeChecker.ATTIDX_ITEMTYPE];
         @SuppressWarnings("unchecked")
-        Vector<QName> memberTypes = (Vector<QName>)contentAttrs[XSAttributeChecker.ATTIDX_MEMBERTYPES];
+        List<QName> memberTypes = (List<QName>)contentAttrs[XSAttributeChecker.ATTIDX_MEMBERTYPES];
         //content = {annotation?,simpleType?...}
         Element content = DOMUtil.getFirstChildElement(child);
         //check content (annotation?, ...)
@@ -293,7 +293,7 @@ class XSDSimpleTypeTraverser extends XSDAbstractTraverser {
             // for each qname in the list
             for (int i = 0; i < size; i++) {
                 // get the type decl
-                dv = findDTValidator(child, name, (QName)memberTypes.elementAt(i),
+                dv = findDTValidator(child, name, (QName)memberTypes.get(i),
                         XSConstants.DERIVATION_UNION, schemaDoc);
                 if (dv != null) {
                     // if it's a union, expand it

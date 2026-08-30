@@ -17,7 +17,8 @@
 
 package org.apache.xerces.impl.xs.models;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.xerces.impl.xs.SubstitutionGroupHandler;
 import org.apache.xerces.impl.xs.XMLSchemaException;
@@ -202,13 +203,13 @@ public class XSAllCM implements XSCMValidator {
      * @return       a Vector whose entries are instances of
      *               either XSWildcardDecl or XSElementDecl.
      */
-    public Vector whatCanGoHere(int[] state) {
-        Vector ret = new Vector();
+    public List whatCanGoHere(int[] state) {
+        List ret = new ArrayList();
         for (int i = 0; i < fNumElements; i++) {
             // we only try to look for a matching decl if we have not seen
             // this element yet.
             if (state[i+1] == STATE_START)
-                ret.addElement(fAllElements[i]);
+                ret.add(fAllElements[i]);
         }
         return ret;
     }

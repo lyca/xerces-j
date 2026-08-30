@@ -19,7 +19,8 @@ package org.apache.xerces.impl.xs;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.xerces.xni.grammars.Grammar;
 
 /**
@@ -92,20 +93,20 @@ public class XSGrammarBucket {
         // get all imported grammars, and make a copy of the Vector, so that
         // we can recursively process the grammars, and add distinct ones
         // to the same vector
-        Vector<Grammar> currGrammars = grammar.getImportedGrammars();
+        List<Grammar> currGrammars = grammar.getImportedGrammars();
         if (currGrammars == null) {
             putGrammar(grammar);
             return true;
         }
         
         @SuppressWarnings("unchecked")
-        Vector<Grammar> grammars = (Vector<Grammar>) currGrammars.clone();
+        List<Grammar> grammars = new ArrayList<>(currGrammars);
         SchemaGrammar sg1, sg2;
-        Vector<Grammar> gs;
+        List<Grammar> gs;
         // for all (recursively) imported grammars
         for (int i = 0; i < grammars.size(); i++) {
             // get the grammar
-            sg1 = (SchemaGrammar)grammars.elementAt(i);
+            sg1 = (SchemaGrammar)grammars.get(i);
             // check whether the bucket has one with the same tns
             sg2 = getGrammar(sg1.fTargetNamespace);
             if (sg2 == null) {
@@ -115,9 +116,9 @@ public class XSGrammarBucket {
                 // we add them to the vector
                 if(gs == null) continue;
                 for (int j = gs.size() - 1; j >= 0; j--) {
-                    sg2 = (SchemaGrammar)gs.elementAt(j);
+                    sg2 = (SchemaGrammar)gs.get(j);
                     if (!grammars.contains(sg2))
-                        grammars.addElement(sg2);
+                        grammars.add(sg2);
                 }
             }
             // we found one with the same target namespace
@@ -130,7 +131,7 @@ public class XSGrammarBucket {
         // now we have all imported grammars stored in the vector. add them
         putGrammar(grammar);
         for (int i = grammars.size() - 1; i >= 0; i--)
-            putGrammar((SchemaGrammar)grammars.elementAt(i));
+            putGrammar((SchemaGrammar)grammars.get(i));
 
         return true;
     }
@@ -166,19 +167,19 @@ public class XSGrammarBucket {
         // get all imported grammars, and make a copy of the Vector, so that
         // we can recursively process the grammars, and add distinct ones
         // to the same vector
-        Vector<Grammar> currGrammars = grammar.getImportedGrammars();
+        List<Grammar> currGrammars = grammar.getImportedGrammars();
         if (currGrammars == null) {
             return true;
         }
         
         @SuppressWarnings("unchecked")
-        Vector<Grammar> grammars = (Vector<Grammar>) currGrammars.clone();
+        List<Grammar> grammars = new ArrayList<>(currGrammars);
         SchemaGrammar sg1, sg2;
-        Vector<Grammar> gs;
+        List<Grammar> gs;
         // for all (recursively) imported grammars
         for (int i = 0; i < grammars.size(); i++) {
             // get the grammar
-            sg1 = (SchemaGrammar)grammars.elementAt(i);
+            sg1 = (SchemaGrammar)grammars.get(i);
             // check whether the bucket has one with the same tns
             sg2 = getGrammar(sg1.fTargetNamespace);
             if (sg2 == null) {
@@ -188,9 +189,9 @@ public class XSGrammarBucket {
                 // we add them to the vector
                 if(gs == null) continue;
                 for (int j = gs.size() - 1; j >= 0; j--) {
-                    sg2 = (SchemaGrammar)gs.elementAt(j);
+                    sg2 = (SchemaGrammar)gs.get(j);
                     if (!grammars.contains(sg2))
-                        grammars.addElement(sg2);
+                        grammars.add(sg2);
                 }
             }
             // we found one with the same target namespace, ignore it
@@ -201,7 +202,7 @@ public class XSGrammarBucket {
 
         // now we have all imported grammars stored in the vector. add them
         for (int i = grammars.size() - 1; i >= 0; i--) {
-            putGrammar((SchemaGrammar)grammars.elementAt(i));
+            putGrammar((SchemaGrammar)grammars.get(i));
         }
 
         return true;

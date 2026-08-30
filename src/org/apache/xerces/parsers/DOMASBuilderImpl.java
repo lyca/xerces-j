@@ -17,7 +17,7 @@
 
 package org.apache.xerces.parsers;
 
-import java.util.Vector;
+import java.util.List;
 
 import org.apache.xerces.dom.ASModelImpl;
 import org.apache.xerces.dom3.as.ASModel;
@@ -264,7 +264,7 @@ public class DOMASBuilderImpl
             fGrammarBucket.putGrammar(currModel.getGrammar());
         }
         for(int i = 0; i < currModel.getInternalASModels().size(); i++) {
-            ASModelImpl nextModel = (ASModelImpl)(currModel.getInternalASModels().elementAt(i));
+            ASModelImpl nextModel = (ASModelImpl)(currModel.getInternalASModels().get(i));
             initGrammarBucketRecurse(nextModel);
         }
     }
@@ -285,9 +285,9 @@ public class DOMASBuilderImpl
         if ((grammars[0] = (Grammar)currModel.getGrammar()) != null) {
             grammarPool.cacheGrammars(grammars[0].getGrammarDescription().getGrammarType(), grammars);
         }
-        Vector modelStore = currModel.getInternalASModels();
+        List modelStore = currModel.getInternalASModels();
         for (int i = 0; i < modelStore.size(); i++) {
-            initGrammarPool((ASModelImpl)modelStore.elementAt(i), grammarPool);
+            initGrammarPool((ASModelImpl)modelStore.get(i), grammarPool);
         }
     }
 } // class DOMASBuilderImpl

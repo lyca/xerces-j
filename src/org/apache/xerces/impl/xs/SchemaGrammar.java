@@ -18,7 +18,8 @@
 package org.apache.xerces.impl.xs;
 
 import java.lang.ref.SoftReference;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.xerces.impl.Constants;
 import org.apache.xerces.impl.dv.SchemaDVFactory;
@@ -240,16 +241,16 @@ public class SchemaGrammar implements XSGrammar, XSNamespaceItem {
 
         // List of imported grammars
         if (grammar.fImported != null) {
-            fImported = new Vector<>();
+            fImported = new ArrayList<>();
             for (int i=0; i<grammar.fImported.size(); i++) {
-                fImported.add(grammar.fImported.elementAt(i));
+                fImported.add(grammar.fImported.get(i));
             }
         }
 
         // Locations
         if (grammar.fLocations != null) {
             for (int k=0; k<grammar.fLocations.size(); k++) {
-                addDocument(null, (String)grammar.fLocations.elementAt(k));
+                addDocument(null, (String)grammar.fLocations.get(k));
             }
         }
 
@@ -404,7 +405,7 @@ public class SchemaGrammar implements XSGrammar, XSNamespaceItem {
 
         // override these methods solely so that these
         // objects cannot be modified once they're created.
-        public void setImportedGrammars(Vector importedGrammars) {
+        public void setImportedGrammars(List<Grammar> importedGrammars) {
             // ignore
         }
         public void addGlobalAttributeDecl(XSAttributeDecl decl) {
@@ -655,7 +656,7 @@ public class SchemaGrammar implements XSGrammar, XSNamespaceItem {
 
         // override these methods solely so that these
         // objects cannot be modified once they're created.
-        public void setImportedGrammars(Vector importedGrammars) {
+        public void setImportedGrammars(List<Grammar> importedGrammars) {
             // ignore
         }
         public void addGlobalAttributeDecl(XSAttributeDecl decl) {
@@ -799,7 +800,7 @@ public class SchemaGrammar implements XSGrammar, XSNamespaceItem {
         return true;
     } // isNamespaceAware():boolean
 
-    Vector<Grammar> fImported = null;
+    List<Grammar> fImported = null;
 
     /**
      * Set imported grammars.
@@ -807,9 +808,11 @@ public class SchemaGrammar implements XSGrammar, XSNamespaceItem {
      * @param importedGrammars a Vector of imported Grammar objects
      * @see Grammar
      */
-    public void setImportedGrammars(Vector importedGrammars) {
+    public void setImportedGrammars(List<Grammar> importedGrammars) {
         fImported = importedGrammars;
     }
+
+
 
     /**
      * Get imported grammars.
@@ -817,7 +820,7 @@ public class SchemaGrammar implements XSGrammar, XSNamespaceItem {
      * @return the imported Grammar objects as a Vector
      * @see Grammar
      */
-    public Vector<Grammar> getImportedGrammars() {
+    public List<Grammar> getImportedGrammars() {
         return fImported;
     }
 
@@ -1377,24 +1380,24 @@ public class SchemaGrammar implements XSGrammar, XSNamespaceItem {
 
     // store the documents and their locations contributing to this namespace
     // REVISIT: use StringList and XSObjectList for there fields.
-    private Vector<Object> fDocuments = null;
-    private Vector<String> fLocations = null;
+    private List<Object> fDocuments = null;
+    private List<String> fLocations = null;
     
     public synchronized void addDocument(Object document, String location) {
         if (fDocuments == null) {
-            fDocuments = new Vector<>();
-            fLocations = new Vector<>();
+            fDocuments = new ArrayList<>();
+            fLocations = new ArrayList<>();
         }
-        fDocuments.addElement(document);
-        fLocations.addElement(location);
+        fDocuments.add(document);
+        fLocations.add(location);
     }
     
     public synchronized void removeDocument(int index) {
         if (fDocuments != null && 
             index >= 0 && 
             index < fDocuments.size()) {
-            fDocuments.removeElementAt(index);
-            fLocations.removeElementAt(index);
+            fDocuments.remove(index);
+            fLocations.remove(index);
         }
     }
     

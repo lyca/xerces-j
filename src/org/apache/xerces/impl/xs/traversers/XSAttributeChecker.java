@@ -22,7 +22,8 @@ import java.util.Map;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.StringTokenizer;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.xerces.impl.dv.InvalidDatatypeValueException;
 import org.apache.xerces.impl.dv.XSSimpleType;
@@ -924,10 +925,10 @@ public class XSAttributeChecker {
     protected SymbolTable fSymbolTable = null;
 
     // used to store the mapping from processed element to attributes
-    protected Map<String, Vector<String>> fNonSchemaAttrs = new HashMap<>();
+    protected Map<String, List<String>> fNonSchemaAttrs = new HashMap<>();
 
     // temprory vector, used to hold the namespace list
-    protected Vector fNamespaceList = new Vector();
+    protected List<String> fNamespaceList = new ArrayList<>();
 
     // whether this attribute appeared in the current element
     protected boolean[] fSeen = new boolean[ATTIDX_COUNT];
@@ -1068,10 +1069,10 @@ public class XSAttributeChecker {
                 else {
                     if(attrValues[ATTIDX_NONSCHEMA] == null) {
                         // these are usually small
-                        attrValues[ATTIDX_NONSCHEMA] = new Vector(4,2);
+                        attrValues[ATTIDX_NONSCHEMA] = new ArrayList<String>(4);
                     }
-                    ((Vector)attrValues[ATTIDX_NONSCHEMA]).addElement(attrName);
-                    ((Vector)attrValues[ATTIDX_NONSCHEMA]).addElement(attrVal);
+                    ((List<String>)attrValues[ATTIDX_NONSCHEMA]).add(attrName);
+                    ((List<String>)attrValues[ATTIDX_NONSCHEMA]).add(attrVal);
                     // for attributes from other namespace
                     // store them in a list, and TRY to validate them after
                     // schema traversal (because it's "lax")
@@ -1194,7 +1195,7 @@ public class XSAttributeChecker {
 
         String value = XMLChar.trim(ivalue);
         Object retValue = null;
-        Vector memberType;
+        List<QName> memberType;
         int choice;
 
         switch (dvIndex) {
@@ -1407,7 +1408,7 @@ public class XSAttributeChecker {
             break;
         case DT_MEMBERTYPES:
             // memberTypes = List of QName
-            memberType = new Vector();
+            memberType = new ArrayList<>();
             try {
                 StringTokenizer t = new StringTokenizer(value, " \n\t\r");
                 while (t.hasMoreTokens()) {
@@ -1416,7 +1417,7 @@ public class XSAttributeChecker {
                     // kludge to handle chameleon includes/redefines...
                     if(qname.prefix == XMLSymbols.EMPTY_STRING && qname.uri == null && schemaDoc.fIsChameleonSchema)
                         qname.uri = schemaDoc.fTargetNamespace;
-                    memberType.addElement(qname);
+                    memberType.add(qname);
                 }
                 retValue = memberType;
             }
@@ -1450,7 +1451,7 @@ public class XSAttributeChecker {
                 // list
                 retValue = INT_ANY_LIST;
 
-                fNamespaceList.removeAllElements();
+                fNamespaceList.clear();
 
                 // tokenize
                 StringTokenizer tokens = new StringTokenizer(value, " \n\t\r");
@@ -1472,7 +1473,7 @@ public class XSAttributeChecker {
 
                         //check for duplicate namespaces in the list
                         if (!fNamespaceList.contains(tempNamespace)) {
-                            fNamespaceList.addElement(tempNamespace);
+                            fNamespaceList.add(tempNamespace);
                         }
                     }
                 } catch (InvalidDatatypeValueException ide) {
@@ -1482,7 +1483,7 @@ public class XSAttributeChecker {
                 // convert the vector to an array
                 int num = fNamespaceList.size();
                 String[] list = new String[num];
-                fNamespaceList.copyInto(list);
+                fNamespaceList.toArray(list);
                 attrValues[ATTIDX_NAMESPACE_LIST] = list;
             }
             break;
@@ -1561,18 +1562,18 @@ public class XSAttributeChecker {
             }
 
             // get all values appeared with this attribute name
-            Vector values = (Vector) entry.getValue();
+            List values = (List) entry.getValue();
             String elName;
-            String attrName = (String)values.elementAt(0);
+            String attrName = (String)values.get(0);
             // for each of the values
             int count = values.size();
             for (int i = 1; i < count; i += 2) {
-                elName = (String)values.elementAt(i);
+                elName = (String)values.get(i);
                 try {
                     // and validate it using the XSSimpleType
                     // REVISIT: what would be the proper validation context?
                     //          guess we need to save that in the vectors too.
-                    dv.validate((String)values.elementAt(i+1), null, null);
+                    dv.validate((String)values.get(i+1), null, null);
                 } catch(InvalidDatatypeValueException ide) {
                     reportSchemaError ("s4s-att-invalid-value",
                                        new Object[] {elName, attrName, ide.getMessage()},
@@ -1689,7 +1690,7 @@ public class XSAttributeChecker {
         attrArray[ATTIDX_ISRETURNED] = Boolean.TRUE;
         // better clear nonschema vector
         if(attrArray[ATTIDX_NONSCHEMA] != null)
-            ((Vector)attrArray[ATTIDX_NONSCHEMA]).clear();
+            ((List)attrArray[ATTIDX_NONSCHEMA]).clear();
         // and put it into the pool
         fArrayPool[--fPoolPos] = attrArray;
     }

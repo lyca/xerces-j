@@ -18,7 +18,8 @@
 package org.apache.xerces.impl.xs.models;
 
 import java.util.HashMap;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.xerces.impl.dtd.models.CMNode;
 import org.apache.xerces.impl.dtd.models.CMStateSet;
@@ -1109,7 +1110,7 @@ public class XSDFACM
      * @return       a Vector whose entries are instances of
      *               either XSWildcardDecl or XSElementDecl.
      */
-    public Vector whatCanGoHere(int[] state) {
+    public List whatCanGoHere(int[] state) {
         int curState = state[0];
         if (curState < 0)
             curState = state[1];
@@ -1117,7 +1118,7 @@ public class XSDFACM
                 fCountingStates[curState] : null;
         int count = state[2];
 
-        Vector ret = new Vector();
+        List ret = new ArrayList();
         for (int elemIndex = 0; elemIndex < fElemMapSize; elemIndex++) {
             int nextState = fTransTable[curState][elemIndex];
             if (nextState != -1) {
@@ -1137,7 +1138,7 @@ public class XSDFACM
                         continue;
                     }
                 }
-                ret.addElement(fElemMap[elemIndex]);
+                ret.add(fElemMap[elemIndex]);
             }  
         }
         return ret;

@@ -17,7 +17,9 @@
 
 package org.apache.xerces.impl.xs.models;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import org.apache.xerces.impl.xs.SubstitutionGroupHandler;
 import org.apache.xerces.impl.xs.XMLSchemaException;
@@ -44,7 +46,7 @@ public class XSEmptyCM implements XSCMValidator {
     // start the content model: did not see any children
     private static final short STATE_START = 0;
     
-    private static final Vector EMPTY = new Vector(0);
+    private static final List EMPTY = Collections.emptyList();
 
     //
     // Data
@@ -126,7 +128,7 @@ public class XSEmptyCM implements XSCMValidator {
      * @return       a Vector whose entries are instances of
      *               either XSWildcardDecl or XSElementDecl.
      */
-    public Vector whatCanGoHere(int[] state) {
+    public List whatCanGoHere(int[] state) {
         return EMPTY;
     }
     

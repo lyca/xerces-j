@@ -18,7 +18,8 @@
 package org.apache.xerces.impl.xs.traversers;
 
 import java.util.Locale;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.xerces.impl.dv.InvalidDatatypeValueException;
 import org.apache.xerces.impl.dv.XSFacets;
@@ -142,7 +143,7 @@ abstract class XSDAbstractTraverser {
         // find the grammar; fSchemaHandler must be known!
         SchemaGrammar grammar = fSchemaHandler.getGrammar(schemaDoc.fTargetNamespace);
         // fish out local attributes passed from parent
-        Vector annotationLocalAttrs = (Vector)parentAttrs[XSAttributeChecker.ATTIDX_NONSCHEMA];
+        List annotationLocalAttrs = (List)parentAttrs[XSAttributeChecker.ATTIDX_NONSCHEMA];
         // optimize for case where there are no local attributes
         if(annotationLocalAttrs != null && !annotationLocalAttrs.isEmpty()) {
             StringBuffer localStrBuffer = new StringBuffer(64);
@@ -150,7 +151,7 @@ abstract class XSDAbstractTraverser {
             // Vector should contain rawname value pairs
             int i = 0;
             while (i < annotationLocalAttrs.size()) {
-                String rawname = (String)annotationLocalAttrs.elementAt(i++);
+                String rawname = (String)annotationLocalAttrs.get(i++);
                 int colonIndex = rawname.indexOf(':');
                 String prefix, localpart;
                 if (colonIndex == -1) {
@@ -168,7 +169,7 @@ abstract class XSDAbstractTraverser {
                 }
                 localStrBuffer.append(rawname)
                 .append("=\"");
-                String value = (String)annotationLocalAttrs.elementAt(i++);
+                String value = (String)annotationLocalAttrs.get(i++);
                 // search for pesky "s and <s within attr value:
                 value = processAttValue(value);
                 localStrBuffer.append(value)
@@ -205,7 +206,7 @@ abstract class XSDAbstractTraverser {
         // find the grammar; fSchemaHandler must be known!
         SchemaGrammar grammar = fSchemaHandler.getGrammar(schemaDoc.fTargetNamespace);
         // fish out local attributes passed from parent
-        Vector annotationLocalAttrs = (Vector)parentAttrs[XSAttributeChecker.ATTIDX_NONSCHEMA];
+        List annotationLocalAttrs = (List)parentAttrs[XSAttributeChecker.ATTIDX_NONSCHEMA];
         // optimize for case where there are no local attributes
         if (annotationLocalAttrs != null && !annotationLocalAttrs.isEmpty()) {
             StringBuffer localStrBuffer = new StringBuffer(64);
@@ -213,7 +214,7 @@ abstract class XSDAbstractTraverser {
             // Vector should contain rawname value pairs
             int i = 0;
             while (i < annotationLocalAttrs.size()) {
-                String rawname = (String)annotationLocalAttrs.elementAt(i++);
+                String rawname = (String)annotationLocalAttrs.get(i++);
                 int colonIndex = rawname.indexOf(':');
                 String prefix, localpart;
                 if (colonIndex == -1) {
@@ -227,7 +228,7 @@ abstract class XSDAbstractTraverser {
                 String uri = schemaDoc.fNamespaceSupport.getURI(fSymbolTable.addSymbol(prefix));
                 localStrBuffer.append(rawname)
                 .append("=\"");
-                String value = (String)annotationLocalAttrs.elementAt(i++);
+                String value = (String)annotationLocalAttrs.get(i++);
                 // search for pesky "s and <s within attr value:
                 value = processAttValue(value);
                 localStrBuffer.append(value)
@@ -285,10 +286,10 @@ abstract class XSDAbstractTraverser {
         short facetsFixed = 0; // facets that have fixed="true"        
         String facet;
         boolean hasQName = containsQName(baseValidator);
-        Vector enumData = null;
+        List<String> enumData = null;
         XSObjectListImpl enumAnnotations = null;
         XSObjectListImpl patternAnnotations = null;
-        Vector enumNSDecls = hasQName ? new Vector() : null;       
+        List<org.apache.xerces.xni.NamespaceContext> enumNSDecls = hasQName ? new ArrayList<>() : null;       
         int currentFacet = 0;
         xsFacets.reset();
         boolean seenPattern = false;
@@ -339,13 +340,13 @@ abstract class XSDAbstractTraverser {
                     schemaDoc.fValidationContext.setNamespaceSupport(schemaDoc.fNamespaceSupport);
                 }
                 if (enumData == null){
-                    enumData = new Vector();
+                    enumData = new ArrayList<>();
                     enumAnnotations = new XSObjectListImpl();
                 }
-                enumData.addElement(enumVal);
+                enumData.add(enumVal);
                 enumAnnotations.addXSObject(null);
                 if (hasQName)
-                    enumNSDecls.addElement(nsDecls);
+                    enumNSDecls.add(nsDecls);
                 Element child = DOMUtil.getFirstChildElement( content );
                 
                 if (child != null &&
@@ -616,7 +617,7 @@ abstract class XSDAbstractTraverser {
     /*
      * Check whether values of xs:maxLength and xs:enumeration are consistent. Report a warning message if they are not.
      */
-    private void checkEnumerationAndMaxLengthInconsistency(XSSimpleType baseValidator, Vector enumData, Element contextNode, String typeName) {
+    private void checkEnumerationAndMaxLengthInconsistency(XSSimpleType baseValidator, List enumData, Element contextNode, String typeName) {
         if (SchemaSymbols.URI_SCHEMAFORSCHEMA.equals(baseValidator.getNamespace()) && 
             SchemaSymbols.ATTVAL_HEXBINARY.equals(baseValidator.getName())) {
             for (int enumIdx = 0; enumIdx < enumData.size(); enumIdx++) {
@@ -649,7 +650,7 @@ abstract class XSDAbstractTraverser {
     /*
      * Check whether values of xs:minLength and xs:enumeration are consistent. Report a warning message if they are not.
      */
-    private void checkEnumerationAndMinLengthInconsistency(XSSimpleType baseValidator, Vector enumData, Element contextNode, String typeName) {
+    private void checkEnumerationAndMinLengthInconsistency(XSSimpleType baseValidator, List enumData, Element contextNode, String typeName) {
         if (SchemaSymbols.URI_SCHEMAFORSCHEMA.equals(baseValidator.getNamespace()) && 
             SchemaSymbols.ATTVAL_HEXBINARY.equals(baseValidator.getName())) {
             for (int enumIdx = 0; enumIdx < enumData.size(); enumIdx++) {
@@ -682,7 +683,7 @@ abstract class XSDAbstractTraverser {
     /*
      * Check whether values of xs:length and xs:enumeration are consistent. Report a warning message if they are not.
      */
-    private void checkEnumerationAndLengthInconsistency(XSSimpleType baseValidator, Vector enumData, Element contextNode, String typeName) {
+    private void checkEnumerationAndLengthInconsistency(XSSimpleType baseValidator, List enumData, Element contextNode, String typeName) {
         if (SchemaSymbols.URI_SCHEMAFORSCHEMA.equals(baseValidator.getNamespace()) && 
             SchemaSymbols.ATTVAL_HEXBINARY.equals(baseValidator.getName())) {
             for (int enumIdx = 0; enumIdx < enumData.size(); enumIdx++) {

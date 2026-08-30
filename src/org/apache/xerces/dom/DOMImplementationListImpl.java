@@ -19,8 +19,6 @@ package org.apache.xerces.dom;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.List;
-import java.util.Vector;
 
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.DOMImplementationList;
@@ -55,9 +53,7 @@ public class DOMImplementationListImpl implements DOMImplementationList {
     /** 
      * Construct a list of DOMImplementations from a Vector of DOMImplementation
      */
-    public DOMImplementationListImpl(Vector<DOMImplementation> params) {
-        fImplementations = new ArrayList<>(params);
-    }
+
 
     /**
      * Returns the indexth item in the collection.
