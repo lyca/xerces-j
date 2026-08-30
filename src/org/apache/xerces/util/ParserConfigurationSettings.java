@@ -52,16 +52,16 @@ public class ParserConfigurationSettings
     // data
 
     /** Recognized properties as a list of Strings. */
-    protected ArrayList fRecognizedProperties;
+    protected ArrayList<String> fRecognizedProperties;
 
     /** Properties as a map of Strings to Objects. */
-    protected HashMap fProperties;
+    protected HashMap<String, Object> fProperties;
 
     /** Recognized features as a list of strings. */
-    protected ArrayList fRecognizedFeatures;
+    protected ArrayList<String> fRecognizedFeatures;
 
     /** Features as a map of Strings to Boolean values. */
-    protected HashMap fFeatures;
+    protected HashMap<String, Boolean> fFeatures;
 
     /** Parent parser configuration settings. */
     protected XMLComponentManager fParentSettings;
@@ -191,6 +191,7 @@ public class ParserConfigurationSettings
      *                                   it is <strong>really</strong>
      *                                   a critical error.
      */
+    @Override
     public boolean getFeature(String featureId)
         throws XMLConfigurationException {
 
@@ -216,6 +217,7 @@ public class ParserConfigurationSettings
      *                                   it is <strong>really</strong>
      *                                   a critical error.
      */
+    @Override
     public Object getProperty(String propertyId)
         throws XMLConfigurationException {
 

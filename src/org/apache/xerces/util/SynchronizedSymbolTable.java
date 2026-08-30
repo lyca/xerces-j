@@ -68,6 +68,7 @@ public final class SynchronizedSymbolTable
      * 
      * @param symbol The new symbol.
      */
+    @Override
     public String addSymbol(String symbol) {
 
         synchronized (fSymbolTable) {
@@ -86,6 +87,7 @@ public final class SynchronizedSymbolTable
      * @param offset The offset into the buffer of the new symbol.
      * @param length The length of the new symbol in the buffer.
      */
+    @Override
     public String addSymbol(char[] buffer, int offset, int length) {
 
         synchronized (fSymbolTable) {
@@ -100,6 +102,7 @@ public final class SynchronizedSymbolTable
      *
      * @param symbol The symbol to look for.
      */
+    @Override
     public boolean containsSymbol(String symbol) {
 
         synchronized (fSymbolTable) {
@@ -116,6 +119,7 @@ public final class SynchronizedSymbolTable
      * @param offset The offset into the buffer.
      * @param length The length of the symbol in the buffer.
      */
+    @Override
     public boolean containsSymbol(char[] buffer, int offset, int length) {
 
         synchronized (fSymbolTable) {

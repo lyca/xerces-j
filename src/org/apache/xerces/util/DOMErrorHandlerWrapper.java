@@ -18,7 +18,8 @@
 package org.apache.xerces.util;
 
 import java.io.PrintWriter;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.xerces.dom.DOMErrorImpl;
 import org.apache.xerces.dom.DOMLocatorImpl;
@@ -122,8 +123,8 @@ public class DOMErrorHandlerWrapper
      * @throws XNIException Thrown to signal that the parser should stop
      *                      parsing the document.
      */
-
-    public void warning(String domain, String key, 
+    @Override
+    public void warning(String domain, String key,
                         XMLParseException exception) throws XNIException {
         fDOMError.fSeverity = DOMError.SEVERITY_WARNING;
         fDOMError.fException = exception;
@@ -159,6 +160,7 @@ public class DOMErrorHandlerWrapper
      * @throws XNIException Thrown to signal that the parser should stop
      *                      parsing the document.
      */
+    @Override
     public void error(String domain, String key, 
                       XMLParseException exception) throws XNIException {
         fDOMError.fSeverity = DOMError.SEVERITY_ERROR;
@@ -203,6 +205,7 @@ public class DOMErrorHandlerWrapper
      * @throws XNIException Thrown to signal that the parser should stop
      *                      parsing the document.
      */
+    @Override
     public void fatalError(String domain, String key, 
                            XMLParseException exception) throws XNIException {
         fDOMError.fSeverity = DOMError.SEVERITY_FATAL_ERROR;
@@ -224,7 +227,7 @@ public class DOMErrorHandlerWrapper
         } 
     } // fatalError(String,String,XMLParseException)
 
-
+    @Override
     public boolean handleError(DOMError error) {
         printError(error);
         return eStatus;
@@ -284,14 +287,14 @@ public class DOMErrorHandlerWrapper
     private static class DOMErrorTypeMap {
         
         /** Map for converting internal error codes to DOM error types. **/
-        private static Hashtable fgDOMErrorTypeTable;
+        private static final Map<XMLErrorCode, String> fgDOMErrorTypeTable;
         
         static {
             // initialize error type table: internal error codes (represented by domain and key) need to be mapped to a DOM error type.
             
             // REVISIT: do well-formedness issues involving XML declaration <?xml ... ?> need to be added to hash table (no XML declaration node in DOM, but Document includes xmlEncoding, xmlStandalone, xmlVersion, etc.
             
-            fgDOMErrorTypeTable = new Hashtable();   
+            fgDOMErrorTypeTable = new HashMap<>();   
             fgDOMErrorTypeTable.put(new XMLErrorCode(XMLMessageFormatter.XML_DOMAIN, "InvalidCharInCDSect"), "wf-invalid-character");
             fgDOMErrorTypeTable.put(new XMLErrorCode(XMLMessageFormatter.XML_DOMAIN, "InvalidCharInContent"), "wf-invalid-character");
             fgDOMErrorTypeTable.put(new XMLErrorCode(XMLMessageFormatter.XML_DOMAIN, "TwoColonsInQName"), "wf-invalid-character-in-node-name");

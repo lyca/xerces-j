@@ -97,6 +97,7 @@ public class DOMEntityResolverWrapper
      * @throws IOException  Thrown if resolved entity stream cannot be
      *                      opened or some other i/o error occurs.
      */
+    @Override
     public XMLInputSource resolveEntity(XMLResourceIdentifier resourceIdentifier)
         throws XNIException, IOException {
         // resolve entity using DOM entity resolver

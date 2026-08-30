@@ -85,7 +85,7 @@ public class NamespaceSupport implements NamespaceContext {
     public NamespaceSupport(NamespaceContext context) {
         pushContext();
         // copy declaration in the context
-        Enumeration prefixes = context.getAllPrefixes();
+        Enumeration<String> prefixes = context.getAllPrefixes();
         while (prefixes.hasMoreElements()){
             String prefix = (String)prefixes.nextElement();
             String uri = context.getURI(prefix);
@@ -101,6 +101,7 @@ public class NamespaceSupport implements NamespaceContext {
 	/**
 	 * @see org.apache.xerces.xni.NamespaceContext#reset()
 	 */
+    @Override
     public void reset() {
 
         // reset namespace and context info
@@ -122,6 +123,7 @@ public class NamespaceSupport implements NamespaceContext {
 	/**
 	 * @see org.apache.xerces.xni.NamespaceContext#pushContext()
 	 */
+    @Override
     public void pushContext() {
 
         // extend the array, if necessary
@@ -140,6 +142,7 @@ public class NamespaceSupport implements NamespaceContext {
 	/**
 	 * @see org.apache.xerces.xni.NamespaceContext#popContext()
 	 */
+    @Override
     public void popContext() {
         fNamespaceSize = fContext[fCurrentContext--];
     } // popContext()
@@ -147,6 +150,7 @@ public class NamespaceSupport implements NamespaceContext {
 	/**
 	 * @see org.apache.xerces.xni.NamespaceContext#declarePrefix(String, String)
 	 */
+    @Override
     public boolean declarePrefix(String prefix, String uri) {
         // ignore "xml" and "xmlns" prefixes
         if (prefix == XMLSymbols.PREFIX_XML || prefix == XMLSymbols.PREFIX_XMLNS) {
@@ -185,6 +189,7 @@ public class NamespaceSupport implements NamespaceContext {
 	/**
 	 * @see org.apache.xerces.xni.NamespaceContext#getURI(String)
 	 */
+    @Override
     public String getURI(String prefix) {
         
         // find prefix in current context
@@ -203,6 +208,7 @@ public class NamespaceSupport implements NamespaceContext {
 	/**
 	 * @see org.apache.xerces.xni.NamespaceContext#getPrefix(String)
 	 */
+    @Override
     public String getPrefix(String uri) {
 
         // find uri in current context
@@ -222,6 +228,7 @@ public class NamespaceSupport implements NamespaceContext {
 	/**
 	 * @see org.apache.xerces.xni.NamespaceContext#getDeclaredPrefixCount()
 	 */
+    @Override
     public int getDeclaredPrefixCount() {
         return (fNamespaceSize - fContext[fCurrentContext]) / 2;
     } // getDeclaredPrefixCount():int
@@ -229,6 +236,7 @@ public class NamespaceSupport implements NamespaceContext {
 	/**
 	 * @see org.apache.xerces.xni.NamespaceContext#getDeclaredPrefixAt(int)
 	 */
+    @Override
     public String getDeclaredPrefixAt(int index) {
         return fNamespace[fContext[fCurrentContext] + index * 2];
     } // getDeclaredPrefixAt(int):String
@@ -236,7 +244,8 @@ public class NamespaceSupport implements NamespaceContext {
 	/**
 	 * @see org.apache.xerces.xni.NamespaceContext#getAllPrefixes()
 	 */
-	public Enumeration getAllPrefixes() {
+	@Override
+    public Enumeration<String> getAllPrefixes() {
         int count = 0;
         if (fPrefixes.length < (fNamespace.length/2)) {
             // resize prefix array          
@@ -286,7 +295,7 @@ public class NamespaceSupport implements NamespaceContext {
         return false;
     }
     
-    protected final class Prefixes implements Enumeration {
+    protected final class Prefixes implements Enumeration<String> {
         private String[] prefixes;
         private int counter = 0;
         private int size = 0;
@@ -302,14 +311,16 @@ public class NamespaceSupport implements NamespaceContext {
        /**
 		 * @see java.util.Enumeration#hasMoreElements()
 		 */
-		public boolean hasMoreElements() {           
+		@Override
+        public boolean hasMoreElements() {           
 			return (counter< size);
 		}
 
 		/**
 		 * @see java.util.Enumeration#nextElement()
 		 */
-		public Object nextElement() {
+		@Override
+        public String nextElement() {
             if (counter< size){
                 return fPrefixes[counter++];
             }

@@ -85,7 +85,7 @@ public final class JAXPNamespaceContextWrapper implements NamespaceContext {
     /*
      * NamespaceContext methods
      */
-    
+    @Override
     public String getURI(String prefix) {
         if (fNamespaceContext != null) {
             String uri = fNamespaceContext.getNamespaceURI(prefix);
@@ -96,6 +96,7 @@ public final class JAXPNamespaceContextWrapper implements NamespaceContext {
         return null;
     }
 
+    @Override
     public String getPrefix(String uri) {
         if (fNamespaceContext != null) {
             if (uri == null) {
@@ -115,12 +116,14 @@ public final class JAXPNamespaceContextWrapper implements NamespaceContext {
      *
      * @return an enumeration of string values of all the prefixes
      */
-    public Enumeration getAllPrefixes() {
+    @Override
+    public Enumeration<String> getAllPrefixes() {
         // There may be duplicate prefixes in the list so we 
         // first transfer them to a set to ensure uniqueness.
         return Collections.enumeration(new TreeSet<>(fAllPrefixes));
     }
 
+    @Override
     public void pushContext() {
         // extend the array, if necessary
         if (fCurrentContext + 1 == fContext.length) {
@@ -135,22 +138,27 @@ public final class JAXPNamespaceContextWrapper implements NamespaceContext {
         }
     }
 
+    @Override
     public void popContext() {
         fAllPrefixes.setSize(fContext[fCurrentContext--]);
     }
 
+    @Override
     public boolean declarePrefix(String prefix, String uri) {
         return true;
     }
 
+    @Override
     public int getDeclaredPrefixCount() {
         return (fPrefixes != null) ? fPrefixes.size() : 0;
     }
 
+    @Override
     public String getDeclaredPrefixAt(int index) {
         return (String) fPrefixes.get(index);
     }
 
+    @Override
     public void reset() {
         fCurrentContext = 0;
         fContext[fCurrentContext] = 0;

@@ -65,18 +65,21 @@ public class DefaultErrorHandler
     //
 
     /** Warning. */
+    @Override
     public void warning(String domain, String key, XMLParseException ex) 
         throws XNIException {
         printError("Warning", ex);
     } // warning(XMLParseException)
 
     /** Error. */
+    @Override
     public void error(String domain, String key, XMLParseException ex)
         throws XNIException {
         printError("Error", ex);
     } // error(XMLParseException)
 
     /** Fatal error. */
+    @Override
     public void fatalError(String domain, String key, XMLParseException ex)
         throws XNIException {
         printError("Fatal Error", ex);

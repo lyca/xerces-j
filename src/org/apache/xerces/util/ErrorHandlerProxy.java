@@ -41,7 +41,8 @@ import org.xml.sax.SAXParseException;
  * @version $Id$
  */
 public abstract class ErrorHandlerProxy implements ErrorHandler {
-    
+
+    @Override
     public void error(SAXParseException e) throws SAXException {
         XMLErrorHandler eh = getErrorHandler();
         if (eh instanceof ErrorHandlerWrapper) {
@@ -54,6 +55,7 @@ public abstract class ErrorHandlerProxy implements ErrorHandler {
         // REVISIT: is this OK? or should we try to wrap it into SAXException?
     }
 
+    @Override
     public void fatalError(SAXParseException e) throws SAXException {
         XMLErrorHandler eh = getErrorHandler();
         if (eh instanceof ErrorHandlerWrapper) {
@@ -64,6 +66,7 @@ public abstract class ErrorHandlerProxy implements ErrorHandler {
         }
     }
 
+    @Override
     public void warning(SAXParseException e) throws SAXException {
         XMLErrorHandler eh = getErrorHandler();
         if (eh instanceof ErrorHandlerWrapper) {

@@ -61,6 +61,7 @@ extends SymbolTable {
      * 
      * @param symbol The new symbol.
      */
+    @Override
     public String addSymbol(String symbol) {
 
         if (fSymbolTable.containsSymbol(symbol)) {
@@ -80,6 +81,7 @@ extends SymbolTable {
      * @param offset The offset into the buffer of the new symbol.
      * @param length The length of the new symbol in the buffer.
      */
+    @Override
     public String addSymbol(char[] buffer, int offset, int length) {
 
         if (fSymbolTable.containsSymbol(buffer, offset, length)) {
@@ -97,6 +99,7 @@ extends SymbolTable {
      * 
      * @param symbol The symbol to hash.
      */
+    @Override
     public int hash(String symbol) {
         return fSymbolTable.hash(symbol);
     } // hash(String):int
@@ -112,6 +115,7 @@ extends SymbolTable {
      *               of the symbol.
      * @param length The length of the symbol.
      */
+    @Override
     public int hash(char[] buffer, int offset, int length) {
         return fSymbolTable.hash(buffer, offset, length);
     } // hash(char[],int,int):int

@@ -77,7 +77,7 @@ public interface Augmentations {
      *
      * @return an {@link Enumeration} of the keys in the Augmentations structure
      */
-    public Enumeration keys ();
+    public Enumeration<String> keys();
 
 
     /**

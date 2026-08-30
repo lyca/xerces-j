@@ -90,6 +90,7 @@ public class ErrorHandlerWrapper
      * @throws XNIException Thrown to signal that the parser should stop
      *                      parsing the document.
      */
+    @Override
     public void warning(String domain, String key, 
                         XMLParseException exception) throws XNIException {
 
@@ -125,6 +126,7 @@ public class ErrorHandlerWrapper
      * @throws XNIException Thrown to signal that the parser should stop
      *                      parsing the document.
      */
+    @Override
     public void error(String domain, String key, 
                       XMLParseException exception) throws XNIException {
         
@@ -168,6 +170,7 @@ public class ErrorHandlerWrapper
      * @throws XNIException Thrown to signal that the parser should stop
      *                      parsing the document.
      */
+    @Override
     public void fatalError(String domain, String key, 
                            XMLParseException exception) throws XNIException {
                            	

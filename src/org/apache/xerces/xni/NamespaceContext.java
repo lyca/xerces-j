@@ -172,7 +172,7 @@ public interface NamespaceContext {
      * @return an {@link Enumeration} of all prefixes whose declarations are active
      * in the current context
 	 */
-    public Enumeration getAllPrefixes();
+    public Enumeration<String> getAllPrefixes();
     
     /**
      * Reset this Namespace support object for reuse.

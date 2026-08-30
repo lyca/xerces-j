@@ -187,7 +187,7 @@ public class DOMUtil {
      * @param hiddenNodes a hash table of Node to Object
      * @return the first visible child element
      */
-    public static Element getFirstVisibleChildElement(Node parent, Hashtable hiddenNodes) {
+    public static Element getFirstVisibleChildElement(Node parent, Hashtable<Node, Object> hiddenNodes) {
         
         // search for node
         Node child = parent.getFirstChild();
@@ -249,7 +249,7 @@ public class DOMUtil {
      * @param hiddenNodes a hash table of Node to Object
      * @return the last visible child element
      */
-    public static Element getLastVisibleChildElement(Node parent, Hashtable hiddenNodes) {
+    public static Element getLastVisibleChildElement(Node parent, Hashtable<Node, Object> hiddenNodes) {
         
         // search for node
         Node child = parent.getLastChild();
