@@ -17,7 +17,6 @@
 
 package org.apache.xerces.jaxp.validation;
 
-import java.lang.ref.Reference;
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.SoftReference;
 
@@ -56,13 +55,13 @@ final class SoftReferenceGrammarPool implements XMLGrammarPool {
     protected Entry [] fGrammars = null;
     
     /** Flag indicating whether this pool is locked */
-    protected boolean fPoolIsLocked;
+    protected volatile boolean fPoolIsLocked;
     
     /** The number of grammars in the pool */
     protected int fGrammarCount = 0;
     
     /** Reference queue for cleared grammar references */
-    protected final ReferenceQueue fReferenceQueue = new ReferenceQueue();
+    protected final ReferenceQueue<Grammar> fReferenceQueue = new ReferenceQueue<>();
     
     //
     // Constructors
@@ -94,6 +93,7 @@ final class SoftReferenceGrammarPool implements XMLGrammarPool {
      *  		  interface.
      * @return 		  The set of grammars the validator may put in its "bucket"
      */
+    @Override
     public Grammar [] retrieveInitialGrammarSet (String grammarType) {
         synchronized (fGrammars) {
             clean();
@@ -116,6 +116,7 @@ final class SoftReferenceGrammarPool implements XMLGrammarPool {
      * @param grammars 	  An array containing the set of grammars being
      *  		  returned; order is not significant.
      */
+    @Override
     public void cacheGrammars(String grammarType, Grammar[] grammars) {
         if (!fPoolIsLocked) {
             for (int i = 0; i < grammars.length; ++i) {
@@ -138,6 +139,7 @@ final class SoftReferenceGrammarPool implements XMLGrammarPool {
      * @return     The Grammar corresponding to this description or null if
      *  	   no such Grammar is known.
      */
+    @Override
     public Grammar retrieveGrammar(XMLGrammarDescription desc) {
         return getGrammar(desc);
     } // retrieveGrammar(XMLGrammarDescription):  Grammar
@@ -188,7 +190,7 @@ final class SoftReferenceGrammarPool implements XMLGrammarPool {
             int hash = hashCode(desc);
             int index = (hash & 0x7FFFFFFF) % fGrammars.length;
             for (Entry entry = fGrammars[index]; entry != null; entry = entry.next) {
-                Grammar tempGrammar = (Grammar) entry.grammar.get();
+                Grammar tempGrammar = entry.grammar.get();
                 /** If the soft reference has been cleared, remove this entry from the pool. */
                 if (tempGrammar == null) {
                     removeEntry(entry);
@@ -238,7 +240,7 @@ final class SoftReferenceGrammarPool implements XMLGrammarPool {
             int hash = hashCode(desc);
             int index = (hash & 0x7FFFFFFF) % fGrammars.length;
             for (Entry entry = fGrammars[index]; entry != null ; entry = entry.next) {
-                Grammar tempGrammar = (Grammar) entry.grammar.get();
+                Grammar tempGrammar = entry.grammar.get();
                 /** If the soft reference has been cleared, remove this entry from the pool. */
                 if (tempGrammar == null) {
                     removeEntry(entry);
@@ -254,6 +256,7 @@ final class SoftReferenceGrammarPool implements XMLGrammarPool {
     /* <p> Sets this grammar pool to a "locked" state--i.e.,
      * no new grammars will be added until it is "unlocked".
      */
+    @Override
     public void lockPool() {
         fPoolIsLocked = true;
     } // lockPool()
@@ -262,6 +265,7 @@ final class SoftReferenceGrammarPool implements XMLGrammarPool {
      * new grammars will be added when putGrammar or cacheGrammars
      * are called.
      */
+    @Override
     public void unlockPool() {
         fPoolIsLocked = false;
     } // unlockPool()
@@ -270,14 +274,17 @@ final class SoftReferenceGrammarPool implements XMLGrammarPool {
      * <p>This method clears the pool-i.e., removes references
      * to all the grammars in it.</p>
      */
+    @Override
     public void clear() {
-        for (int i=0; i<fGrammars.length; i++) {
-            if(fGrammars[i] != null) {
-                fGrammars[i].clear();
-                fGrammars[i] = null;
+        synchronized (fGrammars) {
+            for (int i=0; i<fGrammars.length; i++) {
+                if (fGrammars[i] != null) {
+                    fGrammars[i].clear();
+                    fGrammars[i] = null;
+                }
             }
+            fGrammarCount = 0;
         }
-        fGrammarCount = 0;
     } // clear()
     
     /**
@@ -360,14 +367,14 @@ final class SoftReferenceGrammarPool implements XMLGrammarPool {
         }
         --fGrammarCount;
         entry.grammar.entry = null;
-        return (Grammar) entry.grammar.get();
+        return entry.grammar.get();
     }
     
     /**
      * Removes stale entries from the pool.
      */
     private void clean() {
-        Reference ref = fReferenceQueue.poll();
+        java.lang.ref.Reference<? extends Grammar> ref = fReferenceQueue.poll();
         while (ref != null) {
             Entry entry = ((SoftGrammarReference) ref).entry;
             if (entry != null) {
@@ -379,8 +386,7 @@ final class SoftReferenceGrammarPool implements XMLGrammarPool {
     
     /**
      * This class is a grammar pool entry. Each entry acts as a node
-     * in a doubly linked list.
-     */
+     * in a doubly linked list.\n     */
     static final class Entry {
 
         public int hash;
@@ -390,7 +396,7 @@ final class SoftReferenceGrammarPool implements XMLGrammarPool {
         public XMLGrammarDescription desc;
         public SoftGrammarReference grammar;
                 
-        protected Entry(int hash, int bucket, XMLGrammarDescription desc, Grammar grammar, Entry next, ReferenceQueue queue) {
+        protected Entry(int hash, int bucket, XMLGrammarDescription desc, Grammar grammar, Entry next, ReferenceQueue<Grammar> queue) {
             this.hash = hash;
             this.bucket = bucket;
             this.prev = null;
@@ -419,11 +425,11 @@ final class SoftReferenceGrammarPool implements XMLGrammarPool {
      * This class stores a soft reference to a grammar object. It keeps a reference
      * to its associated entry, so that it can be easily removed from the pool.
      */
-    static final class SoftGrammarReference extends SoftReference {
+    static final class SoftGrammarReference extends SoftReference<Grammar> {
 
         public Entry entry;
         
-        protected SoftGrammarReference(Entry entry, Grammar grammar, ReferenceQueue queue) {
+        protected SoftGrammarReference(Entry entry, Grammar grammar, ReferenceQueue<Grammar> queue) {
             super(grammar, queue);
             this.entry = entry;
         }
