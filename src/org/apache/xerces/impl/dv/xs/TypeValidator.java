@@ -39,15 +39,17 @@ import org.apache.xerces.util.XMLChar;
  */
 public abstract class TypeValidator {
     
-    private static final boolean USE_CODE_POINT_COUNT_FOR_STRING_LENGTH = AccessController.doPrivileged(new PrivilegedAction() {
-        @Override
-        public Object run() {
-            try {
-                return Boolean.getBoolean("org.apache.xerces.impl.dv.xs.useCodePointCountForStringLength") ? Boolean.TRUE : Boolean.FALSE;
-            }
-            catch (SecurityException ex) {}
-            return Boolean.FALSE;
-        }}) == Boolean.TRUE;
+    private static boolean useCodePointCountForStringLength() {
+        return AccessController.doPrivileged(new PrivilegedAction() {
+            @Override
+            public Object run() {
+                try {
+                    return Boolean.getBoolean("org.apache.xerces.impl.dv.xs.useCodePointCountForStringLength") ? Boolean.TRUE : Boolean.FALSE;
+                }
+                catch (SecurityException ex) {}
+                return Boolean.FALSE;
+            }}) == Boolean.TRUE;
+    }
 
     /**
      * Which facets are allowed for this type.
@@ -138,7 +140,7 @@ public abstract class TypeValidator {
     public int getDataLength(Object value) {
         if (value instanceof String) {
             final String str = (String)value;
-            if (!USE_CODE_POINT_COUNT_FOR_STRING_LENGTH) {
+            if (!useCodePointCountForStringLength()) {
                 return str.length();
             }
             return getCodePointLength(str);
@@ -208,5 +210,4 @@ public abstract class TypeValidator {
     public static final int getDigit(char ch) {
         return isDigit(ch) ? ch - '0' : -1;
     }
-    
-} // interface TypeValidator
+}
