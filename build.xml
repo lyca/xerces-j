@@ -855,6 +855,8 @@ Authors:
               <include name="dom/range/Test.class"/>
               <include name="dom/registry/Test.class"/>
               <include name="dom/serialization/Test.class"/>
+              <include name="xinclude/Test.class"/>
+              <include name="dom/dom3/Test.class"/>
            </fileset>
          </batchtest>
 
@@ -918,18 +920,7 @@ Authors:
         <arg value="10"/>
         <arg value="${data.dir}/personal-schema.xml"/>
     </java>
-    <echo message="Running xinclude.Test..." />
-    <java fork="yes"
-          classname="xinclude.Test"
-          classpathref="test.classpath"
-          failOnError="yes">
-    </java>
-    <echo message="Running dom.dom3.Test..." />
-    <java fork="yes"
-          classname="dom.dom3.Test"
-          classpathref="test.classpath"
-          failOnError="yes">
-    </java>   
+   
   </target>
 
   <target name="ci-test" depends="test">
