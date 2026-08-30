@@ -17,7 +17,8 @@
 
 package org.apache.xerces.impl.xs.traversers;
 
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -142,9 +143,9 @@ public class XSAttributeChecker {
 
     // used to store the map from element name to attribute list
     // for 14 global elements
-    private static final Hashtable fEleAttrsMapG = new Hashtable(29);
+    private static final Map<String, Container> fEleAttrsMapG = new HashMap<>(29);
     // for 39 local elememnts
-    private static final Hashtable fEleAttrsMapL = new Hashtable(79);
+    private static final Map<String, Container> fEleAttrsMapL = new HashMap<>(79);
 
     // used to initialize fEleAttrsMap
     // step 1: all possible data types
@@ -923,7 +924,7 @@ public class XSAttributeChecker {
     protected SymbolTable fSymbolTable = null;
 
     // used to store the mapping from processed element to attributes
-    protected Hashtable fNonSchemaAttrs = new Hashtable();
+    protected Map<String, Vector<String>> fNonSchemaAttrs = new HashMap<>();
 
     // temprory vector, used to hold the namespace list
     protected Vector fNamespaceList = new Vector();
@@ -989,7 +990,7 @@ public class XSAttributeChecker {
             reportSchemaError("s4s-elt-schema-ns", new Object[] {elName}, element);
         }
 
-        Hashtable eleAttrsMap = fEleAttrsMapG;
+        Map<String, Container> eleAttrsMap = fEleAttrsMapG;
         String lookupName = elName;
 
         // REVISIT: only local element and attribute are different from others.
@@ -1077,9 +1078,9 @@ public class XSAttributeChecker {
                     //otherValues.put(attrName, attrVal);
                     // REVISIT:  actually use this some day...
                     // String attrRName = attrURI + "," + attrName;
-                    // Vector values = (Vector)fNonSchemaAttrs.get(attrRName);
+                    // Vector<String> values = fNonSchemaAttrs.get(attrRName);
                     // if (values == null) {
-                        // values = new Vector();
+                        // values = new Vector<>();
                         // values.addElement(attrName);
                         // values.addElement(elName);
                         // values.addElement(attrVal);
@@ -1772,9 +1773,9 @@ class SmallContainer extends Container {
 }
 
 class LargeContainer extends Container {
-    Hashtable items;
+    Map<String, OneAttr> items;
     LargeContainer(int size) {
-        items = new Hashtable(size*2+1);
+        items = new HashMap<>(size*2+1);
         values = new OneAttr[size];
     }
     void put(String key, OneAttr value) {
@@ -1782,7 +1783,6 @@ class LargeContainer extends Container {
         values[pos++] = value;
     }
     OneAttr get(String key) {
-        OneAttr ret = (OneAttr)items.get(key);
-        return ret;
+        return items.get(key);
     }
 }

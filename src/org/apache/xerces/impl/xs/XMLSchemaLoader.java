@@ -26,7 +26,8 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.List;
 import java.util.Locale;
 import java.util.StringTokenizer;
@@ -535,7 +536,7 @@ XSLoader, DOMConfiguration {
         desc.setBaseSystemId(source.getBaseSystemId());
         desc.setLiteralSystemId( source.getSystemId());
         // none of the other fields make sense for preparsing
-        Hashtable<String, LocationArray> locationPairs = new Hashtable<>();
+        Map<String, LocationArray> locationPairs = new HashMap<>();
         // Process external schema location properties.
         // We don't call tokenizeSchemaLocationStr here, because we also want
         // to check whether the values are valid URI.
@@ -569,7 +570,7 @@ XSLoader, DOMConfiguration {
      */
     SchemaGrammar loadSchema(XSDDescription desc,
             XMLInputSource source,
-            Hashtable locationPairs) throws IOException, XNIException {
+            Map<String, LocationArray> locationPairs) throws IOException, XNIException {
         
         // this should only be done once per invocation of this object;
         // unless application alters JAXPSource in the meantime.
@@ -595,7 +596,7 @@ XSLoader, DOMConfiguration {
      * @throws IOException
      * @see LocationArray
      */
-    public static XMLInputSource resolveDocument(XSDDescription desc, Hashtable locationPairs,
+    public static XMLInputSource resolveDocument(XSDDescription desc, Map<String, LocationArray> locationPairs,
             XMLEntityResolver entityResolver) throws IOException {
         String loc = null;
         // we consider the schema location properties for import
@@ -605,7 +606,7 @@ XSLoader, DOMConfiguration {
             String namespace = desc.getTargetNamespace();
             String ns = namespace == null ? XMLSymbols.EMPTY_STRING : namespace;
             // get the location hint for that namespace
-            LocationArray tempLA = (LocationArray)locationPairs.get(ns);
+            LocationArray tempLA = locationPairs.get(ns);
             if(tempLA != null)
                 loc = tempLA.getFirstLocation();
         }
@@ -633,7 +634,7 @@ XSLoader, DOMConfiguration {
      * @param er an XML error reporter
      */
     public static void processExternalHints(String sl, String nsl,
-            Hashtable locations,
+            Map<String, LocationArray> locations,
             XMLErrorReporter er) {
         if (sl != null) {
             try {
@@ -664,7 +665,7 @@ XSLoader, DOMConfiguration {
                 // similarly for no ns schema location property
                 XSAttributeDecl attrDecl = SchemaGrammar.SG_XSI.getGlobalAttributeDecl(SchemaSymbols.XSI_NONAMESPACESCHEMALOCATION);
                 attrDecl.fType.validate(nsl, null, null);
-                LocationArray la = ((LocationArray)locations.get(XMLSymbols.EMPTY_STRING));
+                LocationArray la = locations.get(XMLSymbols.EMPTY_STRING);
                 if(la == null) {
                     la = new LocationArray();
                     locations.put(XMLSymbols.EMPTY_STRING, la);
@@ -686,7 +687,7 @@ XSLoader, DOMConfiguration {
     // @param schemaStr     The schemaLocation string to tokenize
     // @param locations     Hashtable mapping namespaces to LocationArray objects holding lists of locaitons
     // @return true if no problems; false if string could not be tokenized
-    public static boolean tokenizeSchemaLocationStr(String schemaStr, Hashtable locations, String base) {
+    public static boolean tokenizeSchemaLocationStr(String schemaStr, Map<String, LocationArray> locations, String base) {
         if (schemaStr!= null) {
             StringTokenizer t = new StringTokenizer(schemaStr, " \n\t\r");
             String namespace, location;
@@ -696,7 +697,7 @@ XSLoader, DOMConfiguration {
                     return false; // error!
                 }
                 location = t.nextToken();
-                LocationArray la = ((LocationArray)locations.get(namespace));
+                LocationArray la = locations.get(namespace);
                 if(la == null) {
                     la = new LocationArray();
                     locations.put(namespace, la);
@@ -723,7 +724,7 @@ XSLoader, DOMConfiguration {
      * Note: all JAXP schema files will be checked for full-schema validity if the feature was set up
      * 
      */
-    private void processJAXPSchemaSource(Hashtable<String, LocationArray> locationPairs) throws IOException {
+    private void processJAXPSchemaSource(Map<String, LocationArray> locationPairs) throws IOException {
         fJAXPProcessed = true;
         if (fJAXPSource == null) {
             return;
@@ -916,7 +917,7 @@ XSLoader, DOMConfiguration {
      * For internal use only.
      * todo: This class being package-private is not ideal as it should be accessible to XSDHandler
      */
-    static final class LocationArray {
+    public static final class LocationArray {
         
         int length ;
         String [] locations = new String[2];

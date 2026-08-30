@@ -17,8 +17,11 @@
 
 package org.apache.xerces.impl.xs;
 
-import java.util.Hashtable;
-import java.util.Vector;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
+
 
 import org.apache.xerces.xni.QName;
 import org.apache.xerces.xs.XSConstants;
@@ -177,10 +180,10 @@ public class SubstitutionGroupHandler {
     // - a Vector, which contains all elements that has this element as their
     //   substitution group affilication
     // - an array of OneSubGroup, which contains its substitution group before block.
-    Hashtable fSubGroupsB = new Hashtable();
+    Map<XSElementDecl, Object> fSubGroupsB = new HashMap<>();
     private static final OneSubGroup[] EMPTY_VECTOR = new OneSubGroup[0];
     // The real substitution groups (after "block")
-    Hashtable fSubGroups = new Hashtable();
+    Map<XSElementDecl, XSElementDecl[]> fSubGroups = new HashMap<>();
 
     /**
      * clear the internal registry of substitutionGroup information
@@ -195,20 +198,20 @@ public class SubstitutionGroupHandler {
      */
     public void addSubstitutionGroup(XSElementDecl[] elements) {
         XSElementDecl subHead, element;
-        Vector subGroup;
+        List<XSElementDecl> subGroup;
         // for all elements with substitution group affiliation
         for (int i = elements.length-1; i >= 0; i--) {
             element = elements[i];
             subHead = element.fSubGroup;
             // check whether this an entry for this element
-            subGroup = (Vector)fSubGroupsB.get(subHead);
+            subGroup = (List<XSElementDecl>)fSubGroupsB.get(subHead);
             if (subGroup == null) {
                 // if not, create a new one
-                subGroup = new Vector();
+                subGroup = new ArrayList<>();
                 fSubGroupsB.put(subHead, subGroup);
             }
             // add to the vactor
-            subGroup.addElement(element);
+            subGroup.add(element);
         }
     }
 
@@ -222,9 +225,9 @@ public class SubstitutionGroupHandler {
      */
     public XSElementDecl[] getSubstitutionGroup(XSElementDecl element) {
         // If we already have sub group for this element, just return it.
-        Object subGroup = fSubGroups.get(element);
+        XSElementDecl[] subGroup = fSubGroups.get(element);
         if (subGroup != null)
-            return (XSElementDecl[])subGroup;
+            return subGroup;
         
         if ((element.fBlock & XSConstants.DERIVATION_SUBSTITUTION) != 0) {
             fSubGroups.put(element, EMPTY_GROUP);
@@ -269,21 +272,22 @@ public class SubstitutionGroupHandler {
             return (OneSubGroup[])subGroup;
         
         // we only have the *direct* substitutions
-        Vector group = (Vector)subGroup, newGroup = new Vector();
+        List<XSElementDecl> group = (List<XSElementDecl>)subGroup;
+        List<OneSubGroup> newGroup = new ArrayList<>();
         OneSubGroup[] group1;
         // then for each of the direct substitutions, get its substitution
         // group, and combine the groups together.
         short dMethod, bMethod, dSubMethod, bSubMethod;
         for (int i = group.size()-1, j; i >= 0; i--) {
             // Check whether this element is blocked. If so, ignore it.
-            XSElementDecl sub = (XSElementDecl)group.elementAt(i);
+            XSElementDecl sub = group.get(i);
             if (!getDBMethods(sub.fType, element.fType, methods))
                 continue;
             // Remember derivation methods and blocks from the types
             dMethod = methods.dMethod;
             bMethod = methods.bMethod;
             // Add this one to potential group
-            newGroup.addElement(new OneSubGroup(sub, methods.dMethod, methods.bMethod));
+            newGroup.add(new OneSubGroup(sub, methods.dMethod, methods.bMethod));
             // Get potential group for this element
             group1 = getSubGroupB(sub, methods);
             for (j = group1.length-1; j >= 0; j--) {
@@ -293,14 +297,11 @@ public class SubstitutionGroupHandler {
                 // Ignore it if it's blocked
                 if ((dSubMethod & bSubMethod) != 0)
                     continue;
-                newGroup.addElement(new OneSubGroup(group1[j].sub, dSubMethod, bSubMethod));
+                newGroup.add(new OneSubGroup(group1[j].sub, dSubMethod, bSubMethod));
             }
         }
         // Convert to an array
-        OneSubGroup[] ret = new OneSubGroup[newGroup.size()];
-        for (int i = newGroup.size()-1; i >= 0; i--) {
-            ret[i] = (OneSubGroup)newGroup.elementAt(i);
-        }
+        OneSubGroup[] ret = newGroup.toArray(new OneSubGroup[newGroup.size()]);
         // Store the potential sub group
         fSubGroupsB.put(element, ret);
         

@@ -17,8 +17,8 @@
 
 package org.apache.xerces.impl.xs;
 
-import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
 import org.apache.xerces.xni.grammars.Grammar;
 
@@ -37,7 +37,7 @@ public class XSGrammarBucket {
     /**
      * Hashtable that maps between Namespace and a Grammar
      */
-    Hashtable fGrammarRegistry = new Hashtable();
+    Map<String, SchemaGrammar> fGrammarRegistry = new HashMap<>();
     SchemaGrammar fNoNSGrammar = null;
 
     /**
@@ -213,15 +213,12 @@ public class XSGrammarBucket {
      * @return an array of SchemaGrammars.
      */
     public SchemaGrammar[] getGrammars() {
-        // get the number of grammars
-        int count = fGrammarRegistry.size() + (fNoNSGrammar==null ? 0 : 1);
+        int count = fGrammarRegistry.size() + (fNoNSGrammar == null ? 0 : 1);
         SchemaGrammar[] grammars = new SchemaGrammar[count];
-        // get grammars with target namespace
-        Enumeration schemas = fGrammarRegistry.elements();
         int i = 0;
-        while (schemas.hasMoreElements())
-            grammars[i++] = (SchemaGrammar)schemas.nextElement();
-        // add the grammar without target namespace, if any
+        for (SchemaGrammar sg : fGrammarRegistry.values()) {
+            grammars[i++] = sg;
+        }
         if (fNoNSGrammar != null)
             grammars[count-1] = fNoNSGrammar;
         return grammars;

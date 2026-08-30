@@ -21,9 +21,14 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Collections;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.Locale;
-import java.util.Stack;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 import javax.xml.stream.XMLEventReader;
@@ -38,6 +43,7 @@ import org.apache.xerces.impl.dv.xs.XSSimpleTypeDecl;
 import org.apache.xerces.impl.xs.SchemaGrammar;
 import org.apache.xerces.impl.xs.SchemaNamespaceSupport;
 import org.apache.xerces.impl.xs.SchemaSymbols;
+import org.apache.xerces.impl.xs.XMLSchemaLoader.LocationArray;
 import org.apache.xerces.impl.xs.XMLSchemaException;
 import org.apache.xerces.impl.xs.XMLSchemaLoader;
 import org.apache.xerces.impl.xs.XSAttributeDecl;
@@ -235,7 +241,7 @@ public class XSDHandler {
     //
     //protected data that can be accessable by any traverser
     // stores <notation> decl
-    protected Hashtable fNotationRegistry = new Hashtable();
+    protected Map<String, XSNotationDecl> fNotationRegistry = new HashMap<>();
     
     protected XSDeclarationPool fDeclPool = null;
     
@@ -247,35 +253,35 @@ public class XSDHandler {
     // By asking the node for its ownerDocument and looking in
     // XSDocumentInfoRegistry we can easily get the corresponding
     // XSDocumentInfo object.
-    private Hashtable fUnparsedAttributeRegistry = new Hashtable();
-    private Hashtable fUnparsedAttributeGroupRegistry = new Hashtable();
-    private Hashtable fUnparsedElementRegistry = new Hashtable();
-    private Hashtable fUnparsedGroupRegistry = new Hashtable();
-    private Hashtable fUnparsedIdentityConstraintRegistry = new Hashtable();
-    private Hashtable fUnparsedNotationRegistry = new Hashtable();
-    private Hashtable fUnparsedTypeRegistry = new Hashtable();
+    private Map<String, Element> fUnparsedAttributeRegistry = new HashMap<>();
+    private Map<String, Element> fUnparsedAttributeGroupRegistry = new HashMap<>();
+    private Map<String, Element> fUnparsedElementRegistry = new HashMap<>();
+    private Map<String, Element> fUnparsedGroupRegistry = new HashMap<>();
+    private Map<String, Element> fUnparsedIdentityConstraintRegistry = new HashMap<>();
+    private Map<String, Element> fUnparsedNotationRegistry = new HashMap<>();
+    private Map<String, Element> fUnparsedTypeRegistry = new HashMap<>();
     // Compensation for the above hashtables to locate XSDocumentInfo, 
     // Since we may take Schema Element directly, so can not get the
     // corresponding XSDocumentInfo object just using above hashtables.
-    private Hashtable fUnparsedAttributeRegistrySub = new Hashtable();
-    private Hashtable fUnparsedAttributeGroupRegistrySub = new Hashtable();
-    private Hashtable fUnparsedElementRegistrySub = new Hashtable();
-    private Hashtable fUnparsedGroupRegistrySub = new Hashtable();
-    private Hashtable fUnparsedIdentityConstraintRegistrySub = new Hashtable();
-    private Hashtable fUnparsedNotationRegistrySub = new Hashtable();
-    private Hashtable fUnparsedTypeRegistrySub = new Hashtable();
+    private Map<String, XSDocumentInfo> fUnparsedAttributeRegistrySub = new HashMap<>();
+    private Map<String, XSDocumentInfo> fUnparsedAttributeGroupRegistrySub = new HashMap<>();
+    private Map<String, XSDocumentInfo> fUnparsedElementRegistrySub = new HashMap<>();
+    private Map<String, XSDocumentInfo> fUnparsedGroupRegistrySub = new HashMap<>();
+    private Map<String, XSDocumentInfo> fUnparsedIdentityConstraintRegistrySub = new HashMap<>();
+    private Map<String, XSDocumentInfo> fUnparsedNotationRegistrySub = new HashMap<>();
+    private Map<String, XSDocumentInfo> fUnparsedTypeRegistrySub = new HashMap<>();
 
     // Stores XSDocumentInfo (keyed by component name), to check for duplicate
     // components declared within the same xsd document
-    private Hashtable fUnparsedRegistriesExt[] = new Hashtable[] {
+    private Map[] fUnparsedRegistriesExt = new Map[] {
         null,
-        new Hashtable(), // ATTRIBUTE_TYPE
-        new Hashtable(), // ATTRIBUTEGROUP_TYPE
-        new Hashtable(), // ELEMENT_TYPE
-        new Hashtable(), // GROUP_TYPE
-        new Hashtable(), // IDENTITYCONSTRAINT_TYPE
-        new Hashtable(), // NOTATION_TYPE
-        new Hashtable(), // TYPEDECL_TYPE
+        new HashMap<String, XSDocumentInfo>(), // ATTRIBUTE_TYPE
+        new HashMap<String, XSDocumentInfo>(), // ATTRIBUTEGROUP_TYPE
+        new HashMap<String, XSDocumentInfo>(), // ELEMENT_TYPE
+        new HashMap<String, XSDocumentInfo>(), // GROUP_TYPE
+        new HashMap<String, XSDocumentInfo>(), // IDENTITYCONSTRAINT_TYPE
+        new HashMap<String, XSDocumentInfo>(), // NOTATION_TYPE
+        new HashMap<String, XSDocumentInfo>(), // TYPEDECL_TYPE
     };
     
     // this is keyed with a documentNode (or the schemaRoot nodes
@@ -284,28 +290,28 @@ public class XSDHandler {
     // Basically, the function of this registry is to be a link
     // between the nodes we fetch from calls to the fUnparsed*
     // arrays and the XSDocumentInfos they live in.
-    private Hashtable fXSDocumentInfoRegistry = new Hashtable();
+    private Map<Object, XSDocumentInfo> fXSDocumentInfoRegistry = new HashMap<>();
     
     // this hashtable is keyed on by XSDocumentInfo objects.  Its values
     // are Vectors containing the XSDocumentInfo objects <include>d,
     // <import>ed or <redefine>d by the key XSDocumentInfo.
-    private Hashtable<XSDocumentInfo, Vector<XSDocumentInfo>> fDependencyMap = new Hashtable<>();
+    private Map<XSDocumentInfo, List<XSDocumentInfo>> fDependencyMap = new HashMap<>();
     
     // this hashtable is keyed on by a target namespace.  Its values
     // are Vectors containing namespaces imported by schema documents
     // with the key target namespace.
     // if an imprted schema has absent namespace, the value "null" is stored.
-    private Hashtable<String, Vector> fImportMap = new Hashtable<>();
+    private Map<String, Vector> fImportMap = new HashMap<>();
     // all namespaces that imports other namespaces
     // if the importing schema has absent namespace, empty string is stored.
     // (because the key of a hashtable can't be null.)
     private Vector<String> fAllTNSs = new Vector<String>();
     // stores instance document mappings between namespaces and schema hints
-    private Hashtable<String, Object> fLocationPairs = null; // should be Hashtable<String, LocationArray> but LocationArray is a private class
-    private static final Hashtable<String, Object> EMPTY_TABLE = new Hashtable<>(); // should be Hashtable<String, LocationArray> but LocationArray is a private class
+    private Map<String, LocationArray> fLocationPairs = null; // should be Map<String, LocationArray> but LocationArray is a private class
+    private static final Map<String, LocationArray> EMPTY_TABLE = Collections.emptyMap();
     
     // Records which nodes are hidden when the input is a DOMInputSource.
-    Hashtable<Node, Object> fHiddenNodes = null;
+    Map<Node, Object> fHiddenNodes = null;
 
     // convenience methods
     private String null2EmptyString(String ns) {
@@ -331,33 +337,33 @@ public class XSDHandler {
     // schema document.  This combination is used so that the user's
     // EntityResolver can provide a consistent way of identifying a
     // schema document that is included in multiple other schemas.
-    private Hashtable fTraversed = new Hashtable();
+    private Map<Object, Element> fTraversed = new HashMap<>();
     
     // this hashtable contains a mapping from Schema Element to its systemId
     // this is useful to resolve a uri relative to the referring document
-    private Hashtable fDoc2SystemId = new Hashtable();
+    private Map<Object, String> fDoc2SystemId = new HashMap<>();
     
     // the primary XSDocumentInfo we were called to parse
     private XSDocumentInfo fRoot = null;
     
     // This hashtable's job is to act as a link between the Schema Element and its
     // XSDocumentInfo object.
-    private Hashtable fDoc2XSDocumentMap = new Hashtable();
+    private Map<Object, XSDocumentInfo> fDoc2XSDocumentMap = new HashMap<>();
     
     // map between <redefine> elements and the XSDocumentInfo
     // objects that correspond to the documents being redefined.
-    private Hashtable fRedefine2XSDMap = new Hashtable();
+    private Map<Element, XSDocumentInfo> fRedefine2XSDMap = new HashMap<>();
     
     // map between <redefine> elements and the namespace support
-    private Hashtable fRedefine2NSSupport = new Hashtable();
+    private Map<Element, SchemaNamespaceSupport> fRedefine2NSSupport = new HashMap<>();
     
     // these objects store a mapping between the names of redefining
     // groups/attributeGroups and the groups/AttributeGroups which
     // they redefine by restriction (implicitly).  It is up to the
     // Group and AttributeGroup traversers to check these restrictions for
     // validity.
-    private Hashtable fRedefinedRestrictedAttributeGroupRegistry = new Hashtable();
-    private Hashtable fRedefinedRestrictedGroupRegistry = new Hashtable();
+    private Map<String, String> fRedefinedRestrictedAttributeGroupRegistry = new HashMap<>();
+    private Map<String, String> fRedefinedRestrictedGroupRegistry = new HashMap<>();
     
     // a variable storing whether the last schema document
     // processed (by getSchema) was a duplicate.
@@ -456,7 +462,7 @@ public class XSDHandler {
 
     // Constructors
     public XSDHandler(){
-        fHiddenNodes = new Hashtable<>();       
+        fHiddenNodes = new HashMap<>();       
         fSchemaParser = new SchemaDOMParser(new SchemaParsingConfig());
     }
     
@@ -486,7 +492,7 @@ public class XSDHandler {
      * @throws IOException
      */
     public SchemaGrammar parseSchema(XMLInputSource is, XSDDescription desc,
-            Hashtable locationPairs)
+            Map<String, LocationArray> locationPairs)
     throws IOException {
         fLocationPairs = locationPairs;
         fSchemaParser.resetNodePool();   
@@ -891,7 +897,7 @@ public class XSDHandler {
         sg.addDocument(null, (String)fDoc2SystemId.get(currSchemaInfo.fSchemaElement));
         
         fDoc2XSDocumentMap.put(schemaRoot, currSchemaInfo);
-        Vector dependencies = new Vector();
+        List<XSDocumentInfo> dependencies = new ArrayList<>();
         Element rootNode = schemaRoot;
         
         Element newSchemaRoot = null;
@@ -1130,7 +1136,7 @@ public class XSDHandler {
             }
             if (newSchemaRoot != null) {
                 if (newSchemaInfo != null)
-                    dependencies.addElement(newSchemaInfo);
+                    dependencies.add(newSchemaInfo);
                 newSchemaRoot = null;
             }
         }
@@ -1226,12 +1232,12 @@ public class XSDHandler {
         // stack of schemas that we haven't yet finished processing; this
         // is a depth-first traversal.
             
-        Stack schemasToProcess = new Stack();
+        Deque<XSDocumentInfo> schemasToProcess = new ArrayDeque<>();
         schemasToProcess.push(fRoot);
        
-        while (!schemasToProcess.empty()) {            
+        while (!schemasToProcess.isEmpty()) {            
             XSDocumentInfo currSchemaDoc =
-                (XSDocumentInfo)schemasToProcess.pop();
+                schemasToProcess.pop();
             Element currDoc = currSchemaDoc.fSchemaElement; 
             if(DOMUtil.isHidden(currDoc, fHiddenNodes)){
                 // must have processed this already!
@@ -1344,9 +1350,9 @@ public class XSDHandler {
             // now we're done with this one!
            	DOMUtil.setHidden(currDoc, fHiddenNodes);
             // now add the schemas this guy depends on
-            Vector currSchemaDepends = (Vector)fDependencyMap.get(currSchemaDoc);
+            List<XSDocumentInfo> currSchemaDepends = fDependencyMap.get(currSchemaDoc);
             for (int i = 0; i < currSchemaDepends.size(); i++) {
-                schemasToProcess.push(currSchemaDepends.elementAt(i));
+                schemasToProcess.push(currSchemaDepends.get(i));
             }
         } // while
 
@@ -1369,11 +1375,11 @@ public class XSDHandler {
         // hidden for a second time; so make them all visible again
         // first!
         setSchemasVisible(fRoot);
-        Stack schemasToProcess = new Stack();
+        Deque<XSDocumentInfo> schemasToProcess = new ArrayDeque<>();
         schemasToProcess.push(fRoot);
-        while (!schemasToProcess.empty()) {
+        while (!schemasToProcess.isEmpty()) {
             XSDocumentInfo currSchemaDoc =
-                (XSDocumentInfo)schemasToProcess.pop();
+                schemasToProcess.pop();
             Element currDoc = currSchemaDoc.fSchemaElement;
        
             SchemaGrammar currSG = fGrammarBucket.getGrammar(currSchemaDoc.fTargetNamespace);
@@ -1474,25 +1480,25 @@ public class XSDHandler {
             DOMUtil.setHidden(currDoc, fHiddenNodes);
 
             // now add the schemas this guy depends on
-            Vector currSchemaDepends = (Vector)fDependencyMap.get(currSchemaDoc);
+            List<XSDocumentInfo> currSchemaDepends = fDependencyMap.get(currSchemaDoc);
             for (int i = 0; i < currSchemaDepends.size(); i++) {
-                schemasToProcess.push(currSchemaDepends.elementAt(i));
+                schemasToProcess.push(currSchemaDepends.get(i));
             }
         } // while
     } // end traverseSchemas
     
     // store whether we have reported an error about that no grammar
     // is found for the given namespace uri
-    private Vector fReportedTNS = null;
+    private List<String> fReportedTNS = null;
     // check whether we need to report an error against the given uri.
     // if we have reported an error, then we don't need to report again;
     // otherwise we reported the error, and remember this fact.
     private final boolean needReportTNSError(String uri) {
         if (fReportedTNS == null)
-            fReportedTNS = new Vector();
+            fReportedTNS = new ArrayList<>();
         else if (fReportedTNS.contains(uri))
             return false;
-        fReportedTNS.addElement(uri);
+        fReportedTNS.add(uri);
         return true;
     }
     
@@ -1991,11 +1997,11 @@ public class XSDHandler {
     
     // an accessor method.  Just makes sure callers
     // who want the Identity constraint registry vaguely know what they're about.
-    protected Hashtable getIDRegistry() {
+    protected Map<String, Element> getIDRegistry() {
         return fUnparsedIdentityConstraintRegistry;
     }
     // an accessor method.  
-    protected Hashtable getIDRegistry_sub() {
+    protected Map<String, XSDocumentInfo> getIDRegistry_sub() {
         return fUnparsedIdentityConstraintRegistrySub;
     }
     
@@ -2050,7 +2056,7 @@ public class XSDHandler {
                                   Element referElement, boolean usePairs) {
         XMLInputSource schemaSource = null;
         try {
-            Hashtable<String, Object> pairs = usePairs ? fLocationPairs : EMPTY_TABLE;
+            Map<String, LocationArray> pairs = usePairs ? fLocationPairs : EMPTY_TABLE;
             schemaSource = XMLSchemaLoader.resolveDocument(desc, pairs, fEntityResolver);
         }
         catch (IOException ex) {
@@ -2103,7 +2109,7 @@ public class XSDHandler {
 
         XMLInputSource schemaSource = null;
         try {
-            Hashtable pairs = usePairs ? fLocationPairs : EMPTY_TABLE;
+            Map<String, LocationArray> pairs = usePairs ? fLocationPairs : EMPTY_TABLE;
             schemaSource = XMLSchemaLoader.resolveDocument(desc, pairs, fEntityResolver);
         }
         catch (IOException ex) {
@@ -2517,7 +2523,7 @@ public class XSDHandler {
         else {
             XSObject[] components = schemaSource.getComponents();
             if (components != null && components.length > 0) {
-                Hashtable importDependencies = new Hashtable();
+                Map<String, Vector> importDependencies = new HashMap<>();
                 Vector expandedComponents = expandComponents(components, importDependencies);
                 if (fNamespaceGrowth || canAddComponents(expandedComponents)) {
                     addGlobalComponents(expandedComponents, importDependencies);
@@ -2985,7 +2991,7 @@ public class XSDHandler {
         }
     }
 
-    private Vector expandComponents(XSObject[] components, Hashtable dependencies) {
+    private Vector expandComponents(XSObject[] components, Map<String, Vector> dependencies) {
         Vector newComponents = new Vector();
         
         for (int i=0; i<components.length; i++) {
@@ -3002,7 +3008,7 @@ public class XSDHandler {
         return newComponents;
     }
     
-    private void expandRelatedComponents(XSObject component, Vector componentList, Hashtable dependencies) {
+    private void expandRelatedComponents(XSObject component, Vector componentList, Map<String, Vector> dependencies) {
         short componentType = component.getType();
         switch (componentType) {
         case XSConstants.TYPE_DEFINITION :
@@ -3027,7 +3033,7 @@ public class XSDHandler {
         }
     }
 
-    private void expandRelatedAttributeComponents(XSAttributeDeclaration decl, Vector componentList, String namespace, Hashtable dependencies) {
+    private void expandRelatedAttributeComponents(XSAttributeDeclaration decl, Vector componentList, String namespace, Map<String, Vector> dependencies) {
         addRelatedType(decl.getTypeDefinition(), componentList, namespace, dependencies);
 
         /*final XSComplexTypeDefinition enclosingType = decl.getEnclosingCTDefinition();
@@ -3036,7 +3042,7 @@ public class XSDHandler {
         }*/
     }
 
-    private void expandRelatedElementComponents(XSElementDeclaration decl, Vector componentList, String namespace, Hashtable dependencies) {
+    private void expandRelatedElementComponents(XSElementDeclaration decl, Vector componentList, String namespace, Map<String, Vector> dependencies) {
         addRelatedType(decl.getTypeDefinition(), componentList, namespace, dependencies);
         
         /*final XSTypeDefinition enclosingType = decl.getEnclosingCTDefinition();
@@ -3050,7 +3056,7 @@ public class XSDHandler {
         }
     }
     
-    private void expandRelatedTypeComponents(XSTypeDefinition type, Vector componentList, String namespace, Hashtable dependencies) {
+    private void expandRelatedTypeComponents(XSTypeDefinition type, Vector componentList, String namespace, Map<String, Vector> dependencies) {
         if (type instanceof XSComplexTypeDecl) {
             expandRelatedComplexTypeComponents((XSComplexTypeDecl) type, componentList, namespace, dependencies);
         }
@@ -3060,16 +3066,16 @@ public class XSDHandler {
     }
 
     private void expandRelatedModelGroupDefinitionComponents(XSModelGroupDefinition modelGroupDef, Vector componentList,
-            String namespace, Hashtable dependencies) {
+            String namespace, Map<String, Vector> dependencies) {
         expandRelatedModelGroupComponents(modelGroupDef.getModelGroup(), componentList, namespace, dependencies);
     }
 
     private void expandRelatedAttributeGroupComponents(XSAttributeGroupDefinition attrGroup, Vector componentList
-            , String namespace, Hashtable dependencies) {
+            , String namespace, Map<String, Vector> dependencies) {
         expandRelatedAttributeUsesComponents(attrGroup.getAttributeUses(), componentList, namespace, dependencies);
     }
 
-    private void expandRelatedComplexTypeComponents(XSComplexTypeDecl type, Vector componentList, String namespace, Hashtable dependencies) {
+    private void expandRelatedComplexTypeComponents(XSComplexTypeDecl type, Vector componentList, String namespace, Map<String, Vector> dependencies) {
         addRelatedType(type.getBaseType(), componentList, namespace, dependencies);
         expandRelatedAttributeUsesComponents(type.getAttributeUses(), componentList, namespace, dependencies);
         final XSParticle particle = type.getParticle();
@@ -3078,7 +3084,7 @@ public class XSDHandler {
         }
     }
 
-    private void expandRelatedSimpleTypeComponents(XSSimpleTypeDefinition type, Vector componentList, String namespace, Hashtable dependencies) {
+    private void expandRelatedSimpleTypeComponents(XSSimpleTypeDefinition type, Vector componentList, String namespace, Map<String, Vector> dependencies) {
         final XSTypeDefinition baseType = type.getBaseType();
         if (baseType != null) {
             addRelatedType(baseType, componentList, namespace, dependencies);
@@ -3103,7 +3109,7 @@ public class XSDHandler {
     }
     
     private void expandRelatedAttributeUsesComponents(XSObjectList attrUses, Vector componentList,
-            String namespace, Hashtable dependencies) {
+            String namespace, Map<String, Vector> dependencies) {
         final int attrUseSize = (attrUses == null) ? 0 : attrUses.size();
         for (int i=0; i<attrUseSize; i++) {
             expandRelatedAttributeUseComponents((XSAttributeUse)attrUses.item(i), componentList, namespace, dependencies);
@@ -3111,12 +3117,12 @@ public class XSDHandler {
     }
 
     private void expandRelatedAttributeUseComponents(XSAttributeUse component, Vector componentList,
-            String namespace, Hashtable dependencies) {
+            String namespace, Map<String, Vector> dependencies) {
         addRelatedAttribute(component.getAttrDeclaration(), componentList, namespace, dependencies);
     }
 
     private void expandRelatedParticleComponents(XSParticle component, Vector componentList,
-            String namespace, Hashtable dependencies) {
+            String namespace, Map<String, Vector> dependencies) {
         XSTerm term = component.getTerm();
         switch (term.getType()) {
         case XSConstants.ELEMENT_DECLARATION :
@@ -3131,7 +3137,7 @@ public class XSDHandler {
     }
 
     private void expandRelatedModelGroupComponents(XSModelGroup modelGroup, Vector componentList,
-            String namespace, Hashtable dependencies) {
+            String namespace, Map<String, Vector> dependencies) {
         XSObjectList particles = modelGroup.getParticles();
         final int length = (particles == null) ? 0 : particles.getLength();
         for (int i=0; i<length; i++) {
@@ -3139,7 +3145,7 @@ public class XSDHandler {
         }
     }
     
-    private void addRelatedType(XSTypeDefinition type, Vector componentList, String namespace, Hashtable dependencies) {
+    private void addRelatedType(XSTypeDefinition type, Vector componentList, String namespace, Map<String, Vector> dependencies) {
         if (!type.getAnonymous()) {
             if (!SchemaSymbols.URI_SCHEMAFORSCHEMA.equals(type.getNamespace())) { //REVISIT - do we use == instead
                 if (!componentList.contains(type)) {
@@ -3154,7 +3160,7 @@ public class XSDHandler {
         }
     }
     
-    private void addRelatedElement(XSElementDeclaration decl, Vector componentList, String namespace, Hashtable dependencies) {
+    private void addRelatedElement(XSElementDeclaration decl, Vector componentList, String namespace, Map<String, Vector> dependencies) {
         if (decl.getScope() == XSConstants.SCOPE_GLOBAL) {
             if (!componentList.contains(decl)) {
                 Vector importedNamespaces = findDependentNamespaces(namespace, dependencies);
@@ -3167,7 +3173,7 @@ public class XSDHandler {
         }
     }
 
-    private void addRelatedAttribute(XSAttributeDeclaration decl, Vector componentList, String namespace, Hashtable dependencies) {
+    private void addRelatedAttribute(XSAttributeDeclaration decl, Vector componentList, String namespace, Map<String, Vector> dependencies) {
         if (decl.getScope() == XSConstants.SCOPE_GLOBAL) {
             if (!componentList.contains(decl)) {
                 Vector importedNamespaces = findDependentNamespaces(namespace, dependencies);
@@ -3180,7 +3186,7 @@ public class XSDHandler {
         }
     }
 
-    private void addGlobalComponents(Vector components, Hashtable importDependencies) {
+    private void addGlobalComponents(Vector components, Map<String, Vector> importDependencies) {
         final XSDDescription desc = new XSDDescription();
         final int size = components.size();
         
@@ -3269,13 +3275,10 @@ public class XSDHandler {
         }
     }
 
-    private void updateImportDependencies(Hashtable table) {
-        Enumeration keys = table.keys();
-        String namespace;
-        Vector importList;
-        while (keys.hasMoreElements()) {
-            namespace = (String) keys.nextElement();
-            importList = (Vector) table.get(null2EmptyString(namespace));
+    private void updateImportDependencies(Map<String, Vector> table) {
+        for (Map.Entry<String, Vector> entry : table.entrySet()) {
+            String namespace = entry.getKey();
+            Vector importList = entry.getValue();
             if (importList.size() > 0) {
                 expandImportList(namespace, importList);
             }
@@ -3359,7 +3362,7 @@ public class XSDHandler {
         return sg;
     }
 
-    private Vector findDependentNamespaces(String namespace, Hashtable table) {
+    private Vector findDependentNamespaces(String namespace, Map<String, Vector> table) {
         final String ns = null2EmptyString(namespace);
         Vector namespaceList = (Vector) table.get(ns);
         
@@ -3702,7 +3705,7 @@ public class XSDHandler {
      * or because we've found the thing we're redefining.
      */
     void checkForDuplicateNames(String qName, int declType,
-            Hashtable registry, Hashtable registry_sub, Element currComp,
+            Map<String, Element> registry, Map<String, XSDocumentInfo> registry_sub, Element currComp,
             XSDocumentInfo currSchema) {
         Object objElem = null;
         // REVISIT:  when we add derivation checking, we'll have to make
@@ -3719,7 +3722,7 @@ public class XSDHandler {
         }
         else {
             Element collidingElem = (Element)objElem;
-            XSDocumentInfo collidingElemSchema = (XSDocumentInfo)registry_sub.get(qName);
+            XSDocumentInfo collidingElemSchema = registry_sub.get(qName);
             if (collidingElem == currComp) return;
             Element elemParent = null;
             XSDocumentInfo redefinedSchema = null;
@@ -3727,7 +3730,7 @@ public class XSDHandler {
             // (the parent of the colliding element is a redefine)
             boolean collidedWithRedefine = true;
             if ((DOMUtil.getLocalName((elemParent = DOMUtil.getParent(collidingElem))).equals(SchemaSymbols.ELT_REDEFINE))) {
-                redefinedSchema = (XSDocumentInfo)(fRedefine2XSDMap.get(elemParent));
+                redefinedSchema = fRedefine2XSDMap.get(elemParent);
                 // case where we're a redefining element.
             }
             else if ((DOMUtil.getLocalName(DOMUtil.getParent(currComp)).equals(SchemaSymbols.ELT_REDEFINE))) {
@@ -4053,7 +4056,7 @@ public class XSDHandler {
          so long as there's some include/import/redefine path amongst them.
          If they rver reverse this decision the code's right here though...  - neilg
          // now look in fDependencyMap to see if this is reachable
-          if(((Vector)fDependencyMap.get(currSchema)).contains(declDocInfo)) {
+          if(fDependencyMap.get(currSchema).contains(declDocInfo)) {
           return declDocInfo;
           }
           // obviously the requesting doc didn't include, redefine or
@@ -4074,9 +4077,11 @@ public class XSDHandler {
         if (DOMUtil.isHidden(startSchema.fSchemaElement, fHiddenNodes)) {
             // make it visible
             DOMUtil.setVisible(startSchema.fSchemaElement, fHiddenNodes);           
-            Vector dependingSchemas = (Vector)fDependencyMap.get(startSchema);
-            for (int i = 0; i < dependingSchemas.size(); i++) {
-                setSchemasVisible((XSDocumentInfo)dependingSchemas.elementAt(i));
+            List<XSDocumentInfo> dependingSchemas = fDependencyMap.get(startSchema);
+            if (dependingSchemas != null) {
+                for (int i = 0; i < dependingSchemas.size(); i++) {
+                    setSchemasVisible(dependingSchemas.get(i));
+                }
             }
         }
         // if it's visible already than so must be its children

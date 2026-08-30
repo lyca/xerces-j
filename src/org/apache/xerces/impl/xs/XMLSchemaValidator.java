@@ -19,11 +19,13 @@ package org.apache.xerces.impl.xs;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.HashMap;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Stack;
 import java.util.Vector;
 
 import javax.xml.XMLConstants;
@@ -349,7 +351,7 @@ public class XMLSchemaValidator
     static final XSAttributeDecl XSI_NONAMESPACESCHEMALOCATION = SchemaGrammar.SG_XSI.getGlobalAttributeDecl(SchemaSymbols.XSI_NONAMESPACESCHEMALOCATION);
 
     //
-    private static final Hashtable<String, LocationArray> EMPTY_TABLE = new Hashtable<>();
+    private static final Map<String, LocationArray> EMPTY_TABLE = Collections.emptyMap();
 
     //
     // Data
@@ -526,8 +528,8 @@ public class XMLSchemaValidator
 
     /** Schema Grammar Description passed,  to give a chance to application to supply the Grammar */
     protected final XSDDescription fXSDDescription = new XSDDescription();
-    protected final Hashtable<String, LocationArray> fLocationPairs = new Hashtable<>();
-    protected final Hashtable fExpandedLocationPairs = new Hashtable();
+    protected final Map<String, LocationArray> fLocationPairs = new HashMap<>();
+    protected final Map<String, LocationArray> fExpandedLocationPairs = new HashMap<>();
     protected final ArrayList fUnparsedLocations = new ArrayList();
 
 
@@ -2619,7 +2621,7 @@ public class XMLSchemaValidator
         }
         if (nsLocation != null) {
             XMLSchemaLoader.LocationArray la =
-                ((XMLSchemaLoader.LocationArray) fLocationPairs.get(XMLSymbols.EMPTY_STRING));
+                fLocationPairs.get(XMLSymbols.EMPTY_STRING);
             if (la == null) {
                 la = new XMLSchemaLoader.LocationArray();
                 fLocationPairs.put(XMLSymbols.EMPTY_STRING, la);
@@ -2681,7 +2683,7 @@ public class XMLSchemaValidator
                 fXSDDescription.setBaseSystemId(fLocator.getExpandedSystemId());
             }
 
-            Hashtable<String, LocationArray> locationPairs = fLocationPairs;
+            Map<String, LocationArray> locationPairs = fLocationPairs;
             final LocationArray locationArray = locationPairs.get(namespace == null ? XMLSymbols.EMPTY_STRING : namespace);
 
             if (locationArray != null) {
@@ -4329,7 +4331,7 @@ public class XMLSchemaValidator
         // the preceding siblings' eligible id constraints;
         // the fGlobalIDConstraintMap contains descendants+self.
         // keyrefs can only match descendants+self.
-        protected final Stack fGlobalMapStack = new Stack();
+        protected final List<HashMap> fGlobalMapStack = new ArrayList<>();
         protected final HashMap fGlobalIDConstraintMap = new HashMap();
 
         //
@@ -4349,7 +4351,7 @@ public class XMLSchemaValidator
             fValueStores.clear();
             fIdentityConstraint2ValueStoreMap.clear();
             fGlobalIDConstraintMap.clear();
-            fGlobalMapStack.removeAllElements();
+            fGlobalMapStack.clear();
         } // startDocument()
 
         // startElement:  pushes the current fGlobalIDConstraintMap
@@ -4357,9 +4359,9 @@ public class XMLSchemaValidator
         public void startElement() {
             // only clone the map when there are elements
             if (fGlobalIDConstraintMap.size() > 0)
-                fGlobalMapStack.push(fGlobalIDConstraintMap.clone());
+                fGlobalMapStack.add((HashMap)fGlobalIDConstraintMap.clone());
             else
-                fGlobalMapStack.push(null);
+                fGlobalMapStack.add(null);
             fGlobalIDConstraintMap.clear();
         } // startElement(void)
 
@@ -4370,7 +4372,7 @@ public class XMLSchemaValidator
             if (fGlobalMapStack.isEmpty()) {
                 return; // must be an invalid doc!
             }
-            HashMap oldMap = (HashMap) fGlobalMapStack.pop();
+            HashMap oldMap = (HashMap) fGlobalMapStack.remove(fGlobalMapStack.size() - 1);
             // return if there is no element
             if (oldMap == null) {
                 return;

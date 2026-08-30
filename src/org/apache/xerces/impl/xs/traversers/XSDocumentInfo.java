@@ -17,8 +17,10 @@
 
 package org.apache.xerces.impl.xs.traversers;
 
-import java.util.Stack;
-import java.util.Vector;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.xerces.impl.validation.ValidationState;
 import org.apache.xerces.impl.xs.SchemaNamespaceSupport;
@@ -45,7 +47,7 @@ class XSDocumentInfo {
     // Data
     protected SchemaNamespaceSupport fNamespaceSupport;
     protected SchemaNamespaceSupport fNamespaceSupportRoot;
-    protected Stack SchemaNamespaceSupportStack = new Stack();
+    protected Deque<SchemaNamespaceSupport> SchemaNamespaceSupportStack = new ArrayDeque<>();
 
     // schema's attributeFormDefault
     protected boolean fAreLocalAttributesQualified;
@@ -67,7 +69,7 @@ class XSDocumentInfo {
     protected Element fSchemaElement;
 
     // all namespaces that this document can refer to
-    Vector fImportedNS = new Vector();
+    List<String> fImportedNS = new ArrayList<>();
     
     protected ValidationState fValidationContext = new ValidationState();
 
@@ -145,7 +147,7 @@ class XSDocumentInfo {
     }
 
     void restoreNSSupport() {
-        fNamespaceSupport = (SchemaNamespaceSupport)SchemaNamespaceSupportStack.pop();
+        fNamespaceSupport = SchemaNamespaceSupportStack.pop();
         fValidationContext.setNamespaceSupport(fNamespaceSupport);
     }
 
@@ -171,7 +173,7 @@ class XSDocumentInfo {
     }
 
     public void addAllowedNS(String namespace) {
-        fImportedNS.addElement(namespace == null ? "" : namespace);
+        fImportedNS.add(namespace == null ? "" : namespace);
     }
     
     public boolean isAllowedNS(String namespace) {
@@ -180,16 +182,16 @@ class XSDocumentInfo {
     
     // store whether we have reported an error about that this document
     // can't access components from the given namespace
-    private Vector fReportedTNS = null;
+    private List<String> fReportedTNS = null;
     // check whether we need to report an error against the given uri.
     // if we have reported an error, then we don't need to report again;
     // otherwise we reported the error, and remember this fact.
     final boolean needReportTNSError(String uri) {
         if (fReportedTNS == null)
-            fReportedTNS = new Vector();
+            fReportedTNS = new ArrayList<>();
         else if (fReportedTNS.contains(uri))
             return false;
-        fReportedTNS.addElement(uri);
+        fReportedTNS.add(uri);
         return true;
     }
 

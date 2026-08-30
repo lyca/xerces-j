@@ -238,7 +238,8 @@ class XSDSimpleTypeTraverser extends XSDAbstractTraverser {
         QName baseTypeName = (QName)contentAttrs[restriction ?
                 XSAttributeChecker.ATTIDX_BASE :
                     XSAttributeChecker.ATTIDX_ITEMTYPE];
-        Vector memberTypes = (Vector)contentAttrs[XSAttributeChecker.ATTIDX_MEMBERTYPES];
+        @SuppressWarnings("unchecked")
+        Vector<QName> memberTypes = (Vector<QName>)contentAttrs[XSAttributeChecker.ATTIDX_MEMBERTYPES];
         //content = {annotation?,simpleType?...}
         Element content = DOMUtil.getFirstChildElement(child);
         //check content (annotation?, ...)
