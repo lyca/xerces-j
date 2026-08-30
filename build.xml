@@ -862,6 +862,7 @@ Authors:
               <include name="dom/serialize/TestXmlns.class"/>
               <include name="io/UTF8.class"/>
               <include name="io/UTF16.class"/>
+              <include name="thread/Test.class"/>
            </fileset>
          </batchtest>
 
@@ -900,32 +901,6 @@ Authors:
           failOnError="yes">
         <arg value="${data.dir}/personal.xml"/>
     </java>
-    <!-- TODO These should be run using the junit tasks, not java -->
-    <echo message="Running thread.Test dom" />
-    <echo message="Using classpath='${test.classpath.string}'" />
-    <java fork="yes"
-          classname="thread.Test"
-          classpathref="test.classpath"
-          failOnError="yes">
-        <arg value="-dom"/>
-        <arg value="-threads"/>
-        <arg value="20"/>
-        <arg value="-time"/>
-        <arg value="10"/>
-        <arg value="${data.dir}/personal-schema.xml"/>
-    </java>
-    <echo message="Running thread.Test sax" />
-    <java fork="yes"
-          classname="thread.Test"
-          classpathref="test.classpath"
-          failOnError="yes">
-        <arg value="-threads"/>
-        <arg value="20"/>
-        <arg value="-time"/>
-        <arg value="10"/>
-        <arg value="${data.dir}/personal-schema.xml"/>
-    </java>
-   
   </target>
 
   <target name="ci-test" depends="test">
