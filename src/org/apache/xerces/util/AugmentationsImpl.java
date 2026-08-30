@@ -279,11 +279,9 @@ public class AugmentationsImpl implements Augmentations {
         }
 
         public String toString() {
-            StringBuffer buff = new StringBuffer();
+            StringBuilder buff = new StringBuilder();
             buff.append("LargeContainer");
-            Iterator entries = fAugmentations.entrySet().iterator();
-            while (entries.hasNext()) {
-                Map.Entry entry = (Map.Entry) entries.next();
+            for (Map.Entry<String, Object> entry : fAugmentations.entrySet()) {
                 buff.append("\nkey == ");
                 buff.append(entry.getKey());
                 buff.append("; value == ");

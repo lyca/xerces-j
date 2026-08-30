@@ -153,7 +153,7 @@ public final class HTTPInputSource extends XMLInputSource {
      * been set
      */
     public String getHTTPRequestProperty(String key) {
-        return (String) fHTTPRequestProperties.get(key);
+        return fHTTPRequestProperties.get(key);
     } // getHTTPRequestProperty(String):String
     
     /**
