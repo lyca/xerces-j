@@ -1603,11 +1603,7 @@ public class XMLEntityManager
         }
     }
     
-    private static PrivilegedAction GET_USER_DIR_SYSTEM_PROPERTY = new PrivilegedAction() {
-        public Object run() {
-            return System.getProperty("user.dir");
-        }
-    };
+    private static final PrivilegedAction<String> GET_USER_DIR_SYSTEM_PROPERTY = () -> System.getProperty("user.dir");
     
     // To escape the "user.dir" system property, by using %HH to represent
     // special ASCII characters: 0x00~0x1F, 0x7F, ' ', '<', '>', '#', '%'
@@ -1623,7 +1619,7 @@ public class XMLEntityManager
         // get the user.dir property
         String userDir = "";
         try {
-            userDir = (String) AccessController.doPrivileged(GET_USER_DIR_SYSTEM_PROPERTY);
+            userDir = AccessController.doPrivileged(GET_USER_DIR_SYSTEM_PROPERTY);
         }
         catch (SecurityException se) {}
 
