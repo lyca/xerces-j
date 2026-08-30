@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 
+import javax.inject.Inject
+
 plugins {
     id 'java'
 }
@@ -26,6 +28,8 @@ description = 'Apache Xerces-J XML Parser'
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
+    withSourcesJar()
+    withJavadocJar()
 }
 
 repositories {
@@ -36,10 +40,17 @@ sourceSets {
     main {
         java {
             srcDirs = ['src']
+            exclude 'tools/**'
         }
         resources {
             srcDirs = ['src']
             exclude '**/*.java'
+            exclude 'tools/**'
+            exclude 'manifest.xerces'
+            exclude 'org/apache/xerces/jaxp/javax.xml.*'
+            exclude 'org/apache/xerces/jaxp/datatype/javax.xml.*'
+            exclude 'org/apache/xerces/jaxp/validation/javax.xml.*'
+            exclude 'org/apache/xerces/stax/javax.xml.*'
         }
     }
     samples {
@@ -64,11 +75,20 @@ sourceSets {
         compileClasspath += sourceSets.samples.output
         runtimeClasspath += sourceSets.samples.output
     }
+    tools {
+        java {
+            srcDirs = ['src/tools/java']
+        }
+        compileClasspath += sourceSets.main.output
+        runtimeClasspath += sourceSets.main.output
+    }
 }
 
 configurations {
     samplesImplementation.extendsFrom implementation
     samplesRuntimeOnly.extendsFrom runtimeOnly
+    toolsImplementation.extendsFrom implementation
+    toolsRuntimeOnly.extendsFrom runtimeOnly
 }
 
 dependencies {
@@ -91,6 +111,10 @@ tasks.named('compileSamplesJava') {
     options.encoding = 'UTF-8'
 }
 
+tasks.named('compileToolsJava') {
+    options.encoding = 'UTF-8'
+}
+
 processResources {
     into('META-INF/services') {
         from('src/org/apache/xerces/jaxp/javax.xml.parsers.DocumentBuilderFactory')
@@ -99,6 +123,27 @@ processResources {
         from('src/org/apache/xerces/jaxp/validation/javax.xml.validation.SchemaFactory')
         from('src/org/apache/xerces/stax/javax.xml.stream.XMLEventFactory')
     }
+}
+
+javadoc {
+    options {
+        encoding = 'UTF-8'
+        charSet = 'UTF-8'
+        author = true
+        version = true
+        windowTitle = 'Xerces2 Implementation'
+        docTitle = 'Xerces2 Implementation'
+        bottom = 'Copyright &copy; 1999-2026 The Apache Software Foundation. All Rights Reserved.'
+        tags = [
+            'xerces.internal:a:Internal:',
+            'xerces.experimental:a:Experimental:'
+        ]
+        addStringOption('Xdoclint:none', '-quiet')
+    }
+}
+
+tasks.withType(Jar).configureEach {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
 jar {
@@ -118,9 +163,29 @@ jar {
     }
 }
 
+sourcesJar {
+    archiveBaseName.set('xercesImpl')
+}
+
+javadocJar {
+    archiveBaseName.set('xercesImpl')
+}
+
 task samplesJar(type: Jar) {
     archiveBaseName.set('xercesSamples')
     from sourceSets.samples.output
+    from(project.rootDir) {
+        include 'LICENSE', 'NOTICE'
+        into 'META-INF'
+    }
+}
+
+task dtdJar(type: Jar) {
+    archiveBaseName.set('xerces-dtd')
+    from(sourceSets.main.output) {
+        exclude 'org/apache/xerces/impl/xs/**'
+        exclude 'org/apache/xerces/impl/xpath/regex/**'
+    }
     from(project.rootDir) {
         include 'LICENSE', 'NOTICE'
         into 'META-INF'
@@ -162,4 +227,32 @@ test {
         events 'passed', 'skipped', 'failed'
         showStandardStreams = false
     }
+}
+
+abstract class SanityCheckTask extends DefaultTask {
+    @InputFiles
+    abstract ConfigurableFileCollection getClasspath()
+
+    @Inject
+    abstract ExecOperations getExecOperations()
+
+    @TaskAction
+    void run() {
+        def cp = getClasspath()
+        ['sax.Counter', 'sax.Writer', 'dom.Counter', 'dom.Writer'].each { className ->
+            println "Running sanity check: ${className} ..."
+            getExecOperations().javaexec {
+                classpath = cp
+                mainClass = className
+                args = ['data/personal.xml']
+            }
+        }
+    }
+}
+
+tasks.register('sanity', SanityCheckTask) {
+    group = 'verification'
+    description = 'Runs sample Counter and Writer programs as a sanity check.'
+    dependsOn compileSamplesJava
+    classpath.from(sourceSets.samples.runtimeClasspath)
 }

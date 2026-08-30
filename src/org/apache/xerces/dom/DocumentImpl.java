@@ -104,7 +104,7 @@ public class DocumentImpl
     //
 
     /**
-     * Node Iterators as a <code>List&lt;Reference&lt;NodeIterator>></></code>.
+     * Node Iterators as a <code>List&lt;Reference&lt;NodeIterator&gt;&gt;</code>.
      *
      * @see Reference
      * @see NodeIterator
