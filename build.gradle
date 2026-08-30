@@ -30,6 +30,11 @@ java {
     targetCompatibility = JavaVersion.VERSION_1_8
     withSourcesJar()
     withJavadocJar()
+    if (project.hasProperty('testJavaVersion')) {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(project.property('testJavaVersion') as int)
+        }
+    }
 }
 
 repositories {

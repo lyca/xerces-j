@@ -117,8 +117,8 @@ esac
 
 # Bootstrap Gradle Wrapper JAR if missing (ASF release compliance)
 WRAPPER_JAR="$APP_HOME/gradle/wrapper/gradle-wrapper.jar"
-WRAPPER_SHA256="7d3a4ac4de1c32b59bc6a4eb8ecb8e612ccd0cf1ae1e99f66902da64df296172"
-WRAPPER_URL="https://raw.githubusercontent.com/gradle/gradle/v8.14.5/gradle/wrapper/gradle-wrapper.jar"
+WRAPPER_SHA256="7a9ce74cff467ca1bf60a4fcd9f05185acceda4d0f382434d393e17864262c5d"
+WRAPPER_URL="https://raw.githubusercontent.com/gradle/gradle/v9.7.1/gradle/wrapper/gradle-wrapper.jar"
 
 if [ ! -f "$WRAPPER_JAR" ]; then
     mkdir -p "$APP_HOME/gradle/wrapper"
