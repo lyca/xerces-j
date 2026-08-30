@@ -18,6 +18,7 @@
 package org.apache.xerces.impl.validation;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * ValidationManager is a coordinator property for validators in the 
@@ -33,7 +34,7 @@ import java.util.ArrayList;
  */
 public class ValidationManager {
 
-    protected final ArrayList fVSs = new ArrayList();
+    protected final List<ValidationState> fVSs = new ArrayList<>();
     protected boolean fGrammarFound = false;
 
     // used by the DTD validator to tell other components that it has a

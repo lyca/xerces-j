@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
+import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
@@ -238,28 +239,28 @@ public class XMLDTDProcessor
     private final XMLEntityDecl fEntityDecl = new XMLEntityDecl();
 
     /** Notation declaration hash. */
-    private final HashMap fNDataDeclNotations = new HashMap();
+    private final Map<String, String> fNDataDeclNotations = new HashMap<>();
 
     /** DTD element declaration name. */
     private String fDTDElementDeclName = null;
 
     /** Mixed element type "hash". */
-    private final ArrayList fMixedElementTypes = new ArrayList();
+    private final List<String> fMixedElementTypes = new ArrayList<>();
 
     /** Element declarations in DTD. */
-    private final ArrayList fDTDElementDecls = new ArrayList();
+    private final List<String> fDTDElementDecls = new ArrayList<>();
 
     // to check for duplicate ID or ANNOTATION attribute declare in
     // ATTLIST, and misc VCs
 
     /** ID attribute names. */
-    private HashMap fTableOfIDAttributeNames;
+    private Map<String, String> fTableOfIDAttributeNames;
 
     /** NOTATION attribute names. */
-    private HashMap fTableOfNOTATIONAttributeNames;
+    private Map<String, String> fTableOfNOTATIONAttributeNames;
 
     /** NOTATION enumeration values. */
-    private HashMap fNotationEnumVals;
+    private Map<String, String> fNotationEnumVals;
 
     //
     // Constructors

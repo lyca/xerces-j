@@ -18,6 +18,7 @@
 package org.apache.xerces.impl.dtd.models;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.xerces.impl.dtd.XMLContentSpec;
 import org.apache.xerces.xni.QName;
@@ -591,7 +592,7 @@ public class DFAContentModel
 	     * a large content model such as, "(t001+|t002+|.... |t500+)".
 	     */
 
-        HashMap stateTable = new HashMap();
+        Map<CMStateSet, Integer> stateTable = new HashMap<>();
 
 	    /* Optimization(Jan, 2001) */
 
@@ -664,7 +665,7 @@ public class DFAContentModel
                     //
 
 	    /* Optimization(Jan, 2001) */
-	    Integer stateObj = (Integer)stateTable.get(newSet);
+	    Integer stateObj = stateTable.get(newSet);
 	    int stateIndex = (stateObj == null ? curState : stateObj.intValue());
 	    /* Optimization(Jan, 2001) */
 

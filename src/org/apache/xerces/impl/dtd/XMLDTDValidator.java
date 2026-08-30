@@ -2050,7 +2050,7 @@ public class XMLDTDValidator
             //   IDREF and IDREFS attr (V_IDREF0)
             //
             if (fPerformValidation) {
-                Iterator invIdRefs = fValidationState.checkIDRefID();
+                Iterator<String> invIdRefs = fValidationState.checkIDRefID();
                 if (invIdRefs != null) {
                     while (invIdRefs.hasNext()) {
                         fErrorReporter.reportError( XMLMessageFormatter.XML_DOMAIN,

@@ -77,7 +77,7 @@ public class NamedNodeMapImpl
     /**
      * Nodes as a <code>List&lt;Node></code>
      */
-    protected List nodes;
+    protected List<Node> nodes;
 
     protected NodeImpl ownerNode; // the node this map belongs to
 
@@ -590,9 +590,9 @@ public class NamedNodeMapImpl
      * @param list a list of {@link Node} to copy information into, or null to create a new list
      * @return A copy of this node named map
      */
-    protected ArrayList cloneMap(ArrayList list) {
+    protected ArrayList<Node> cloneMap(ArrayList<Node> list) {
         if (list == null) {
-            list = new ArrayList<Node>(5);
+            list = new ArrayList<>(5);
         }
         list.clear();
         if (nodes != null) {

@@ -111,13 +111,13 @@ public class DocumentImpl
      * @see Reference
      * @see NodeIterator
      */
-    protected transient List iterators;
+    protected transient List<Reference<NodeIterator>> iterators;
     
     /**
      * Reference queue for cleared Node Iterator references as a <code>ReferenceQueue&lt;NodeIterator></code>.
      * @see NodeIterator
      */
-    protected transient ReferenceQueue iteratorReferenceQueue;
+    protected transient ReferenceQueue<NodeIterator> iteratorReferenceQueue;
 
     /**
      * Ranges as a <code>List&lt;Reference&lt;Range>></code>.
@@ -125,13 +125,13 @@ public class DocumentImpl
      * @see Reference
      * @see Range
      */
-    protected transient List ranges;
+    protected transient List<Reference<Range>> ranges;
     
     /**
      * Reference queue for cleared Range references as a <code>ReferenceQueue&lt;Range></code>.
      * @see Range
      */
-    protected transient ReferenceQueue rangeReferenceQueue;
+    protected transient ReferenceQueue<Range> rangeReferenceQueue;
 
     /**
      * Table (<code>Hashtable&lt;NodeImpl, Vector&lt;LEntry>></code>) of for event listeners registered to this document nodes.

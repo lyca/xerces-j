@@ -132,7 +132,7 @@ public class DeferredDocumentImpl
     // private data
     //
     private transient final StringBuffer fBufferStr = new StringBuffer();
-    private transient final ArrayList fStrChunks = new ArrayList();
+    private transient final ArrayList<String> fStrChunks = new ArrayList<>();
 
     //
     // Constructors

@@ -107,7 +107,7 @@ public class AttributeMap extends NamedNodeMapImpl {
         } else {
             i = -1 - i; // Insert point (may be end of list)
             if (null == nodes) {
-                nodes = new ArrayList(5);
+                nodes = new ArrayList<>(5);
             }
             nodes.add(i, arg);
         }
@@ -187,7 +187,7 @@ public class AttributeMap extends NamedNodeMapImpl {
             } else {
                 i = -1 - i; // Insert point (may be end of list)
                 if (null == nodes) {
-                    nodes = new ArrayList(5);
+                    nodes = new ArrayList<>(5);
                 }
                 nodes.add(i, arg);
             }
@@ -574,7 +574,7 @@ public class AttributeMap extends NamedNodeMapImpl {
             else {
                 i = -1 - i; // Insert point (may be end of list)
                 if (null == nodes) {
-                    nodes = new ArrayList(5);
+                    nodes = new ArrayList<>(5);
                 }
                 nodes.add(i, arg);
             }

@@ -89,7 +89,7 @@ public class DeepNodeListImpl
     protected NodeImpl rootNode; // Where the search started
     protected String tagName;   // Or "*" to mean all-tags-acceptable
     protected int changes=0;
-    protected ArrayList nodes; // list of Node
+    protected ArrayList<Node> nodes; // list of Node
     
     protected String nsName;
     protected boolean enableNS = false;
@@ -102,7 +102,7 @@ public class DeepNodeListImpl
     public DeepNodeListImpl(NodeImpl rootNode, String tagName) {
         this.rootNode = rootNode;
         this.tagName  = tagName;
-        nodes = new ArrayList<Node>();
+        nodes = new ArrayList<>();
     }  
 
     /** Constructor for Namespace support. */

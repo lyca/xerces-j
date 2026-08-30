@@ -233,7 +233,7 @@ public class DOMConfigurationImpl extends ParserConfigurationSettings
      * Components.
      * @see XMLComponent
      */
-    protected ArrayList fComponents;
+    protected ArrayList<XMLComponent> fComponents;
 
     protected ValidationManager fValidationManager;
 
@@ -290,12 +290,12 @@ public class DOMConfigurationImpl extends ParserConfigurationSettings
         super(parentSettings);
 
         // create storage for recognized features and properties
-        fRecognizedFeatures = new ArrayList();
-        fRecognizedProperties = new ArrayList();
+        fRecognizedFeatures = new ArrayList<>();
+        fRecognizedProperties = new ArrayList<>();
 
         // create table for features and properties
-        fFeatures = new HashMap();
-        fProperties = new HashMap();
+        fFeatures = new HashMap<>();
+        fProperties = new HashMap<>();
 
         // add default recognized features
         final String[] recognizedFeatures = {

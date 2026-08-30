@@ -139,7 +139,7 @@ public class DOMNormalizer implements XMLDocumentHandler {
     protected final NamespaceContext fLocalNSBinder = new NamespaceSupport();
 
     /** list of attributes */
-    protected final ArrayList fAttributeList = new ArrayList<Node>(5);
+    protected final ArrayList<Node> fAttributeList = new ArrayList<>(5);
 
     /** DOM Locator -  for namespace fixup algorithm */
     protected final DOMLocatorImpl fLocator = new DOMLocatorImpl();

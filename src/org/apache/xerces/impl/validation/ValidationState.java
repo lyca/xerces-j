@@ -20,6 +20,8 @@ package org.apache.xerces.impl.validation;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 import java.util.Locale;
 
 import org.apache.xerces.impl.dv.ValidationContext;
@@ -52,8 +54,8 @@ public class ValidationState implements ValidationContext {
     private Locale fLocale                      = null;
 
     //REVISIT: Should replace with a lighter structure.
-    private final HashMap fIdTable    = new HashMap();
-    private final HashMap fIdRefTable = new HashMap();
+    private final Map<String, Object> fIdTable = new HashMap<>();
+    private final Map<String, Object> fIdRefTable = new HashMap<>();
     private final static Object fNullValue = new Object();
 
     //
@@ -92,15 +94,12 @@ public class ValidationState implements ValidationContext {
      * otherwise return an iterator for all the IDREF values without
      * a matching ID value.
      */
-    public Iterator checkIDRefID() {
-        HashSet missingIDs = null;
-        Iterator iter = fIdRefTable.keySet().iterator();
-        String key;
-        while (iter.hasNext()) {
-            key = (String) iter.next();
+    public Iterator<String> checkIDRefID() {
+        Set<String> missingIDs = null;
+        for (String key : fIdRefTable.keySet()) {
             if (!fIdTable.containsKey(key)) {
                 if (missingIDs == null) {
-                    missingIDs = new HashSet();
+                    missingIDs = new HashSet<>();
                 }
                 missingIDs.add(key);
             }
