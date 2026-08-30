@@ -32,11 +32,15 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.ArrayDeque;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Stack;
 import java.util.StringTokenizer;
 
 import org.apache.xerces.impl.io.ASCIIReader;
@@ -347,10 +351,10 @@ public class XMLEntityManager
     // entities
 
     /** Entities. */
-    protected final Hashtable<String, Entity> fEntities = new Hashtable<>();
+    protected final Map<String, Entity> fEntities = new HashMap<>();
 
     /** Entity stack. */
-    protected final Stack fEntityStack = new Stack();
+    protected final List<ScannedEntity> fEntityStack = new ArrayList<>();
 
     /** Current entity. */
     protected ScannedEntity fCurrentEntity;
@@ -358,7 +362,7 @@ public class XMLEntityManager
     // shared context
 
     /** Shared declared entities. */
-    protected Hashtable<String, Entity> fDeclaredEntities;
+    protected Map<String, Entity> fDeclaredEntities;
 
     // temp vars
 
@@ -569,7 +573,7 @@ public class XMLEntityManager
                 }
                 for (int i = size - 1; i >= 0 ; i--) {
                     ScannedEntity externalEntity =
-                        (ScannedEntity)fEntityStack.elementAt(i);
+                        fEntityStack.get(i);
                     if (externalEntity.entityLocation != null && externalEntity.entityLocation.getExpandedSystemId() != null) {
                         baseSystemId = externalEntity.entityLocation.getExpandedSystemId();
                         break;
@@ -825,11 +829,11 @@ public class XMLEntityManager
         for (int i = size; i >= 0; i--) {
             Entity activeEntity = i == size
                                 ? fCurrentEntity
-                                : (Entity)fEntityStack.elementAt(i);
+                                : fEntityStack.get(i);
             if (activeEntity.name == entityName) {
                 StringBuffer path = new StringBuffer(entityName);
                 for (int j = i + 1; j < size; j++) {
-                    activeEntity = (Entity)fEntityStack.elementAt(j);
+                    activeEntity = fEntityStack.get(j);
                     path.append(" -> ");
                     path.append(activeEntity.name);
                 }
@@ -1223,7 +1227,7 @@ public class XMLEntityManager
 
         // push entity on stack
         if (fCurrentEntity != null) {
-            fEntityStack.push(fCurrentEntity);
+            fEntityStack.add(fCurrentEntity);
         }
 
         // create entity
@@ -1269,16 +1273,16 @@ public class XMLEntityManager
     } // getEntityScanner():XMLEntityScanner
 
     // A stack containing all the open readers
-    protected Stack fReaderStack = new Stack();
+    protected Deque<Reader> fReaderStack = new ArrayDeque<>();
 
     /**
      * Close all opened InputStreams and Readers opened by this parser.
      */
     public void closeReaders() {
         // close all readers
-        for (int i = fReaderStack.size()-1; i >= 0; i--) {
+        while (!fReaderStack.isEmpty()) {
             try {
-                ((Reader)fReaderStack.pop()).close();
+                fReaderStack.pop().close();
             } catch (IOException e) {
                 // ignore
             }
@@ -1384,7 +1388,7 @@ public class XMLEntityManager
         fStandalone = false;
         fHasPEReferences = false;
         fEntities.clear();
-        fEntityStack.removeAllElements();
+        fEntityStack.clear();
         fEntityExpansionCount = 0;
 
         fCurrentEntity = null;
@@ -1985,7 +1989,7 @@ public class XMLEntityManager
         
         // Pop entity stack.
         fCurrentEntity = fEntityStack.size() > 0
-                       ? (ScannedEntity)fEntityStack.pop() : null;
+                       ? fEntityStack.remove(fEntityStack.size() - 1) : null;
         fEntityScanner.setCurrentEntity(fCurrentEntity);
         if (DEBUG_BUFFER) {
             System.out.print(")endEntity: ");
@@ -2345,9 +2349,9 @@ public class XMLEntityManager
      * enumerate the declared entities. For now, this method is needed
      * by the constructor that takes an XMLEntityManager parameter.
      */
-    Hashtable<String, Entity> getDeclaredEntities() {
+    Map<String, Entity> getDeclaredEntities() {
         return fEntities;
-    } // getDeclaredEntities():Hashtable
+    } // getDeclaredEntities():Map
 
     /** Prints the contents of the buffer. */
     static final void print(ScannedEntity currentEntity) {
@@ -2754,7 +2758,7 @@ public class XMLEntityManager
             int size = fEntityStack.size();
             for (int i = size - 1; i >= 0; --i) {
                ScannedEntity externalEntity =
-                    (ScannedEntity)fEntityStack.elementAt(i);
+                    fEntityStack.get(i);
 
                 if (externalEntity.entityLocation != null &&
                         externalEntity.entityLocation.getExpandedSystemId() != null) {
@@ -2771,7 +2775,7 @@ public class XMLEntityManager
             int size = fEntityStack.size();
             for (int i = size - 1; i >= 0; --i) {
                ScannedEntity externalEntity =
-                    (ScannedEntity)fEntityStack.elementAt(i);
+                    fEntityStack.get(i);
 
                 if (externalEntity.entityLocation != null &&
                         externalEntity.entityLocation.getLiteralSystemId() != null) {
@@ -2787,7 +2791,7 @@ public class XMLEntityManager
             // search for the first external entity on the stack
             int size = fEntityStack.size();
             for (int i = size - 1; i >= 0 ; --i) {
-                ScannedEntity firstExternalEntity = (ScannedEntity)fEntityStack.elementAt(i);
+                ScannedEntity firstExternalEntity = fEntityStack.get(i);
                 if (firstExternalEntity.isExternal()) {
                     return firstExternalEntity.lineNumber;
                 }
@@ -2801,7 +2805,7 @@ public class XMLEntityManager
             // search for the first external entity on the stack
             int size = fEntityStack.size();
             for (int i = size - 1; i >= 0; --i) {
-                ScannedEntity firstExternalEntity = (ScannedEntity)fEntityStack.elementAt(i);
+                ScannedEntity firstExternalEntity = fEntityStack.get(i);
                 if (firstExternalEntity.isExternal()) {
                     return firstExternalEntity.columnNumber;
                 }
@@ -2815,7 +2819,7 @@ public class XMLEntityManager
             // search for the first external entity on the stack
             int size = fEntityStack.size();
             for (int i = size - 1; i >= 0; --i) {
-                ScannedEntity firstExternalEntity = (ScannedEntity)fEntityStack.elementAt(i);
+                ScannedEntity firstExternalEntity = fEntityStack.get(i);
                 if (firstExternalEntity.isExternal()) {
                     return firstExternalEntity.baseCharOffset + (firstExternalEntity.position - firstExternalEntity.startPosition);
                 }
@@ -2828,7 +2832,7 @@ public class XMLEntityManager
             // search for the first external entity on the stack
             int size = fEntityStack.size();
             for (int i = size - 1; i >= 0; --i) {
-                ScannedEntity firstExternalEntity = (ScannedEntity)fEntityStack.elementAt(i);
+                ScannedEntity firstExternalEntity = fEntityStack.get(i);
                 if (firstExternalEntity.isExternal()) {
                     return firstExternalEntity.encoding;
                 }
@@ -2841,7 +2845,7 @@ public class XMLEntityManager
             // search for the first external entity on the stack
             int size = fEntityStack.size();
             for (int i = size - 1; i >= 0; --i) {
-                ScannedEntity firstExternalEntity = (ScannedEntity)fEntityStack.elementAt(i);
+                ScannedEntity firstExternalEntity = fEntityStack.get(i);
                 if (firstExternalEntity.isExternal()) {
                     return firstExternalEntity.xmlVersion;
                 }

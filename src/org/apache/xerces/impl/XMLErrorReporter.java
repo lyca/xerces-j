@@ -17,7 +17,8 @@
 
 package org.apache.xerces.impl;
 
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Locale;
 
 import org.apache.xerces.util.DefaultErrorHandler;
@@ -149,7 +150,7 @@ public class XMLErrorReporter
     protected Locale fLocale;
 
     /** Mapping of Message formatters for domains. */
-    protected Hashtable<String, MessageFormatter> fMessageFormatters;
+    protected Map<String, MessageFormatter> fMessageFormatters;
 
     /** Error handler. */
     protected XMLErrorHandler fErrorHandler;
@@ -193,7 +194,7 @@ public class XMLErrorReporter
         //       caller to specify the location of the error being
         //       reported. -Ac
 
-        fMessageFormatters = new Hashtable<>();
+        fMessageFormatters = new HashMap<>();
 
     } // <init>()
 

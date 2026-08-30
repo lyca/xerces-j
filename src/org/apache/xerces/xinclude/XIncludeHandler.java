@@ -24,7 +24,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Locale;
-import java.util.Stack;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import org.apache.xerces.impl.Constants;
@@ -299,13 +300,13 @@ public class XIncludeHandler
     // these are needed for XML Base processing
     protected final XMLResourceIdentifier fCurrentBaseURI;
     protected final IntStack fBaseURIScope;
-    protected final Stack fBaseURI;
-    protected final Stack fLiteralSystemID;
-    protected final Stack fExpandedSystemID;
+    protected final List<String> fBaseURI;
+    protected final List<String> fLiteralSystemID;
+    protected final List<String> fExpandedSystemID;
     
     // these are needed for Language Fixup
     protected final IntStack fLanguageScope;
-    protected final Stack fLanguageStack;
+    protected final List<String> fLanguageStack;
     protected String fCurrentLanguage;
     
     protected String fHrefFromParent;
@@ -376,13 +377,13 @@ public class XIncludeHandler
         fUnparsedEntities = new ArrayList();
 
         fBaseURIScope = new IntStack();
-        fBaseURI = new Stack();
-        fLiteralSystemID = new Stack();
-        fExpandedSystemID = new Stack();
+        fBaseURI = new ArrayList<>();
+        fLiteralSystemID = new ArrayList<>();
+        fExpandedSystemID = new ArrayList<>();
         fCurrentBaseURI = new XMLResourceIdentifierImpl();
         
         fLanguageScope = new IntStack();
-        fLanguageStack = new Stack();
+        fLanguageStack = new ArrayList<>();
         fCurrentLanguage = null;
     }
 
@@ -2787,22 +2788,22 @@ public class XIncludeHandler
      */
     protected void saveBaseURI() {
         fBaseURIScope.push(fDepth);
-        fBaseURI.push(fCurrentBaseURI.getBaseSystemId());
-        fLiteralSystemID.push(fCurrentBaseURI.getLiteralSystemId());
-        fExpandedSystemID.push(fCurrentBaseURI.getExpandedSystemId());
+        fBaseURI.add(fCurrentBaseURI.getBaseSystemId());
+        fLiteralSystemID.add(fCurrentBaseURI.getLiteralSystemId());
+        fExpandedSystemID.add(fCurrentBaseURI.getExpandedSystemId());
     }
 
     /**
      * Discards the URIs at the top of the stack, and restores the ones beneath it.
      */
     protected void restoreBaseURI() {
-        fBaseURI.pop();
-        fLiteralSystemID.pop();
-        fExpandedSystemID.pop();
+        fBaseURI.remove(fBaseURI.size() - 1);
+        fLiteralSystemID.remove(fLiteralSystemID.size() - 1);
+        fExpandedSystemID.remove(fExpandedSystemID.size() - 1);
         fBaseURIScope.pop();
-        fCurrentBaseURI.setBaseSystemId((String)fBaseURI.peek());
-        fCurrentBaseURI.setLiteralSystemId((String)fLiteralSystemID.peek());
-        fCurrentBaseURI.setExpandedSystemId((String)fExpandedSystemID.peek());
+        fCurrentBaseURI.setBaseSystemId(fBaseURI.get(fBaseURI.size() - 1));
+        fCurrentBaseURI.setLiteralSystemId(fLiteralSystemID.get(fLiteralSystemID.size() - 1));
+        fCurrentBaseURI.setExpandedSystemId(fExpandedSystemID.get(fExpandedSystemID.size() - 1));
     }
     
     // The following methods are used for language processing
@@ -2814,16 +2815,16 @@ public class XIncludeHandler
      */
     protected void saveLanguage(String language) {
         fLanguageScope.push(fDepth);
-        fLanguageStack.push(language);
+        fLanguageStack.add(language);
     }
     
     /**
      * Discards the language at the top of the stack, and returns the one beneath it.
      */
     public String restoreLanguage() {
-        fLanguageStack.pop();
+        fLanguageStack.remove(fLanguageStack.size() - 1);
         fLanguageScope.pop();
-        return (String) fLanguageStack.peek();
+        return fLanguageStack.get(fLanguageStack.size() - 1);
     }
 
     /**
@@ -2833,7 +2834,7 @@ public class XIncludeHandler
      */
     public String getBaseURI(int depth) {
         int scope = scopeOfBaseURI(depth);
-        return (String)fExpandedSystemID.elementAt(scope);
+        return fExpandedSystemID.get(scope);
     }
     
     /**
@@ -2843,7 +2844,7 @@ public class XIncludeHandler
      */
     public String getLanguage(int depth) {
         int scope = scopeOfLanguage(depth);
-        return (String)fLanguageStack.elementAt(scope);
+        return fLanguageStack.get(scope);
     }
 
     /**
@@ -2863,9 +2864,9 @@ public class XIncludeHandler
             // If that is the last system id, then we don't need a relative URI
             return "";
         }
-        URI uri = new URI("file", (String)fLiteralSystemID.elementAt(start));
+        URI uri = new URI("file", fLiteralSystemID.get(start));
         for (int i = start + 1; i < fBaseURIScope.size(); i++) {
-            uri = new URI(uri, (String)fLiteralSystemID.elementAt(i));
+            uri = new URI(uri, fLiteralSystemID.get(i));
         }
         return uri.getPath();
     }

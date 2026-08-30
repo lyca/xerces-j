@@ -18,7 +18,10 @@
 package org.apache.xerces.parsers;
 
 import java.util.Locale;
-import java.util.Stack;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.xerces.dom.AttrImpl;
 import org.apache.xerces.dom.CoreDocumentImpl;
@@ -270,13 +273,13 @@ public class AbstractDOMParser extends AbstractXMLDocumentParser {
     // data
 
     /** Base uri stack*/
-    protected final Stack fBaseURIStack = new Stack ();
+    protected final List<String> fBaseURIStack = new ArrayList<>();
 
     /** LSParserFilter: tracks the element depth within a rejected subtree. */
     protected int fRejectedElementDepth = 0;
 
     /** LSParserFilter: store depth of skipped elements */
-    protected Stack fSkippedElemStack = null;
+    protected Deque<Boolean> fSkippedElemStack = null;
 
     /** LSParserFilter: true if inside entity reference */
     protected boolean fInEntityRef = false;
@@ -461,7 +464,7 @@ public class AbstractDOMParser extends AbstractXMLDocumentParser {
         fCurrentCDATASection = null;
         fCurrentCDATASectionIndex = -1;
 
-        fBaseURIStack.removeAllElements ();
+        fBaseURIStack.clear();
 
 
     } // reset()
@@ -1822,7 +1825,7 @@ public class AbstractDOMParser extends AbstractXMLDocumentParser {
 
         fInDTD = true;
         if (locator != null) {
-            fBaseURIStack.push (locator.getBaseSystemId ());
+            fBaseURIStack.add(locator.getBaseSystemId());
         }
         if (fDeferNodeExpansion || fDocumentImpl != null) {
             fInternalSubset = new StringBuffer (1024);
@@ -1844,7 +1847,7 @@ public class AbstractDOMParser extends AbstractXMLDocumentParser {
         }
         fInDTD = false;
         if (!fBaseURIStack.isEmpty ()) {
-            fBaseURIStack.pop ();
+            fBaseURIStack.remove(fBaseURIStack.size() - 1);
         }
         String internalSubset = fInternalSubset != null && fInternalSubset.length () > 0
         ? fInternalSubset.toString () : null;
@@ -1905,7 +1908,7 @@ public class AbstractDOMParser extends AbstractXMLDocumentParser {
                 System.out.println ("   baseURI:"+ identifier.getBaseSystemId ());
             }
         }
-        fBaseURIStack.push (identifier.getBaseSystemId ());
+        fBaseURIStack.add(identifier.getBaseSystemId());
         fInDTDExternalSubset = true;
     } // startExternalSubset(Augmentations)
 
@@ -1919,7 +1922,7 @@ public class AbstractDOMParser extends AbstractXMLDocumentParser {
     @Override
     public void endExternalSubset (Augmentations augs) throws XNIException {
         fInDTDExternalSubset = false;
-        fBaseURIStack.pop ();
+        fBaseURIStack.remove(fBaseURIStack.size() - 1);
     } // endExternalSubset(Augmentations)
 
     /**
@@ -1943,7 +1946,7 @@ public class AbstractDOMParser extends AbstractXMLDocumentParser {
         if (DEBUG_EVENTS) {
             System.out.println ("==>internalEntityDecl: "+name);
             if (DEBUG_BASEURI) {
-                System.out.println ("   baseURI:"+ (String)fBaseURIStack.peek ());
+                System.out.println ("   baseURI:"+ fBaseURIStack.get(fBaseURIStack.size() - 1));
             }
         }
         // internal subset string
@@ -1978,7 +1981,7 @@ public class AbstractDOMParser extends AbstractXMLDocumentParser {
             EntityImpl entity = (EntityImpl)entities.getNamedItem (name);
             if (entity == null) {
                 entity = (EntityImpl)fDocumentImpl.createEntity (name);
-                entity.setBaseURI ((String)fBaseURIStack.peek ());
+                entity.setBaseURI (fBaseURIStack.get(fBaseURIStack.size() - 1));
                 entities.setNamedItem (entity);
             }
         }
@@ -2000,7 +2003,7 @@ public class AbstractDOMParser extends AbstractXMLDocumentParser {
             }
             if (!found) {
                 int entityIndex =
-                fDeferredDocumentImpl.createDeferredEntity (name, null, null, null, (String)fBaseURIStack.peek ());
+                fDeferredDocumentImpl.createDeferredEntity (name, null, null, null, fBaseURIStack.get(fBaseURIStack.size() - 1));
                 fDeferredDocumentImpl.appendChild (fDocumentTypeIndex, entityIndex);
             }
         }
@@ -2130,7 +2133,7 @@ public class AbstractDOMParser extends AbstractXMLDocumentParser {
             Boolean.TRUE.equals(augs.getItem(Constants.ENTITY_SKIPPED))) {
             fInternalSubset.append(name).append(";\n");
         }
-        fBaseURIStack.push (identifier.getExpandedSystemId ());
+        fBaseURIStack.add(identifier.getExpandedSystemId());
     }
 
 
@@ -2149,7 +2152,7 @@ public class AbstractDOMParser extends AbstractXMLDocumentParser {
         if (DEBUG_EVENTS) {
             System.out.println ("==>endParameterEntity: "+name);
         }
-        fBaseURIStack.pop ();
+        fBaseURIStack.remove(fBaseURIStack.size() - 1);
     }
 
     /**

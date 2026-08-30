@@ -20,7 +20,7 @@ package org.apache.xerces.parsers;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Locale;
-import java.util.Stack;
+import java.util.ArrayDeque;
 import java.util.StringTokenizer;
 
 import org.apache.xerces.dom.DOMErrorImpl;
@@ -299,7 +299,7 @@ public class DOMParserImpl
             fNullFilterInUse = false;
         }
         if (fSkippedElemStack != null) {
-            fSkippedElemStack.removeAllElements();
+            fSkippedElemStack.clear();
         }
         fRejectedElementDepth = 0;
         fFilterReject = false;
@@ -350,7 +350,7 @@ public class DOMParserImpl
             fDOMFilter = filter;
         }
         if (fSkippedElemStack == null) {
-            fSkippedElemStack = new Stack();
+            fSkippedElemStack = new ArrayDeque<>();
         }
     }
 

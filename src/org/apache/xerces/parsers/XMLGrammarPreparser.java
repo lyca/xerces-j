@@ -18,8 +18,8 @@
 package org.apache.xerces.parsers;
 
 import java.io.IOException;
-import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Locale;
 
 import org.apache.xerces.impl.Constants;
@@ -78,7 +78,7 @@ public class XMLGrammarPreparser {
         Constants.XERCES_PROPERTY_PREFIX + Constants.XMLGRAMMAR_POOL_PROPERTY;
 
     // the "built-in" grammar loaders
-    private static final Hashtable KNOWN_LOADERS = new Hashtable();
+    private static final Map<String, String> KNOWN_LOADERS = new HashMap<>();
 
     static {
         KNOWN_LOADERS.put(XMLGrammarDescription.XML_SCHEMA,
@@ -105,7 +105,7 @@ public class XMLGrammarPreparser {
     protected Locale fLocale;
 
     // Hashtable holding our loaders
-    private final Hashtable<String, XMLGrammarLoaderContainer> fLoaders;
+    private final Map<String, XMLGrammarLoaderContainer> fLoaders;
     
     // The number of times the configuration has been modified.
     private int fModCount = 1;
@@ -127,7 +127,7 @@ public class XMLGrammarPreparser {
     public XMLGrammarPreparser (SymbolTable symbolTable) {
         fSymbolTable = symbolTable;
 
-        fLoaders = new Hashtable<>();
+        fLoaders = new HashMap<>();
         fErrorReporter = new XMLErrorReporter();
         setLocale(Locale.getDefault());
         fEntityResolver = new XMLEntityManager();
@@ -299,9 +299,8 @@ public class XMLGrammarPreparser {
     // by a grammar loader of a particular type, it will have
     // to retrieve that loader and use the loader's setFeature method.
     public void setFeature(String featureId, boolean value) {
-        Enumeration loaders = fLoaders.elements();
-        while (loaders.hasMoreElements()) {
-            XMLGrammarLoader gl = ((XMLGrammarLoaderContainer)loaders.nextElement()).loader;
+        for (XMLGrammarLoaderContainer container : fLoaders.values()) {
+            XMLGrammarLoader gl = container.loader;
             try {
                 gl.setFeature(featureId, value);
             } catch(Exception e) {
@@ -323,9 +322,8 @@ public class XMLGrammarPreparser {
     // <p> <strong>An application should use the explicit method
     // in this class to set "standard" properties like error handler etc.</strong>
     public void setProperty(String propId, Object value) {
-        Enumeration loaders = fLoaders.elements();
-        while (loaders.hasMoreElements()) {
-            XMLGrammarLoader gl = ((XMLGrammarLoaderContainer)loaders.nextElement()).loader;
+        for (XMLGrammarLoaderContainer container : fLoaders.values()) {
+            XMLGrammarLoader gl = container.loader;
             try {
                 gl.setProperty(propId, value);
             } catch(Exception e) {
@@ -371,9 +369,7 @@ public class XMLGrammarPreparser {
     }
     
     private void clearModCounts() {
-        Enumeration loaders = fLoaders.elements();
-        while (loaders.hasMoreElements()) {
-            XMLGrammarLoaderContainer xglc = (XMLGrammarLoaderContainer) loaders.nextElement();
+        for (XMLGrammarLoaderContainer xglc : fLoaders.values()) {
             xglc.modCount = 0;
         }
         fModCount = 1;
