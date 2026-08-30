@@ -17,106 +17,78 @@
 
 package jaxp;
 
+import static org.junit.Assert.fail;
+
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
+import org.junit.Before;
+import org.junit.Test;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
- * This sample program tests JAXP 1.2 properties
+ * Tests JAXP 1.2 properties
  */
-public class PropertyTest extends DefaultHandler{
+public class PropertyTest extends DefaultHandler {
 
-	public static void main(String[] argv) {
+    private SAXParserFactory spf;
 
-		try {
-			SAXParserFactory spf = SAXParserFactory.newInstance();
-			spf.setValidating(true);
-			spf.setNamespaceAware(true);
-			SAXParser parser = spf.newSAXParser();
-			parser.setProperty(
-				"http://java.sun.com/xml/jaxp/properties/schemaLanguage",
-				"http://www.w3.org/2001/XMLSchema");
-			parser.setProperty(
-				"http://java.sun.com/xml/jaxp/properties/schemaSource",
-				new String[] { "personal.xsd", "ipo.xsd" });
-			parser.parse("tests/jaxp/data/personal-schema.xml", new PropertyTest());
+    @Before
+    public void setUp() {
+        spf = SAXParserFactory.newInstance();
+        spf.setValidating(true);
+        spf.setNamespaceAware(true);
+    }
 
-			parser = spf.newSAXParser();
-			parser.setProperty(
-				"http://java.sun.com/xml/jaxp/properties/schemaLanguage",
-				"http://www.w3.org/2001/XMLSchema");
-			parser.setProperty(
-				"http://java.sun.com/xml/jaxp/properties/schemaSource",
-				new String[] { "address.xsd", "ipo.xsd", });
+    @Test
+    public void testValidSchemaSource() throws Exception {
+        SAXParser parser = spf.newSAXParser();
+        parser.setProperty(
+            "http://java.sun.com/xml/jaxp/properties/schemaLanguage",
+            "http://www.w3.org/2001/XMLSchema");
+        parser.setProperty(
+            "http://java.sun.com/xml/jaxp/properties/schemaSource",
+            new String[] { "personal.xsd", "ipo.xsd" });
+        parser.parse("tests/jaxp/data/personal-schema.xml", new DefaultHandler());
+    }
 
-			try {
-				parser.parse("tests/jaxp/data/personal-schema.xml", new PropertyTest());
-				System.err.println("ERROR!");
-			} catch (Exception e) {
-			}
-			
-			parser = spf.newSAXParser();
-			parser.setProperty(
-				"http://java.sun.com/xml/jaxp/properties/schemaLanguage",
-				"http://www.w3.org/2001/XMLSchema");
-			parser.setProperty(
-				"http://java.sun.com/xml/jaxp/properties/schemaSource",
-				new String[] { "personal.xsd", "ipo.xsd", "a.xsd"});
+    @Test
+    public void testInvalidSchemaSourceMismatch() throws Exception {
+        SAXParser parser = spf.newSAXParser();
+        parser.setProperty(
+            "http://java.sun.com/xml/jaxp/properties/schemaLanguage",
+            "http://www.w3.org/2001/XMLSchema");
+        parser.setProperty(
+            "http://java.sun.com/xml/jaxp/properties/schemaSource",
+            new String[] { "address.xsd", "ipo.xsd" });
 
-			try {
-				parser.parse("tests/jaxp/data/personal-schema.xml", new PropertyTest());
-				System.err.println("ERROR!");
-			} catch (Exception e) {
-			}
-			
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-		System.out.println("done.");
-	}
-	
-	/** Warning. */
-	public void warning(SAXParseException ex) throws SAXException {
-		printError("Warning", ex);
-	} // warning(SAXParseException)
+        try {
+            parser.parse("tests/jaxp/data/personal-schema.xml", new DefaultHandler());
+            fail("Parsing with mismatched schemas should have thrown an IllegalArgumentException");
+        } catch (IllegalArgumentException e) {
+            // expected: duplicate / conflicting target namespace schemas
+        }
+    }
 
-	/** Error. */
-	public void error(SAXParseException ex) throws SAXException {
-		printError("Error", ex);
-	} // error(SAXParseException)
+    @Test
+    public void testInvalidSchemaSourceExtraXsd() throws Exception {
+        SAXParser parser = spf.newSAXParser();
+        parser.setProperty(
+            "http://java.sun.com/xml/jaxp/properties/schemaLanguage",
+            "http://www.w3.org/2001/XMLSchema");
+        parser.setProperty(
+            "http://java.sun.com/xml/jaxp/properties/schemaSource",
+            new String[] { "personal.xsd", "ipo.xsd", "a.xsd" });
 
-	/** Fatal error. */
-	public void fatalError(SAXParseException ex) throws SAXException {
-		printError("Fatal Error", ex);
-		throw ex;
-	} // fatalError(SAXParseException)
+        try {
+            parser.parse("tests/jaxp/data/personal-schema.xml", new DefaultHandler());
+            fail("Parsing with erroneous schema source should have thrown an IllegalArgumentException");
+        } catch (IllegalArgumentException e) {
+            // expected: duplicate / conflicting target namespace schemas
+        }
+    }
 
-
-	protected void printError(String type, SAXParseException ex) {
-
-		System.err.print("[");
-		System.err.print(type);
-		System.err.print("] ");
-		String systemId = ex.getSystemId();
-		if (systemId != null) {
-			int index = systemId.lastIndexOf('/');
-			if (index != -1)
-				systemId = systemId.substring(index + 1);
-			System.err.print(systemId);
-		}
-		System.err.print(':');
-		System.err.print(ex.getLineNumber());
-		System.err.print(':');
-		System.err.print(ex.getColumnNumber());
-		System.err.print(": ");
-		System.err.print(ex.getMessage());
-		System.err.println();
-		System.err.flush();
-
-	} // printError(String,SAXParseException)
-
-
+    public static junit.framework.Test suite() {
+        return new junit.framework.JUnit4TestAdapter(PropertyTest.class);
+    }
 }

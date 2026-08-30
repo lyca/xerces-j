@@ -17,8 +17,9 @@
 
 package jaxp;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
 /**
  * All JAXP JUnit Tests
@@ -26,16 +27,16 @@ import junit.framework.TestSuite;
  * @author Michael Glavassevich, IBM
  * @version $Id$
  */
+@RunWith(Suite.class)
+@SuiteClasses({
+    JAXP12Tests.class,
+    JAXPSecureProcessingTest.class,
+    JAXPSpecTest.class,
+    PropertyTest.class
+})
 public class AllTests {
     
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(AllTests.suite());
-    }
-    
-    public static Test suite() {
-        TestSuite suite = new TestSuite("Tests for JAXP");
-        suite.addTestSuite(JAXP12Tests.class);
-        suite.addTestSuite(JAXPSecureProcessingTest.class);
-        return suite;
+    public static junit.framework.Test suite() {
+        return new junit.framework.JUnit4TestAdapter(AllTests.class);
     }
 }

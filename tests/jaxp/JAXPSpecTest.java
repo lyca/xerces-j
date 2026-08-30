@@ -17,6 +17,8 @@
 
 package jaxp;
 
+import static org.junit.Assert.fail;
+
 import java.io.File;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -24,8 +26,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import junit.framework.TestCase;
-
+import org.junit.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -44,15 +45,15 @@ import org.xml.sax.helpers.DefaultHandler;
  * 
  * @version $Id$
  */
-public class JAXPSpecTest extends TestCase {
+public class JAXPSpecTest {
     
     /** 
      * Schema Language property should be ignored if
      * validation feature is set to false
      * @throws Exception
      */
-    
-    public void testSchemaLanguageSAX() throws Exception{
+    @Test
+    public void testSchemaLanguageSAX() throws Exception {
         SAXParserFactory spf = SAXParserFactory.newInstance();
         spf.setValidating(false);
         SAXParser saxParser = spf.newSAXParser();
@@ -66,8 +67,8 @@ public class JAXPSpecTest extends TestCase {
      * set without setting SchemaLanguage property
      * @throws Exception
      */
-    
-    public void testSchemaSourceSAX() throws Exception{
+    @Test
+    public void testSchemaSourceSAX() throws Exception {
         try {
             SAXParserFactory spf = SAXParserFactory.newInstance();
             spf.setValidating(true);
@@ -85,7 +86,7 @@ public class JAXPSpecTest extends TestCase {
     /** Schema Language property should be ignored if
      * validation feature is set to false
      * @throws Exception  */
-    
+    @Test
     public void testSchemaLanguageDOM() throws Exception {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setValidating(false);
@@ -102,7 +103,7 @@ public class JAXPSpecTest extends TestCase {
      * set without setting SchemaLanguage property.
      * @throws Exception
      */
-    
+    @Test
     public void testSchemaSourceDOM() throws Exception {
         try {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -119,5 +120,8 @@ public class JAXPSpecTest extends TestCase {
             // expected
         }
     }
-}
 
+    public static junit.framework.Test suite() {
+        return new junit.framework.JUnit4TestAdapter(JAXPSpecTest.class);
+    }
+}

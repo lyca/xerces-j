@@ -847,6 +847,9 @@ Authors:
             -->             
               <include name="schema/Test.class"/>
               <include name="jaxp/JAXPSpecTest.class"/>
+              <include name="jaxp/JAXP12Tests.class"/>
+              <include name="jaxp/JAXPSecureProcessingTest.class"/>
+              <include name="jaxp/PropertyTest.class"/>
               <include name="dom/ids/Test.class"/>
            </fileset>
          </batchtest>
@@ -936,12 +939,6 @@ Authors:
         <arg value="out.xml"/>
     </java>
     
-    <echo message="Running jaxp.PropertyTest..." />
-    <java fork="yes"
-          classname="jaxp.PropertyTest"
-          classpathref="test.classpath"
-          failOnError="yes">
-    </java>
     <echo message="Running xinclude.Test..." />
     <java fork="yes"
           classname="xinclude.Test"

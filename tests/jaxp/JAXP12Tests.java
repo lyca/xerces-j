@@ -17,13 +17,16 @@
 
 package jaxp;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import junit.framework.TestCase;
-
+import org.junit.Before;
+import org.junit.Test;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
@@ -36,7 +39,7 @@ import org.xml.sax.XMLReader;
  * 
  * @version $Id$
  */
-public class JAXP12Tests extends TestCase implements JAXPConstants {
+public class JAXP12Tests implements JAXPConstants {
     protected DocumentBuilderFactory dbf;
     protected DocumentBuilder db;
     protected DocumentBuilder dbn;
@@ -45,10 +48,6 @@ public class JAXP12Tests extends TestCase implements JAXPConstants {
     SAXParserFactory spf;
     SAXParser spn;
     SAXParser spnv;
-
-    public JAXP12Tests(String name) {
-        super(name);
-    }
 
     private static class MyErrorHandler implements ErrorHandler {
         public void fatalError(SAXParseException x) throws SAXException {
@@ -87,9 +86,10 @@ public class JAXP12Tests extends TestCase implements JAXPConstants {
         public Object getStatus() {
             return gotError;
         }
-    };
+    }
 
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         dbf = DocumentBuilderFactory.newInstance();
         db = dbf.newDocumentBuilder();  // non-namespaceAware version
         dbf.setNamespaceAware(true);
@@ -111,6 +111,7 @@ public class JAXP12Tests extends TestCase implements JAXPConstants {
      * result if no validation is occurring at all.  See other tests that
      * checks that validation actually occurs.
      */
+    @Test
     public void testSaxParseXSD() throws Exception {
         spnv.setProperty(JAXP_SCHEMA_LANGUAGE, W3C_XML_SCHEMA);
         XMLReader xr = spnv.getXMLReader();
@@ -124,6 +125,7 @@ public class JAXP12Tests extends TestCase implements JAXPConstants {
      * validation error, but assumes any exception thrown is a validation
      * error of the type we expect.
      */
+    @Test
     public void testSaxParseXSD2() throws Exception {
         spnv.setProperty(JAXP_SCHEMA_LANGUAGE, W3C_XML_SCHEMA);
         XMLReader xr = spnv.getXMLReader();
@@ -142,6 +144,7 @@ public class JAXP12Tests extends TestCase implements JAXPConstants {
     /**
      * Check that setting schemaSource overrides xsi: hint in instance doc
      */
+    @Test
     public void testSaxParseSchemaSource() throws Exception {
         spnv.setProperty(JAXP_SCHEMA_LANGUAGE, W3C_XML_SCHEMA);
         spnv.setProperty(JAXP_SCHEMA_SOURCE, new InputData("personal.xsd"));
@@ -155,6 +158,7 @@ public class JAXP12Tests extends TestCase implements JAXPConstants {
      * Turn on DTD validation and expect an error b/c instance doc has no
      * doctypedecl
      */
+    @Test
     public void testSaxParseNoXSD() throws Exception {
         XMLReader xr = spnv.getXMLReader();
 
@@ -174,6 +178,7 @@ public class JAXP12Tests extends TestCase implements JAXPConstants {
      * result if no validation is occurring at all.  See other tests that
      * checks that validation actually occurs.
      */
+    @Test
     public void testDomParseXSD() throws Exception {
         dbf.setNamespaceAware(true);
         dbf.setValidating(true);
@@ -189,6 +194,7 @@ public class JAXP12Tests extends TestCase implements JAXPConstants {
      * validation error, but assumes any exception thrown is a validation
      * error of the type we expect.
      */
+    @Test
     public void testDomParseXSD2() throws Exception {
         dbf.setNamespaceAware(true);
         dbf.setValidating(true);
@@ -209,6 +215,7 @@ public class JAXP12Tests extends TestCase implements JAXPConstants {
     /**
      * Check that setting schemaSource overrides xsi: hint in instance doc
      */
+    @Test
     public void testDomParseSchemaSource() throws Exception {
         dbf.setNamespaceAware(true);
         dbf.setValidating(true);
@@ -224,6 +231,7 @@ public class JAXP12Tests extends TestCase implements JAXPConstants {
      * Turn on DTD validation and expect an error b/c instance doc has no
      * doctypedecl
      */
+    @Test
     public void testDomParseNoXSD() throws Exception {
         dbf.setNamespaceAware(true);
         dbf.setValidating(true);
@@ -240,5 +248,7 @@ public class JAXP12Tests extends TestCase implements JAXPConstants {
         }
     }
 
-
+    public static junit.framework.Test suite() {
+        return new junit.framework.JUnit4TestAdapter(JAXP12Tests.class);
+    }
 }

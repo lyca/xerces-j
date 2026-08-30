@@ -42,6 +42,6 @@ public class InputData extends InputSource {
     }
 
     public String toURIString() throws Exception {
-        return new File(uri).toURL().toString();
+        return new File(uri).toURI().toURL().toString();
     }
 }

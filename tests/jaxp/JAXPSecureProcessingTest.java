@@ -17,6 +17,10 @@
 
 package jaxp;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.IOException;
 import java.util.Locale;
 
@@ -26,8 +30,9 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.validation.SchemaFactory;
 
-import junit.framework.TestCase;
-
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -47,7 +52,7 @@ import org.xml.sax.XMLReader;
  * @author Michael Glavassevich, IBM
  * @version $Id$
  */
-public class JAXPSecureProcessingTest extends TestCase {
+public class JAXPSecureProcessingTest {
     
     private static final String ENTITY_EXPANSION_LIMIT_PROPERTY_NAME = "jdk.xml.entityExpansionLimit";
     private static final String MAX_OCCUR_LIMIT_PROPERTY_NAME = "jdk.xml.maxOccur";
@@ -58,8 +63,8 @@ public class JAXPSecureProcessingTest extends TestCase {
     
     private static final Locale DEFAULT_LOCALE = Locale.getDefault();
     
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
         System.setProperty("javax.xml.parsers.SAXParserFactory", "org.apache.xerces.jaxp.SAXParserFactoryImpl");
         System.setProperty("javax.xml.parsers.DocumentBuilderFactory", "org.apache.xerces.jaxp.DocumentBuilderFactoryImpl");
         System.setProperty("javax.xml.validation.SchemaFactory:" + XMLConstants.W3C_XML_SCHEMA_NS_URI, 
@@ -76,11 +81,22 @@ public class JAXPSecureProcessingTest extends TestCase {
         Locale.setDefault(Locale.ENGLISH);
     }
     
-    protected void tearDown() throws Exception {
-        super.tearDown();
+    @After
+    public void tearDown() throws Exception {
+        System.clearProperty("javax.xml.parsers.SAXParserFactory");
+        System.clearProperty("javax.xml.parsers.DocumentBuilderFactory");
+        System.clearProperty("javax.xml.validation.SchemaFactory:" + XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        System.clearProperty("org.apache.xerces.xni.parser.XMLParserConfiguration");
+        System.clearProperty(ENTITY_EXPANSION_LIMIT_PROPERTY_NAME);
+        System.clearProperty(MAX_OCCUR_LIMIT_PROPERTY_NAME);
+        System.clearProperty(TOTAL_ENTITY_SIZE_LIMIT_PROPERTY_NAME);
+        System.clearProperty(MAX_GENERAL_ENTITY_SIZE_LIMIT_PROPERTY_NAME);
+        System.clearProperty(MAX_PARAMETER_ENTITY_SIZE_LIMIT_PROPERTY_NAME);
+        System.clearProperty(RESOLVE_EXTERNAL_ENTITIES_PROPERTY_NAME);
         Locale.setDefault(DEFAULT_LOCALE);
     }
     
+    @Test
     public void testSAXEntityExpansionLimitSG() throws Exception {
         System.setProperty(ENTITY_EXPANSION_LIMIT_PROPERTY_NAME, "10000");
         XMLReader reader = newSecureXMLReader();
@@ -93,6 +109,7 @@ public class JAXPSecureProcessingTest extends TestCase {
         }
     }
     
+    @Test
     public void testSAXEntityExpansionLimitSP() throws Exception {
         System.setProperty(ENTITY_EXPANSION_LIMIT_PROPERTY_NAME, "20000");
         XMLReader reader = newSecureXMLReader();
@@ -105,6 +122,7 @@ public class JAXPSecureProcessingTest extends TestCase {
         }
     }
     
+    @Test
     public void testSAXEntityExpansionLimitDG() throws Exception {
         System.setProperty(ENTITY_EXPANSION_LIMIT_PROPERTY_NAME, "30000");
         XMLReader reader = newDefaultXMLReader();
@@ -117,6 +135,7 @@ public class JAXPSecureProcessingTest extends TestCase {
         }
     }
     
+    @Test
     public void testSAXEntityExpansionLimitDP() throws Exception {
         System.setProperty(ENTITY_EXPANSION_LIMIT_PROPERTY_NAME, "40000");
         XMLReader reader = newDefaultXMLReader();
@@ -129,6 +148,7 @@ public class JAXPSecureProcessingTest extends TestCase {
         }
     }
     
+    @Test
     public void testDOMEntityExpansionLimitSG() throws Exception {
         System.setProperty(ENTITY_EXPANSION_LIMIT_PROPERTY_NAME, "50000");
         DocumentBuilder reader = newSecureDocumentBuilder();
@@ -141,6 +161,7 @@ public class JAXPSecureProcessingTest extends TestCase {
         }
     }
     
+    @Test
     public void testDOMEntityExpansionLimitSP() throws Exception {
         System.setProperty(ENTITY_EXPANSION_LIMIT_PROPERTY_NAME, "60000");
         DocumentBuilder reader = newSecureDocumentBuilder();
@@ -153,6 +174,7 @@ public class JAXPSecureProcessingTest extends TestCase {
         }
     }
     
+    @Test
     public void testDOMEntityExpansionLimitDG() throws Exception {
         System.setProperty(ENTITY_EXPANSION_LIMIT_PROPERTY_NAME, "70000");
         DocumentBuilder reader = newDefaultDocumentBuilder();
@@ -165,6 +187,7 @@ public class JAXPSecureProcessingTest extends TestCase {
         }
     }
     
+    @Test
     public void testDOMEntityExpansionLimitDP() throws Exception {
         System.setProperty(ENTITY_EXPANSION_LIMIT_PROPERTY_NAME, "80000");
         DocumentBuilder reader = newDefaultDocumentBuilder();
@@ -177,6 +200,7 @@ public class JAXPSecureProcessingTest extends TestCase {
         }
     }
     
+    @Test
     public void testSAXTotalEntitySizeLimitSG() throws Exception {
         System.setProperty(TOTAL_ENTITY_SIZE_LIMIT_PROPERTY_NAME, "1");
         XMLReader reader = newSecureXMLReader();
@@ -189,6 +213,7 @@ public class JAXPSecureProcessingTest extends TestCase {
         }
     }
     
+    @Test
     public void testSAXTotalEntitySizeLimitSP() throws Exception {
         System.setProperty(TOTAL_ENTITY_SIZE_LIMIT_PROPERTY_NAME, "10000");
         XMLReader reader = newSecureXMLReader();
@@ -201,6 +226,7 @@ public class JAXPSecureProcessingTest extends TestCase {
         }
     }
     
+    @Test
     public void testSAXTotalEntitySizeLimitDG() throws Exception {
         System.setProperty(TOTAL_ENTITY_SIZE_LIMIT_PROPERTY_NAME, "2");
         XMLReader reader = newDefaultXMLReader();
@@ -213,6 +239,7 @@ public class JAXPSecureProcessingTest extends TestCase {
         }
     }
     
+    @Test
     public void testSAXTotalEntitySizeLimitDP() throws Exception {
         System.setProperty(TOTAL_ENTITY_SIZE_LIMIT_PROPERTY_NAME, "20000");
         XMLReader reader = newDefaultXMLReader();
@@ -225,6 +252,7 @@ public class JAXPSecureProcessingTest extends TestCase {
         }
     }
     
+    @Test
     public void testDOMTotalEntitySizeLimitSG() throws Exception {
         System.setProperty(TOTAL_ENTITY_SIZE_LIMIT_PROPERTY_NAME, "3");
         DocumentBuilder reader = newSecureDocumentBuilder();
@@ -237,6 +265,7 @@ public class JAXPSecureProcessingTest extends TestCase {
         }
     }
     
+    @Test
     public void testDOMTotalEntitySizeLimitSP() throws Exception {
         System.setProperty(TOTAL_ENTITY_SIZE_LIMIT_PROPERTY_NAME, "30000");
         DocumentBuilder reader = newSecureDocumentBuilder();
@@ -249,6 +278,7 @@ public class JAXPSecureProcessingTest extends TestCase {
         }
     }
     
+    @Test
     public void testDOMTotalEntitySizeLimitDG() throws Exception {
         System.setProperty(TOTAL_ENTITY_SIZE_LIMIT_PROPERTY_NAME, "4");
         DocumentBuilder reader = newDefaultDocumentBuilder();
@@ -261,6 +291,7 @@ public class JAXPSecureProcessingTest extends TestCase {
         }
     }
     
+    @Test
     public void testDOMTotalEntitySizeLimitDP() throws Exception {
         System.setProperty(TOTAL_ENTITY_SIZE_LIMIT_PROPERTY_NAME, "40000");
         DocumentBuilder reader = newDefaultDocumentBuilder();
@@ -273,6 +304,7 @@ public class JAXPSecureProcessingTest extends TestCase {
         }
     }
     
+    @Test
     public void testSAXEntitySizeLimitSG() throws Exception {
         System.setProperty(MAX_GENERAL_ENTITY_SIZE_LIMIT_PROPERTY_NAME, "1");
         XMLReader reader = newSecureXMLReader();
@@ -285,6 +317,7 @@ public class JAXPSecureProcessingTest extends TestCase {
         }
     }
     
+    @Test
     public void testSAXEntitySizeLimitSG11() throws Exception {
         System.setProperty(MAX_GENERAL_ENTITY_SIZE_LIMIT_PROPERTY_NAME, "1");
         XMLReader reader = newSecureXMLReader();
@@ -297,6 +330,7 @@ public class JAXPSecureProcessingTest extends TestCase {
         }
     }
     
+    @Test
     public void testSAXEntitySizeLimitSP() throws Exception {
         System.setProperty(MAX_PARAMETER_ENTITY_SIZE_LIMIT_PROPERTY_NAME, "10000");
         XMLReader reader = newSecureXMLReader();
@@ -309,6 +343,7 @@ public class JAXPSecureProcessingTest extends TestCase {
         }
     }
     
+    @Test
     public void testSAXEntitySizeLimitSP11() throws Exception {
         System.setProperty(MAX_PARAMETER_ENTITY_SIZE_LIMIT_PROPERTY_NAME, "10000");
         XMLReader reader = newSecureXMLReader();
@@ -321,6 +356,7 @@ public class JAXPSecureProcessingTest extends TestCase {
         }
     }
     
+    @Test
     public void testSAXEntitySizeLimitDG() throws Exception {
         System.setProperty(MAX_GENERAL_ENTITY_SIZE_LIMIT_PROPERTY_NAME, "2");
         XMLReader reader = newDefaultXMLReader();
@@ -333,6 +369,7 @@ public class JAXPSecureProcessingTest extends TestCase {
         }
     }
     
+    @Test
     public void testSAXEntitySizeLimitDG11() throws Exception {
         System.setProperty(MAX_GENERAL_ENTITY_SIZE_LIMIT_PROPERTY_NAME, "2");
         XMLReader reader = newDefaultXMLReader();
@@ -345,6 +382,7 @@ public class JAXPSecureProcessingTest extends TestCase {
         }
     }
     
+    @Test
     public void testSAXEntitySizeLimitDP() throws Exception {
         System.setProperty(MAX_PARAMETER_ENTITY_SIZE_LIMIT_PROPERTY_NAME, "20000");
         XMLReader reader = newDefaultXMLReader();
@@ -357,6 +395,7 @@ public class JAXPSecureProcessingTest extends TestCase {
         }
     }
     
+    @Test
     public void testSAXEntitySizeLimitDP11() throws Exception {
         System.setProperty(MAX_PARAMETER_ENTITY_SIZE_LIMIT_PROPERTY_NAME, "20000");
         XMLReader reader = newDefaultXMLReader();
@@ -369,6 +408,7 @@ public class JAXPSecureProcessingTest extends TestCase {
         }
     }
     
+    @Test
     public void testDOMEntitySizeLimitSG() throws Exception {
         System.setProperty(MAX_GENERAL_ENTITY_SIZE_LIMIT_PROPERTY_NAME, "3");
         DocumentBuilder reader = newSecureDocumentBuilder();
@@ -381,6 +421,7 @@ public class JAXPSecureProcessingTest extends TestCase {
         }
     }
     
+    @Test
     public void testDOMEntitySizeLimitSG11() throws Exception {
         System.setProperty(MAX_GENERAL_ENTITY_SIZE_LIMIT_PROPERTY_NAME, "3");
         DocumentBuilder reader = newSecureDocumentBuilder();
@@ -393,6 +434,7 @@ public class JAXPSecureProcessingTest extends TestCase {
         }
     }
     
+    @Test
     public void testDOMEntitySizeLimitSP() throws Exception {
         System.setProperty(MAX_PARAMETER_ENTITY_SIZE_LIMIT_PROPERTY_NAME, "30000");
         DocumentBuilder reader = newSecureDocumentBuilder();
@@ -405,6 +447,7 @@ public class JAXPSecureProcessingTest extends TestCase {
         }
     }
     
+    @Test
     public void testDOMEntitySizeLimitSP11() throws Exception {
         System.setProperty(MAX_PARAMETER_ENTITY_SIZE_LIMIT_PROPERTY_NAME, "30000");
         DocumentBuilder reader = newSecureDocumentBuilder();
@@ -417,6 +460,7 @@ public class JAXPSecureProcessingTest extends TestCase {
         }
     }
     
+    @Test
     public void testDOMEntitySizeLimitDG() throws Exception {
         System.setProperty(MAX_GENERAL_ENTITY_SIZE_LIMIT_PROPERTY_NAME, "4");
         DocumentBuilder reader = newDefaultDocumentBuilder();
@@ -429,6 +473,7 @@ public class JAXPSecureProcessingTest extends TestCase {
         }
     }
     
+    @Test
     public void testDOMEntitySizeLimitDG11() throws Exception {
         System.setProperty(MAX_GENERAL_ENTITY_SIZE_LIMIT_PROPERTY_NAME, "4");
         DocumentBuilder reader = newDefaultDocumentBuilder();
@@ -441,6 +486,7 @@ public class JAXPSecureProcessingTest extends TestCase {
         }
     }
     
+    @Test
     public void testDOMEntitySizeLimitDP() throws Exception {
         System.setProperty(MAX_PARAMETER_ENTITY_SIZE_LIMIT_PROPERTY_NAME, "40000");
         DocumentBuilder reader = newDefaultDocumentBuilder();
@@ -453,6 +499,7 @@ public class JAXPSecureProcessingTest extends TestCase {
         }
     }
     
+    @Test
     public void testDOMEntitySizeLimitDP11() throws Exception {
         System.setProperty(MAX_PARAMETER_ENTITY_SIZE_LIMIT_PROPERTY_NAME, "40000");
         DocumentBuilder reader = newDefaultDocumentBuilder();
@@ -465,6 +512,7 @@ public class JAXPSecureProcessingTest extends TestCase {
         }
     }
     
+    @Test
     public void testSAXMaxOccursLimit() throws Exception {
         System.setProperty(MAX_OCCUR_LIMIT_PROPERTY_NAME, "2500");
         XMLReader reader = newSecureSchemaAwareXMLReader();
@@ -477,6 +525,7 @@ public class JAXPSecureProcessingTest extends TestCase {
         }
     }
     
+    @Test
     public void testDOMMaxOccursLimit() throws Exception {
         System.setProperty(MAX_OCCUR_LIMIT_PROPERTY_NAME, "3500");
         DocumentBuilder reader = newSecureSchemaAwareDocumentBuilder();
@@ -489,6 +538,7 @@ public class JAXPSecureProcessingTest extends TestCase {
         }
     }
     
+    @Test
     public void testSAXEnableExternalEntityResolution() throws Exception {
         System.setProperty(RESOLVE_EXTERNAL_ENTITIES_PROPERTY_NAME, "true");
         XMLReader reader = newSecureXMLReader();
@@ -506,6 +556,7 @@ public class JAXPSecureProcessingTest extends TestCase {
         catch (IOException ioe) {}
     }
     
+    @Test
     public void testDOMEnableExternalEntityResolution() throws Exception {
         System.setProperty(RESOLVE_EXTERNAL_ENTITIES_PROPERTY_NAME, "true");
         DocumentBuilder reader = newSecureDocumentBuilder();
@@ -523,6 +574,7 @@ public class JAXPSecureProcessingTest extends TestCase {
         catch (IOException ioe) {}
     }
     
+    @Test
     public void testSAXDisableExternalEntityResolution() throws Exception {
         System.setProperty(RESOLVE_EXTERNAL_ENTITIES_PROPERTY_NAME, "false");
         XMLReader reader = newSecureXMLReader();
@@ -588,6 +640,7 @@ public class JAXPSecureProcessingTest extends TestCase {
         reader.parse(new InputData("badExternalEntity.xml"));
     }
     
+    @Test
     public void testDOMDisableExternalEntityResolution() throws Exception {
         System.setProperty(RESOLVE_EXTERNAL_ENTITIES_PROPERTY_NAME, "false");
         DocumentBuilder reader = newSecureDocumentBuilder();
@@ -656,5 +709,9 @@ public class JAXPSecureProcessingTest extends TestCase {
         dbf.setNamespaceAware(true);
         dbf.setExpandEntityReferences(false);
         return dbf.newDocumentBuilder();
+    }
+
+    public static junit.framework.Test suite() {
+        return new junit.framework.JUnit4TestAdapter(JAXPSecureProcessingTest.class);
     }
 }
