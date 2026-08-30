@@ -18,7 +18,9 @@
 package org.apache.xerces.impl.xpath;
 
 import java.util.ArrayList;
-import java.util.Vector;
+import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.xerces.util.SymbolTable;
 import org.apache.xerces.util.XMLChar;
@@ -132,12 +134,11 @@ public class XPath {
      * to build a {@link LocationPath} object from the accumulated
      * {@link Step}s.
      */
-    private LocationPath buildLocationPath( Vector stepsVector ) throws XPathException {
+    private LocationPath buildLocationPath( List<Step> stepsVector ) throws XPathException {
         int size = stepsVector.size();
         check(size!=0);
-        Step[] steps = new Step[size];
-        stepsVector.copyInto(steps);
-        stepsVector.removeAllElements();
+        Step[] steps = stepsVector.toArray(new Step[size]);
+        stepsVector.clear();
         
         return new LocationPath(steps);
     }
@@ -185,8 +186,8 @@ public class XPath {
             throw new XPathException("c-general-xpath");
         
         //fTokens.dumpTokens();
-        Vector stepsVector = new Vector();
-        ArrayList locationPathsVector= new ArrayList();
+        List<Step> stepsVector = new ArrayList<>();
+        List<LocationPath> locationPathsVector = new ArrayList<>();
         
         // true when the next token should be 'Step' (as defined in
         // the production rule [3] of XML Schema P1 section 3.11.6
@@ -211,7 +212,7 @@ public class XPath {
                     Step step = new Step(
                             new Axis(Axis.ATTRIBUTE),
                             parseNodeTest(xtokens.nextToken(),xtokens,context));
-                    stepsVector.addElement(step);
+                    stepsVector.add(step);
                     expectingStep=false;
                     break;
                 }
@@ -224,7 +225,7 @@ public class XPath {
                     Step step = new Step(
                             new Axis(Axis.ATTRIBUTE),
                             parseNodeTest(xtokens.nextToken(),xtokens,context));
-                    stepsVector.addElement(step);
+                    stepsVector.add(step);
                     expectingStep = false;
                     break;
                 }
@@ -235,7 +236,7 @@ public class XPath {
                     Step step = new Step(
                             new Axis(Axis.CHILD),
                             parseNodeTest(token,xtokens,context));
-                    stepsVector.addElement(step);
+                    stepsVector.add(step);
                     expectingStep=false;
                     break;
                 }
@@ -248,7 +249,7 @@ public class XPath {
                     Step step = new Step(
                             new Axis(Axis.CHILD),
                             parseNodeTest(xtokens.nextToken(),xtokens,context));
-                    stepsVector.addElement(step);
+                    stepsVector.add(step);
                     expectingStep = false;
                     break;
                 }
@@ -266,7 +267,7 @@ public class XPath {
                         Axis axis = new Axis(Axis.SELF);
                         NodeTest nodeTest = new NodeTest(NodeTest.NODE);
                         Step step = new Step(axis, nodeTest);
-                        stepsVector.addElement(step);
+                        stepsVector.add(step);
                         
                         if( xtokens.hasMore()
                          && xtokens.peekToken() == XPath.Tokens.EXPRTOKEN_OPERATOR_DOUBLE_SLASH){
@@ -277,7 +278,7 @@ public class XPath {
                             axis = new Axis(Axis.DESCENDANT);
                             nodeTest = new NodeTest(NodeTest.NODE);
                             step = new Step(axis, nodeTest);
-                            stepsVector.addElement(step);
+                            stepsVector.add(step);
                             expectingStep=true;
                         }
                     }
@@ -311,7 +312,7 @@ public class XPath {
         locationPathsVector.add(buildLocationPath(stepsVector));
 
         // return location path
-        return (LocationPath[])locationPathsVector.toArray(new LocationPath[locationPathsVector.size()]);
+        return locationPathsVector.toArray(new LocationPath[locationPathsVector.size()]);
 
     } // parseExpression(SymbolTable,NamespaceContext)
 
@@ -856,10 +857,10 @@ public class XPath {
         private SymbolTable fSymbolTable;
 
         // REVISIT: Code something better here. -Ac
-        private java.util.Hashtable fSymbolMapping = new java.util.Hashtable();
+        private final Map<String, Integer> fSymbolMapping = new HashMap<>();
 
         // REVISIT: Code something better here. -Ac
-        private java.util.Hashtable fTokenNames = new java.util.Hashtable();
+        private final Map<Integer, String> fTokenNames = new HashMap<>();
 
         /**
          * Current position in the token list. 
@@ -944,13 +945,14 @@ public class XPath {
 //        }
 //
         public String getTokenString(int token) {
-            return (String)fTokenNames.get(Integer.valueOf(token));
+            return fTokenNames.get(token);
         }
 
         public void addToken(String tokenStr) {
-            Integer tokenInt = (Integer)fTokenNames.get(tokenStr);
+            Integer tokenInt = fSymbolMapping.get(tokenStr);
             if (tokenInt == null) {
                 tokenInt = Integer.valueOf(fTokenNames.size());
+                fSymbolMapping.put(tokenStr, tokenInt);
                 fTokenNames.put(tokenInt, tokenStr);
             }
             addToken(tokenInt.intValue());

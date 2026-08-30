@@ -17,8 +17,10 @@
 
 package org.apache.xerces.impl.xpath.regex;
 
-import java.util.Hashtable;
-import java.util.Vector;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class represents a node in parse tree.
@@ -580,8 +582,8 @@ class Token implements java.io.Serializable {
     }
 
     // ------------------------------------------------------
-    private final static Hashtable categories = new Hashtable();
-    private final static Hashtable categories2 = new Hashtable();
+    private final static Map<String, Token> categories = new HashMap<>();
+    private final static Map<String, Token> categories2 = new HashMap<>();
     private static final String[] categoryNames = {
         "Cn", "Lu", "Ll", "Lt", "Lm", "Lo", "Mn", "Me", "Mc", "Nd",
         "Nl", "No", "Zs", "Zl", "Zp", "Cc", "Cf", null, "Co", "Cs",
@@ -970,14 +972,14 @@ class Token implements java.io.Serializable {
         return range;
     }
 
-    static Hashtable nonxs = null;
+    static Map<String, String> nonxs = null;
     /**
      * This method is called by only getRange().
      * So this method need not MT-safe.
      */
     static protected void registerNonXS(String name) {
         if (Token.nonxs == null)
-            Token.nonxs = new Hashtable();
+            Token.nonxs = new HashMap<>();
         Token.nonxs.put(name, name);
     }
     static protected boolean isRegisterNonXS(String name) {
@@ -1421,7 +1423,7 @@ class Token implements java.io.Serializable {
 
         private static final long serialVersionUID = -2568843945989489861L;
         
-        Vector children;
+        List<Token> children;
 
         UnionToken(int type) {
             super(type);
@@ -1429,9 +1431,9 @@ class Token implements java.io.Serializable {
 
         void addChild(Token tok) {
             if (tok == null)  return;
-            if (this.children == null)  this.children = new Vector();
+            if (this.children == null)  this.children = new ArrayList<>();
             if (this.type == UNION) {
-                this.children.addElement(tok);
+                this.children.add(tok);
                 return;
             }
                                                 // This is CONCAT, and new child is CONCAT.
@@ -1442,13 +1444,13 @@ class Token implements java.io.Serializable {
             }
             int size = this.children.size();
             if (size == 0) {
-                this.children.addElement(tok);
+                this.children.add(tok);
                 return;
             }
-            Token previous = (Token)this.children.elementAt(size-1);
+            Token previous = this.children.get(size-1);
             if (!((previous.type == CHAR || previous.type == STRING)
                   && (tok.type == CHAR || tok.type == STRING))) {
-                this.children.addElement(tok);
+                this.children.add(tok);
                 return;
             }
             
@@ -1464,7 +1466,7 @@ class Token implements java.io.Serializable {
                 else
                     buffer.append((char)ch);
                 previous = Token.createString(null);
-                this.children.setElementAt(previous, size-1);
+                this.children.set(size-1, previous);
             } else {                            // STRING
                 buffer = new StringBuffer(previous.getString().length() + nextMaxLength);
                 buffer.append(previous.getString());
@@ -1487,7 +1489,7 @@ class Token implements java.io.Serializable {
             return this.children == null ? 0 : this.children.size();
         }
         Token getChild(int index) {
-            return (Token)this.children.elementAt(index);
+            return this.children.get(index);
         }
 
         public String toString(int options) {
@@ -1505,7 +1507,7 @@ class Token implements java.io.Serializable {
                 } else {
                     StringBuffer sb = new StringBuffer();
                     for (int i = 0;  i < this.children.size();  i ++) {
-                        sb.append(((Token)this.children.elementAt(i)).toString(options));
+                        sb.append(this.children.get(i).toString(options));
                     }
                     ret = new String(sb);
                 }
@@ -1518,10 +1520,10 @@ class Token implements java.io.Serializable {
                 ret = this.getChild(1).toString(options)+"??";
             } else {
                 StringBuffer sb = new StringBuffer();
-                sb.append(((Token)this.children.elementAt(0)).toString(options));
+                sb.append(this.children.get(0).toString(options));
                 for (int i = 1;  i < this.children.size();  i ++) {
                     sb.append((char)'|');
-                    sb.append(((Token)this.children.elementAt(i)).toString(options));
+                    sb.append(this.children.get(i).toString(options));
                 }
                 ret = new String(sb);
             }

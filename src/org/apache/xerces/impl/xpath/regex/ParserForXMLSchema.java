@@ -17,7 +17,8 @@
 
 package org.apache.xerces.impl.xpath.regex;
 
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Locale;
 
 /**
@@ -370,12 +371,12 @@ class ParserForXMLSchema extends RegexParser {
         return c;
     }
 
-    static private Hashtable ranges = null;
-    static private Hashtable ranges2 = null;
+    static private Map<String, Token> ranges = null;
+    static private Map<String, Token> ranges2 = null;
     static synchronized protected RangeToken getRange(String name, boolean positive) {
         if (ranges == null) {
-            ranges = new Hashtable();
-            ranges2 = new Hashtable();
+            ranges = new HashMap<>();
+            ranges2 = new HashMap<>();
 
             Token tok = Token.createRange();
             setupRange(tok, SPACES);

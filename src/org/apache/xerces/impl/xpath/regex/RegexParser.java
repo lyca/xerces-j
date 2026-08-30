@@ -20,7 +20,8 @@ package org.apache.xerces.impl.xpath.regex;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A Regular Expression Parser.
@@ -79,7 +80,7 @@ class RegexParser {
     int parenOpened = 1;
     int parennumber = 1;
     boolean hasBackReferences;
-    Vector references = null;
+    List<ReferencePosition> references = null;
 
     public RegexParser() {
         this.setLocale(Locale.getDefault());
@@ -144,11 +145,11 @@ class RegexParser {
         }
         if (this.references != null) {
             for (int i = 0;  i < this.references.size();  i ++) {
-                ReferencePosition position = (ReferencePosition)this.references.elementAt(i);
+                ReferencePosition position = this.references.get(i);
                 if (this.parennumber <= position.refNumber)
                     throw ex("parser.parse.2", position.position);
             }
-            this.references.removeAllElements();
+            this.references.clear();
         }
         return ret;
     }
@@ -501,8 +502,8 @@ class RegexParser {
             }
 
             this.hasBackReferences = true;
-            if (this.references == null)  this.references = new Vector();
-            this.references.addElement(new ReferencePosition(finalRefno, this.offset));
+            if (this.references == null)  this.references = new ArrayList<>();
+            this.references.add(new ReferencePosition(finalRefno, this.offset));
             this.offset ++;
             if (this.regex.charAt(this.offset) != ')')  throw ex("parser.factor.1", this.offset);
             this.offset ++;
@@ -636,8 +637,8 @@ class RegexParser {
 
         Token tok = Token.createBackReference(finalRefnum);
         this.hasBackReferences = true;
-        if (this.references == null)  this.references = new Vector();
-        this.references.addElement(new ReferencePosition(finalRefnum, this.offset-2));
+        if (this.references == null)  this.references = new ArrayList<>();
+        this.references.add(new ReferencePosition(finalRefnum, this.offset-2));
         this.next();
         return tok;
     }

@@ -17,7 +17,8 @@
 
 package org.apache.xerces.impl.xpath.regex;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @xerces.internal
@@ -168,19 +169,19 @@ class Op {
 
     // ================================================================
     static class UnionOp extends Op {
-        final Vector branches;
+        final List<Op> branches;
         UnionOp(int type, int size) {
             super(type);
-            this.branches = new Vector(size);
+            this.branches = new ArrayList<>(size);
         }
         void addElement(Op op) {
-            this.branches.addElement(op);
+            this.branches.add(op);
         }
         int size() {
             return this.branches.size();
         }
         Op elementAt(int index) {
-            return (Op)this.branches.elementAt(index);
+            return this.branches.get(index);
         }
     }
 

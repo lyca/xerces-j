@@ -19,7 +19,8 @@ package org.apache.xerces.impl.xpath.regex;
 
 import java.text.CharacterIterator;
 import java.util.Locale;
-import java.util.Stack;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 import org.apache.xerces.util.IntStack;
 
@@ -978,7 +979,7 @@ public class RegularExpression implements java.io.Serializable {
      */
     private int match(Context con, Op op, int offset, int dx, int opts) {
         final ExpressionTarget target = con.target;
-        final Stack opStack = new Stack();
+        final Deque<Op> opStack = new ArrayDeque<>();
         final IntStack dataStack = new IntStack();
         final boolean isSetIgnoreCase = isSet(opts, IGNORE_CASE);
         int retValue = -1;
@@ -1257,7 +1258,7 @@ public class RegularExpression implements java.io.Serializable {
                     return retValue;
                 }
 
-                op = (Op) opStack.pop();
+                op = opStack.pop();
                 offset = dataStack.pop();
 
                 switch (op.type) {
