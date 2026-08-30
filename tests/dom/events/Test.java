@@ -17,6 +17,14 @@
 
 package dom.events;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.util.List;
+
+import org.apache.xerces.dom.DocumentImpl;
+import org.junit.Before;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -24,118 +32,127 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.Text;
 import org.w3c.dom.events.EventTarget;
+import org.w3c.dom.events.MutationEvent;
 
-public class Test
-{
-    EventReporter sharedReporter=new EventReporter();
-    
-    public static void main(String[] args)
-    {
-        Test met=new Test();
-        met.runTest();
+/**
+ * DOM Mutation Events test converted to JUnit 4.
+ */
+public class Test {
+
+    private EventReporter reporter;
+    private Document doc;
+
+    public static junit.framework.Test suite() {
+        return new junit.framework.JUnit4TestAdapter(Test.class);
     }
 
-    void runTest()
-    {
-        Document doc=new org.apache.xerces.dom.DocumentImpl();
+    @Before
+    public void setUp() {
+        reporter = new EventReporter();
+        doc = new DocumentImpl();
         reportAllMutations(doc);
-        
-        Element root=addNoisyElement(doc,doc,0);
-        Element e=null;
-        int i;
+    }
 
-        // Individual nodes
-        e=addNoisyElement(doc,root,0);
-        Attr a=addNoisyAttr(doc,e,0);
-        a.setNodeValue("Updated A0 of E0, prepare to be acidulated.");
-        NamedNodeMap nnm=e.getAttributes();
-        nnm.removeNamedItem(a.getName());
-        nnm.setNamedItem(a);
+    @org.junit.Test
+    public void testElementAndAttrMutationEvents() {
+        reporter.on();
+        Element root = doc.createElement("Root");
+        reportAllMutations(root);
+        doc.appendChild(root);
 
-        // InsertedInto/RemovedFrom tests.
-        // ***** These do not currently cross the Attr/Element barrier.
-        // DOM spec is pretty clear on that, but this may not be the intent.
-        System.out.println();
-        System.out.println("Add/remove a preconstructed tree; tests AddedToDocument");
-        System.out.println();
-        sharedReporter.off();
-        Element lateAdd=doc.createElement("lateAdd");
-        reportAllMutations(lateAdd);
-        e=lateAdd;
-        for(i=0;i<2;++i)
-        {
-            e=addNoisyElement(doc,e,i);
-            addNoisyAttr(doc,e,i);
+        assertTrue("DOMNodeInserted event should be recorded", reporter.getEventsOfType("DOMNodeInserted").size() > 0);
+        assertTrue("DOMSubtreeModified event should be recorded", reporter.getEventsOfType("DOMSubtreeModified").size() > 0);
+
+        reporter.clear();
+        Element e0 = doc.createElement("E0");
+        reportAllMutations(e0);
+        root.appendChild(e0);
+
+        Attr a0 = doc.createAttribute("A0");
+        reportAllMutations(a0);
+        a0.setNodeValue("val0");
+        e0.setAttributeNode(a0);
+
+        List<EventReporter.EventRecord> attrEvents = reporter.getEventsOfType("DOMAttrModified");
+        assertTrue("DOMAttrModified event should be recorded", attrEvents.size() > 0);
+        boolean foundAdd = false;
+        for (EventReporter.EventRecord r : attrEvents) {
+            if ("A0".equals(r.attrName) && r.attrChange == MutationEvent.ADDITION) {
+                foundAdd = true;
+                break;
+            }
         }
-        sharedReporter.on();
+        assertTrue("Attr addition should be reported", foundAdd);
+
+        reporter.clear();
+        a0.setNodeValue("Updated A0");
+        List<EventReporter.EventRecord> modEvents = reporter.getEventsOfType("DOMAttrModified");
+        assertTrue("DOMAttrModified should be fired on value change", modEvents.size() > 0);
+
+        reporter.clear();
+        NamedNodeMap nnm = e0.getAttributes();
+        nnm.removeNamedItem("A0");
+        List<EventReporter.EventRecord> remEvents = reporter.getEventsOfType("DOMAttrModified");
+        assertTrue("DOMAttrModified should be fired on attribute removal", remEvents.size() > 0);
+    }
+
+    @org.junit.Test
+    public void testTreeAddAndRemoveMutationEvents() {
+        Element root = doc.createElement("Root");
+        reportAllMutations(root);
+        doc.appendChild(root);
+
+        Element lateAdd = doc.createElement("lateAdd");
+        reportAllMutations(lateAdd);
+        Element child = doc.createElement("lateAdd_E0");
+        reportAllMutations(child);
+        lateAdd.appendChild(child);
+
+        reporter.clear();
+        reporter.on();
         root.appendChild(lateAdd);
+
+        List<EventReporter.EventRecord> insertedIntoDoc = reporter.getEventsOfType("DOMNodeInsertedIntoDocument");
+        assertTrue("DOMNodeInsertedIntoDocument should be recorded on append to tree", insertedIntoDoc.size() > 0);
+
+        reporter.clear();
         root.removeChild(lateAdd);
+        List<EventReporter.EventRecord> removedFromDoc = reporter.getEventsOfType("DOMNodeRemovedFromDocument");
+        assertTrue("DOMNodeRemovedFromDocument should be recorded on remove from tree", removedFromDoc.size() > 0);
+    }
 
-        System.out.println();
-        System.out.println("Replace a preconstructed tree; tests AddedToDocument");
-        System.out.println();
+    @org.junit.Test
+    public void testCharacterDataModifiedEvents() {
+        Element root = doc.createElement("Root");
+        reportAllMutations(root);
+        doc.appendChild(root);
 
-        sharedReporter.off();
-        Node e0=root.replaceChild(lateAdd,root.getFirstChild());
-        sharedReporter.on();
-        root.replaceChild(e0,lateAdd);
+        Text t = doc.createTextNode("fo");
+        reportAllMutations(t);
+        root.appendChild(t);
 
-        sharedReporter.off();
-        Text t = addNoisyText(doc, root.getFirstChild(), "fo");
-        sharedReporter.on();
+        reporter.clear();
+        reporter.on();
         t.insertData(1, "o");
 
-        root.setAttribute("foo", "bar");
-
-        System.out.println("Done");
-    }
-    
-    Element addNoisyElement(Document doc,Node parent,int index)
-    {
-        String nodeName="Root";
-        if(parent!=doc)
-            nodeName=parent.getNodeName()+"_E"+index;
-        Element e=doc.createElement(nodeName);
-        reportAllMutations(e);
-        parent.appendChild(e);
-        return e;
+        List<EventReporter.EventRecord> charEvents = reporter.getEventsOfType("DOMCharacterDataModified");
+        assertTrue("DOMCharacterDataModified should be fired on insertData", charEvents.size() > 0);
+        EventReporter.EventRecord first = charEvents.get(0);
+        assertEquals("fo", first.prevValue);
+        assertEquals("foo", first.newValue);
     }
 
-    Attr addNoisyAttr(Document doc,Element parent,int index)
-    {
-        String attrName=parent.getNodeName()+"_A"+index;
-        Attr a=doc.createAttribute(attrName);
-        reportAllMutations(a);
-        a.setNodeValue("Initialized A"+index+" of "+parent.getNodeName());
-        parent.setAttributeNode(a);
-        return a;
-    }
+    private void reportAllMutations(Node n) {
+        String[] evtNames = {
+            "DOMSubtreeModified", "DOMAttrModified", "DOMCharacterDataModified",
+            "DOMNodeInserted", "DOMNodeRemoved",
+            "DOMNodeInsertedIntoDocument", "DOMNodeRemovedFromDocument",
+        };
 
-    Text addNoisyText(Document doc, Node parent, String data)
-    {
-        Text t = doc.createTextNode(data);
-        reportAllMutations(t);
-        parent.appendChild(t);
-        return t;
-    }
-
-    void reportAllMutations(Node n)
-    {
-        String[] evtNames={
-            "DOMSubtreeModified","DOMAttrModified","DOMCharacterDataModified",
-            "DOMNodeInserted","DOMNodeRemoved",
-            "DOMNodeInsertedIntoDocument","DOMNodeRemovedFromDocument",
-            };
-            
-        EventTarget t=(EventTarget)n;
-        
-        for(int i=evtNames.length-1;
-            i>=0;
-            --i)
-        {
-            t.addEventListener(evtNames[i], sharedReporter, true);
-            t.addEventListener(evtNames[i], sharedReporter, false);
+        EventTarget t = (EventTarget) n;
+        for (int i = 0; i < evtNames.length; i++) {
+            t.addEventListener(evtNames[i], reporter, true);
+            t.addEventListener(evtNames[i], reporter, false);
         }
-
     }
 }

@@ -17,61 +17,91 @@
 
 package dom.events;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.w3c.dom.Node;
 import org.w3c.dom.events.Event;
 import org.w3c.dom.events.EventListener;
 import org.w3c.dom.events.MutationEvent;
 
-class EventReporter implements EventListener
-{
-    boolean silent=false; // Toggle this to mask reports you don't care about
-    int count=0;
-    String[] phasename={"?","CAPTURING","AT_TARGET","BUBBLING","?"};
-    String[] attrChange={"?","MODIFICATION","ADDITION","REMOVAL"};
+public class EventReporter implements EventListener {
 
-    public void on()
-    {
-        System.out.println();
-        System.out.println("EventReporter awakened:");
-        System.out.println();
-        silent=false;
-    }
-    public void off()
-    {
-        System.out.println();
-        System.out.println("EventReporter muted");
-        System.out.println();
-        silent=true;
-    }
-    
-    public void handleEvent(Event evt)
-    {
-        ++count;
-        if(silent)
-            return;
-            
-        System.out.print("EVT "+count+": '"+
-            evt.getType()+
-            "' listener '"+((Node)evt.getCurrentTarget()).getNodeName()+
-            "' target '"+((Node)evt.getTarget()).getNodeName()+
-            "' while "+phasename[evt.getEventPhase()] +
-            "... ");
-        if(evt.getBubbles()) System.out.print("will bubble");
-        if(evt.getCancelable()) System.out.print("can cancel");
-        System.out.println();
-        if(evt instanceof MutationEvent)
-        {
-            MutationEvent me=(MutationEvent)evt;
-            if(me.getRelatedNode()!=null)
-                System.out.println("\trelatedNode='"+me.getRelatedNode()+"'");
-            if(me.getAttrName()!=null)
-                System.out.println("\tattrName='"+me.getAttrName()+"'");
-            if(me.getPrevValue()!=null)
-                System.out.println("\tprevValue='"+me.getPrevValue()+"'");
-            if(me.getNewValue()!=null)
-                System.out.println("\tnewValue='"+me.getNewValue()+"'");
-            if(me.getType().equals("DOMAttrModified"))
-                System.out.println("\tattrChange='"+attrChange[me.getAttrChange()]+"'");
+    public static class EventRecord {
+        public final String type;
+        public final String currentTargetName;
+        public final String targetName;
+        public final short phase;
+        public final boolean bubbles;
+        public final boolean cancelable;
+        public final String attrName;
+        public final String prevValue;
+        public final String newValue;
+        public final short attrChange;
+
+        public EventRecord(Event evt) {
+            this.type = evt.getType();
+            Node ct = (Node) evt.getCurrentTarget();
+            this.currentTargetName = (ct != null) ? ct.getNodeName() : null;
+            Node t = (Node) evt.getTarget();
+            this.targetName = (t != null) ? t.getNodeName() : null;
+            this.phase = evt.getEventPhase();
+            this.bubbles = evt.getBubbles();
+            this.cancelable = evt.getCancelable();
+
+            if (evt instanceof MutationEvent) {
+                MutationEvent me = (MutationEvent) evt;
+                this.attrName = me.getAttrName();
+                this.prevValue = me.getPrevValue();
+                this.newValue = me.getNewValue();
+                this.attrChange = me.getAttrChange();
+            }
+            else {
+                this.attrName = null;
+                this.prevValue = null;
+                this.newValue = null;
+                this.attrChange = 0;
+            }
         }
+    }
+
+    private boolean silent = true;
+    private final List<EventRecord> events = new ArrayList<EventRecord>();
+
+    public void on() {
+        silent = false;
+    }
+
+    public void off() {
+        silent = true;
+    }
+
+    public void clear() {
+        events.clear();
+    }
+
+    public int getCount() {
+        return events.size();
+    }
+
+    public List<EventRecord> getEvents() {
+        return events;
+    }
+
+    public List<EventRecord> getEventsOfType(String type) {
+        List<EventRecord> matched = new ArrayList<EventRecord>();
+        for (EventRecord r : events) {
+            if (r.type.equals(type)) {
+                matched.add(r);
+            }
+        }
+        return matched;
+    }
+
+    public void handleEvent(Event evt) {
+        if (silent) {
+            return;
+        }
+        events.add(new EventRecord(evt));
     }
 }

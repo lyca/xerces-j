@@ -17,6 +17,10 @@
 
 package dom.treewalker;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
@@ -33,54 +37,17 @@ import org.w3c.dom.traversal.DocumentTraversal;
 import org.w3c.dom.traversal.NodeFilter;
 import org.w3c.dom.traversal.TreeWalker;
 
-
 /**
- * The class tests TreeWalkerImpl.firstChild() and TreeWalkerImpl.nextSibling();
- * The class generates simple XML document and traverses it.
- * 
- * @author Christian Geuer-Pollmann <geuer-pollmann@nue.et-inf.uni-siegen.de>
- * @version $Id$
+ * Tests TreeWalker.firstChild() and TreeWalker.nextSibling().
  */
 public class TestFirstChild {
 
-    public static void main(String args[]) throws Exception {
-
-
-        System.out.println(" --- "
-                           + org.apache.xerces.impl.Version.getVersion()
-                           + " --- ");
-        Document doc = getNodeSet1();
-        NodeFilter nodefilter = null;
-        boolean entityReferenceExpansion = true;
-        int whatToShow = NodeFilter.SHOW_ALL;
-        TreeWalker treewalker =
-        ((DocumentTraversal) doc).createTreeWalker(doc, whatToShow,
-                                                   nodefilter, entityReferenceExpansion);
-        ByteArrayOutputStream bytearrayoutputstream =
-        new ByteArrayOutputStream();
-        PrintWriter printwriter =
-        new PrintWriter(new OutputStreamWriter(bytearrayoutputstream,
-                                               "UTF8"));
-
-        process2(treewalker, printwriter);
-        printwriter.flush();
-
-        System.out.println();
-        System.out.println("Testing the following XML document:\n" + new String(bytearrayoutputstream.toByteArray()));
+    public static junit.framework.Test suite() {
+        return new junit.framework.JUnit4TestAdapter(TestFirstChild.class);
     }
 
-    /**
-     * Method getNodeSet1
-     *
-     * @return
-     * @throws ParserConfigurationException
-     */
-    private static Document getNodeSet1()
-    throws ParserConfigurationException {
-
-        DocumentBuilderFactory dfactory =
-        DocumentBuilderFactory.newInstance();
-
+    private Document createTestDocument() throws ParserConfigurationException {
+        DocumentBuilderFactory dfactory = DocumentBuilderFactory.newInstance();
         dfactory.setValidating(false);
         dfactory.setNamespaceAware(true);
 
@@ -97,131 +64,89 @@ public class TestFirstChild {
         root.appendChild(e2);
         root.appendChild(e3);
         doc.appendChild(root);
-
-        String s1 ="<RootElement><Element1/><Element2/><Element3>Text in Element3</Element3></RootElement>";
-
         return doc;
     }
 
-    /**
-     * recursively traverses the tree
-     *
-     * for simplicity, I don't handle comments, Attributes, PIs etc.
-     * Only Text, Document and Element
-     *
-     * @param treewalker
-     * @param printwriter
-     */
-    private static void process2(TreeWalker treewalker,
-                                 PrintWriter printwriter) {
+    @org.junit.Test
+    public void testTreeWalkerFirstChildAndNextSibling() throws Exception {
+        Document doc = createTestDocument();
+        TreeWalker treewalker = ((DocumentTraversal) doc).createTreeWalker(
+            doc, NodeFilter.SHOW_ALL, null, true);
 
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PrintWriter pw = new PrintWriter(new OutputStreamWriter(baos, "UTF-8"));
+        processTreeWalker(treewalker, pw);
+        pw.flush();
+
+        String expected = "<RootElement><Element1></Element1><Element2></Element2><Element3>Text in Element3</Element3></RootElement>";
+        assertEquals(expected, new String(baos.toByteArray(), "UTF-8"));
+    }
+
+    @org.junit.Test
+    public void testTreeWalkerStepByStep() throws Exception {
+        Document doc = createTestDocument();
+        TreeWalker tw = ((DocumentTraversal) doc).createTreeWalker(
+            doc, NodeFilter.SHOW_ALL, null, true);
+
+        assertEquals("#document", tw.getCurrentNode().getNodeName());
+        Node root = tw.firstChild();
+        assertNotNull(root);
+        assertEquals("RootElement", root.getNodeName());
+
+        Node e1 = tw.firstChild();
+        assertNotNull(e1);
+        assertEquals("Element1", e1.getNodeName());
+        assertNull(tw.firstChild());
+
+        tw.setCurrentNode(e1);
+        Node e2 = tw.nextSibling();
+        assertNotNull(e2);
+        assertEquals("Element2", e2.getNodeName());
+        assertNull(tw.firstChild());
+
+        tw.setCurrentNode(e2);
+        Node e3 = tw.nextSibling();
+        assertNotNull(e3);
+        assertEquals("Element3", e3.getNodeName());
+
+        Node e3t = tw.firstChild();
+        assertNotNull(e3t);
+        assertEquals("Text in Element3", e3t.getNodeValue());
+        assertNull(tw.nextSibling());
+    }
+
+    private void processTreeWalker(TreeWalker treewalker, PrintWriter printwriter) {
         Node currentNode = treewalker.getCurrentNode();
 
         switch (currentNode.getNodeType()) {
-        
-        case Node.TEXT_NODE :
-        case Node.CDATA_SECTION_NODE :
-            printwriter.print(currentNode.getNodeValue());
-            break;
+            case Node.TEXT_NODE:
+            case Node.CDATA_SECTION_NODE:
+                printwriter.print(currentNode.getNodeValue());
+                break;
+            case Node.ENTITY_REFERENCE_NODE:
+            case Node.DOCUMENT_NODE:
+            case Node.ELEMENT_NODE:
+            default:
+                if (currentNode.getNodeType() == Node.ELEMENT_NODE) {
+                    printwriter.print('<');
+                    printwriter.print(currentNode.getNodeName());
+                    printwriter.print(">");
+                }
 
-        case Node.ENTITY_REFERENCE_NODE :
-        case Node.DOCUMENT_NODE :
-        case Node.ELEMENT_NODE :
-        default :
-            if (currentNode.getNodeType() == Node.ELEMENT_NODE) {
-                printwriter.print('<');
-                printwriter.print(currentNode.getNodeName());
-                printwriter.print(">");
-            }
-
-            Node node1 = treewalker.firstChild();
-
-            if (node1 == null) {
-                System.out.println(getNodeTypeString(currentNode.getNodeType())
-                                   + "_NODE parent: "
-                                   + currentNode.getNodeName()
-                                   + " has no children ");
-            }
-            else {
-                System.out.println(getNodeTypeString(currentNode.getNodeType())
-                                   + "_NODE parent: "
-                                   + currentNode.getNodeName()
-                                   + " has children ");
-
+                Node node1 = treewalker.firstChild();
                 while (node1 != null) {
-                    {
-                        String qStr = "";
-
-                        for (Node q = node1; q != null; q = q.getParentNode()) {
-                            qStr = q.getNodeName() + "/" + qStr;
-                        }
-
-                        System.out.println(getNodeTypeString(currentNode.getNodeType())
-                                           + "_NODE process child " + qStr);
-                    }
-
-
-                    // recursion !!!
-                    process2(treewalker, printwriter);
-
+                    processTreeWalker(treewalker, printwriter);
+                    treewalker.setCurrentNode(node1);
                     node1 = treewalker.nextSibling();
-                    if (node1 != null) {
-                        System.out.println("treewalker.nextSibling() = "
-                                           + node1.getNodeName());
-                    }
-                } // while(node1 != null)
-            }
+                }
 
-            System.out.println("setCurrentNode() back to "
-                               + currentNode.getNodeName());
-            treewalker.setCurrentNode(currentNode);
-
-            if (currentNode.getNodeType() == Node.ELEMENT_NODE) {
-                printwriter.print("</");
-                printwriter.print(currentNode.getNodeName());
-                printwriter.print(">");
-            }
-
-            break;
+                treewalker.setCurrentNode(currentNode);
+                if (currentNode.getNodeType() == Node.ELEMENT_NODE) {
+                    printwriter.print("</");
+                    printwriter.print(currentNode.getNodeName());
+                    printwriter.print(">");
+                }
+                break;
         }
     }
-
-    /** Field nodeTypeString */
-    private static String[] nodeTypeString = new String[]{ "", "ELEMENT",
-        "ATTRIBUTE",
-        "TEXT_NODE",
-        "CDATA_SECTION",
-        "ENTITY_REFERENCE",
-        "ENTITY",
-        "PROCESSING_INSTRUCTION",
-        "COMMENT",
-        "DOCUMENT",
-        "DOCUMENT_TYPE",
-        "DOCUMENT_FRAGMENT",
-        "NOTATION"};
-
-
-
-    /**
-     *    
-     *  Transforms <code>org.w3c.dom.Node.XXX_NODE</code> NodeType values into
-     *  XXX Strings.
-     * 
-     *  @param nodeType as taken from the {@link org.w3c.dom.Node#getNodeType}
-     * function
-     *  @return the String value.
-     *  @see org.w3c.dom.Node#getNodeType
-     * @param nodeType
-     * @return 
-     */
-    public static String getNodeTypeString(short nodeType) {
-
-        if ((nodeType > 0) && (nodeType < 13)) {
-            return nodeTypeString[nodeType];
-        }
-        else {
-            return "";
-        }
-    }
-
 }

@@ -857,6 +857,13 @@ Authors:
               <include name="dom/serialization/Test.class"/>
               <include name="xinclude/Test.class"/>
               <include name="dom/dom3/Test.class"/>
+              <include name="dom/events/Test.class"/>
+              <include name="dom/rename/Test.class"/>
+              <include name="dom/treewalker/TestFirstChild.class"/>
+              <include name="dom/serialize/TestNS.class"/>
+              <include name="dom/serialize/TestXmlns.class"/>
+              <include name="io/UTF8.class"/>
+              <include name="io/UTF16.class"/>
            </fileset>
          </batchtest>
 

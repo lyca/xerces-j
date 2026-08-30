@@ -17,112 +17,72 @@
 
 package dom.serialize;
 
-import java.io.IOException;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.StringWriter;
 import java.io.Writer;
 
 import org.apache.xerces.dom.DOMImplementationImpl;
-import org.apache.xerces.dom.DOMOutputImpl;
 import org.apache.xerces.dom.DocumentImpl;
-import org.apache.xerces.parsers.DOMParser;
-import org.apache.xml.serialize.DOMSerializerImpl;
 import org.apache.xml.serialize.OutputFormat;
 import org.apache.xml.serialize.Serializer;
 import org.apache.xml.serialize.SerializerFactory;
 import org.w3c.dom.DOMConfiguration;
-import org.w3c.dom.DOMError;
-import org.w3c.dom.DOMErrorHandler;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.ls.DOMImplementationLS;
-import org.w3c.dom.ls.LSOutput;
 import org.w3c.dom.ls.LSSerializer;
 
 /**
- * Tests that original behavior of XMLSerializer is not broken.
- * The namespace fixup is only performed with DOMWriter.
- * 
- * @author Elena Litani, IBM
- * @version $Id$
+ * Tests XMLSerializer and LSSerializer default namespace handling.
  */
-public class TestXmlns implements DOMErrorHandler{
+public class TestXmlns {
 
-      public static void main(String[] args) {
-
-            // Create a document.
-            DocumentImpl document = new DocumentImpl();
-            document.setXmlEncoding("utf-8");
-            // Create an element with a default namespace declaration.
-            Element outerNode = document.createElement("outer");
-            outerNode.setAttribute("xmlns", "myuri:");
-            document.appendChild(outerNode);
-
-            // Create an inner element with no further namespace declaration.
-            Element innerNode = document.createElement("inner");
-            outerNode.appendChild(innerNode);
-
-            // DOM is complete, now serialize it.
-            Writer writer = new StringWriter();
-            OutputFormat format = new OutputFormat();
-            format.setEncoding("utf-8");
-            Serializer serializer = SerializerFactory.getSerializerFactory("xml").makeSerializer(writer, format);
-            try {
-                  serializer.asDOMSerializer().serialize(document);
-            } catch (IOException exception) {
-                  exception.printStackTrace();
-                  System.exit(1);
-            }
-
-            // Show the results on the console.
-            System.out.println("\n---XMLSerializer output---");
-            System.out.println(writer.toString());
-
-          DOMSerializerImpl s = new DOMSerializerImpl();
-                  DOMParser p = new DOMParser();
-                  try {
-       
-                      p.parse(args[0]);
-                  } catch (Exception e){
-                  }
-                  Document doc = p.getDocument();
-
-
-            // create DOM Serializer
-
-            System.out.println("\n---DOMWriter output---");
-            LSSerializer domWriter = ((DOMImplementationLS)DOMImplementationImpl.getDOMImplementation()).createLSSerializer();
-            DOMConfiguration config = domWriter.getDomConfig();
-            config.setParameter("error-handler", new TestXmlns());
-            config.setParameter("namespaces", Boolean.FALSE);
-            try {
-                LSOutput dOut = new DOMOutputImpl();
-                dOut.setByteStream(System.out);
-                domWriter.write(document,dOut);
-            } catch (Exception e){
-                e.printStackTrace();
-            }
-
-            
-      }
-    /* (non-Javadoc)
-     * @see org.apache.xerces.dom3.DOMErrorHandler#handleError(org.apache.xerces.dom3.DOMError)
-     */
-    public boolean handleError(DOMError error){
-        short severity = error.getSeverity();
-        if (severity == DOMError.SEVERITY_ERROR) {
-            System.out.println("[dom3-error]: "+error.getMessage());
-        }
-        
-        if (severity == DOMError.SEVERITY_FATAL_ERROR) {
-                   System.out.println("[dom3-fatal-error]: "+error.getMessage());
-               }
-
-        if (severity == DOMError.SEVERITY_WARNING) {
-            System.out.println("[dom3-warning]: "+error.getMessage());
-        }
-        return true;
-
+    public static junit.framework.Test suite() {
+        return new junit.framework.JUnit4TestAdapter(TestXmlns.class);
     }
 
+    private Document createTestDocument() {
+        DocumentImpl document = new DocumentImpl();
+        document.setXmlEncoding("utf-8");
 
+        Element outerNode = document.createElement("outer");
+        outerNode.setAttribute("xmlns", "myuri:");
+        document.appendChild(outerNode);
+
+        Element innerNode = document.createElement("inner");
+        outerNode.appendChild(innerNode);
+        return document;
+    }
+
+    @org.junit.Test
+    public void testXMLSerializerDefaultNamespace() throws Exception {
+        Document doc = createTestDocument();
+        Writer writer = new StringWriter();
+        OutputFormat format = new OutputFormat();
+        format.setEncoding("utf-8");
+        Serializer serializer = SerializerFactory.getSerializerFactory("xml").makeSerializer(writer, format);
+        serializer.asDOMSerializer().serialize(doc);
+
+        String result = writer.toString();
+        assertNotNull(result);
+        assertTrue("Output should contain outer element", result.contains("<outer"));
+        assertTrue("Output should contain xmlns attribute", result.contains("xmlns=\"myuri:\""));
+        assertTrue("Output should contain inner element", result.contains("<inner"));
+    }
+
+    @org.junit.Test
+    public void testLSSerializerDefaultNamespace() throws Exception {
+        Document doc = createTestDocument();
+        DOMImplementationLS impl = (DOMImplementationLS) DOMImplementationImpl.getDOMImplementation();
+        LSSerializer serializer = impl.createLSSerializer();
+        DOMConfiguration config = serializer.getDomConfig();
+        config.setParameter("namespaces", Boolean.TRUE);
+
+        String result = serializer.writeToString(doc);
+        assertNotNull(result);
+        assertTrue("Output should contain outer element", result.contains("outer"));
+        assertTrue("Output should contain inner element", result.contains("inner"));
+    }
 }
