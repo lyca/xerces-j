@@ -147,6 +147,22 @@ public abstract class TypeValidator {
     }
 
     /**
+     * Get the length of the value using the validation context.
+     *
+     * @param value the data to check
+     * @param context the validation context
+     * @return the length of the value
+     */
+    public int getDataLength(Object value, ValidationContext context) {
+        if (context != null && context.useCodePointCountForStringLength()) {
+            if (value instanceof String) {
+                return getCodePointLength((String)value);
+            }
+        }
+        return getDataLength(value);
+    }
+
+    /**
      * Get the number of digits of the value.
      * <p>The parameters are in compiled form (from {@link #getActualValue(String, ValidationContext)})</p>
      *

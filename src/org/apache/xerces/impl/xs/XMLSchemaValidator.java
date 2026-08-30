@@ -205,6 +205,10 @@ public class XMLSchemaValidator
     protected static final String IDENTITY_CONSTRAINT_CHECKING =
         Constants.XERCES_FEATURE_PREFIX + Constants.IDC_CHECKING_FEATURE;
 
+    /** Feature identifier: whether to use code point count for string length facets */
+    protected static final String USE_CODE_POINT_COUNT_FOR_STRING_LENGTH =
+        Constants.XERCES_FEATURE_PREFIX + Constants.USE_CODE_POINT_COUNT_FOR_STRING_LENGTH_FEATURE;
+
     // property identifiers
 
     /** Property identifier: symbol table. */
@@ -278,7 +282,8 @@ public class XMLSchemaValidator
             IDENTITY_CONSTRAINT_CHECKING,
             UNPARSED_ENTITY_CHECKING,
             NAMESPACE_GROWTH,
-            TOLERATE_DUPLICATES
+            TOLERATE_DUPLICATES,
+            USE_CODE_POINT_COUNT_FOR_STRING_LENGTH
         };
 
 
@@ -299,6 +304,7 @@ public class XMLSchemaValidator
         null, //Boolean.FALSE,
         null, //Boolean.FALSE,
         null, //Boolean.FALSE,
+        null,
         null,
         null,
         null,
@@ -1534,6 +1540,13 @@ public class XMLSchemaValidator
         }
         catch (XMLConfigurationException e) {
             fValidationState.setUnparsedEntityChecking(true);
+        }
+        
+        try {
+            fValidationState.setUseCodePointCountForStringLength(componentManager.getFeature(USE_CODE_POINT_COUNT_FOR_STRING_LENGTH));
+        }
+        catch (XMLConfigurationException e) {
+            fValidationState.setUseCodePointCountForStringLength(false);
         }
         
         // get schema location properties

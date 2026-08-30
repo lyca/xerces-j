@@ -70,6 +70,9 @@ public abstract class BaseTest extends TestCase {
     protected final static String DYNAMIC_VALIDATION = Constants.XERCES_FEATURE_PREFIX
         + Constants.DYNAMIC_VALIDATION_FEATURE;
     
+    protected final static String USE_CODE_POINT_COUNT_FOR_STRING_LENGTH = Constants.XERCES_FEATURE_PREFIX
+        + Constants.USE_CODE_POINT_COUNT_FOR_STRING_LENGTH_FEATURE;
+    
     protected final static String DOCUMENT_CLASS_NAME = Constants.XERCES_PROPERTY_PREFIX
         + Constants.DOCUMENT_CLASS_NAME_PROPERTY;
     

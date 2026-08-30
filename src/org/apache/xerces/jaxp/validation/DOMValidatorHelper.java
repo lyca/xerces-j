@@ -215,6 +215,9 @@ final class DOMValidatorHelper implements ValidatorHelper, EntityState {
      */
     
     public boolean isEntityDeclared(String name) {
+        if (fEntities != null) {
+            return (fEntities.getNamedItem(name) != null);
+        }
         return false;
     }
     

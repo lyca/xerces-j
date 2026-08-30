@@ -192,6 +192,10 @@ public class XML11Configuration extends ParserConfigurationSettings
 	protected static final String IDENTITY_CONSTRAINT_CHECKING =
 	    Constants.XERCES_FEATURE_PREFIX + Constants.IDC_CHECKING_FEATURE;
 
+	/** Feature identifier: whether to use code point count for string length facets */
+	protected static final String USE_CODE_POINT_COUNT_FOR_STRING_LENGTH =
+	    Constants.XERCES_FEATURE_PREFIX + Constants.USE_CODE_POINT_COUNT_FOR_STRING_LENGTH_FEATURE;
+
     
 
     // property identifiers
@@ -503,6 +507,7 @@ public class XML11Configuration extends ParserConfigurationSettings
 		        TOLERATE_DUPLICATES, IGNORE_XSI_TYPE,
 		        ID_IDREF_CHECKING, IDENTITY_CONSTRAINT_CHECKING,
 		        UNPARSED_ENTITY_CHECKING, USE_GRAMMAR_POOL_ONLY,
+		        USE_CODE_POINT_COUNT_FOR_STRING_LENGTH,
 		        // NOTE: These shouldn't really be here but since the XML Schema
 		        //       validator is constructed dynamically, its recognized
 		        //       features might not have been set and it would cause a
@@ -534,6 +539,7 @@ public class XML11Configuration extends ParserConfigurationSettings
         fFeatures.put(IDENTITY_CONSTRAINT_CHECKING, Boolean.TRUE);
         fFeatures.put(UNPARSED_ENTITY_CHECKING, Boolean.TRUE);
         fFeatures.put(USE_GRAMMAR_POOL_ONLY, Boolean.FALSE);
+        fFeatures.put(USE_CODE_POINT_COUNT_FOR_STRING_LENGTH, Boolean.FALSE);
         fFeatures.put(PARSER_SETTINGS, Boolean.TRUE);
 
         // add default recognized properties

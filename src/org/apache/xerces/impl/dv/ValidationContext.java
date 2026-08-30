@@ -60,4 +60,7 @@ public interface ValidationContext {
     
     // Locale
     public Locale getLocale();
+
+    // whether to use code points (instead of 16-bit code units) for string length facets
+    public boolean useCodePointCountForStringLength();
 }

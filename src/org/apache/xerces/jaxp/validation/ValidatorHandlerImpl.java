@@ -344,6 +344,9 @@ final class ValidatorHandlerImpl extends ValidatorHandler implements
      */
     
     public boolean isEntityDeclared(String name) {
+        if (fUnparsedEntities != null) {
+            return fUnparsedEntities.containsKey(name);
+        }
         return false;
     }
 

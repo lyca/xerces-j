@@ -44,6 +44,7 @@ public class ValidationState implements ValidationContext {
     private boolean fFacetChecking              = true;
     private boolean fNormalize                  = true;
     private boolean fNamespaces                 = true;
+    private boolean fUseCodePointCountForStringLength = false;
 
     private EntityState fEntityState            = null;
     private NamespaceContext fNamespaceContext  = null;
@@ -111,6 +112,7 @@ public class ValidationState implements ValidationContext {
         fExtraChecking = true;
         fFacetChecking = true;
         fNamespaces = true;
+        fUseCodePointCountForStringLength = false;
         fIdTable.clear();
         fIdRefTable.clear();
         fEntityState = null;
@@ -204,5 +206,13 @@ public class ValidationState implements ValidationContext {
     
     public Locale getLocale() {
         return fLocale;
+    }
+
+    public void setUseCodePointCountForStringLength(boolean useCodePointCount) {
+        fUseCodePointCountForStringLength = useCodePointCount;
+    }
+
+    public boolean useCodePointCountForStringLength() {
+        return fUseCodePointCountForStringLength;
     }
 }
