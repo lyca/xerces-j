@@ -23,7 +23,6 @@ import java.io.ObjectOutputStream;
 import java.lang.reflect.Constructor;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Collections;
 import java.util.Map;
@@ -2927,10 +2926,10 @@ extends ParentNode implements Document  {
         final Map oldNodeTable = this.nodeTable;
         try {
             if (oldUserData != null) {
-                this.userData = new Hashtable(oldUserData);
+                this.userData = new HashMap(oldUserData);
             }
             if (oldNodeTable != null) {
-                nodeTable = new Hashtable(oldNodeTable);
+                nodeTable = new HashMap(oldNodeTable);
             }
             out.defaultWriteObject();
         }

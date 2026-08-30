@@ -17,7 +17,8 @@
 
 package org.apache.xerces.impl.dv.dtd;
 
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.xerces.impl.dv.DTDDVFactory;
 import org.apache.xerces.impl.dv.DatatypeValidator;
@@ -33,7 +34,7 @@ import org.apache.xerces.impl.dv.DatatypeValidator;
  */
 public class DTDDVFactoryImpl extends DTDDVFactory {
 
-    static final Hashtable<String, DatatypeValidator> fBuiltInTypes = new Hashtable<>();
+    static final Map<String, DatatypeValidator> fBuiltInTypes = new HashMap<>();
     static {
         createBuiltInTypes();
     }
@@ -55,9 +56,8 @@ public class DTDDVFactoryImpl extends DTDDVFactory {
      * @return      a hashtable which contains all datatypes
      */
     @Override
-    @SuppressWarnings("unchecked")
-    public Hashtable<String, DatatypeValidator> getBuiltInTypes() {
-        return (Hashtable<String, DatatypeValidator>) fBuiltInTypes.clone();
+    public Map<String, DatatypeValidator> getBuiltInTypes() {
+        return new HashMap<>(fBuiltInTypes);
     }
 
     // create all built-in types

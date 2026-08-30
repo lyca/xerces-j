@@ -17,7 +17,7 @@
 
 package org.apache.xerces.impl.dv;
 
-import java.util.Hashtable;
+import java.util.Map;
 
 /**
  * The factory to create and return DTD types. The implementation should
@@ -80,6 +80,6 @@ public abstract class DTDDVFactory {
      *
      * @return      a hashtable which contains all datatypes
      */
-    public abstract Hashtable<String, DatatypeValidator> getBuiltInTypes();
+    public abstract Map<String, DatatypeValidator> getBuiltInTypes();
 
 }

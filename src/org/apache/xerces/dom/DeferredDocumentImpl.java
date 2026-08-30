@@ -18,6 +18,7 @@
 package org.apache.xerces.dom;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Element;
@@ -2059,7 +2060,7 @@ public class DeferredDocumentImpl
 
         // create hashtable
         if (identifiers == null) {
-            identifiers = new java.util.Hashtable();
+            identifiers = new HashMap<>();
         }
 
         // save ID and its associated element

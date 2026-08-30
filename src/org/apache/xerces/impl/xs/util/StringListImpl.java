@@ -54,8 +54,6 @@ public final class StringListImpl extends AbstractList implements StringList {
         fArray = null;
     }
 
-
-
     /**
      * Construct an XSObjectList implementation
      * 

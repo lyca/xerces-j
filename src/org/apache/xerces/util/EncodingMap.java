@@ -17,7 +17,8 @@
 
 package org.apache.xerces.util;
 
-import java.util.Hashtable;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * EncodingMap is a convenience class which handles conversions between IANA encoding names and 
@@ -265,10 +266,10 @@ public class EncodingMap {
     //
 
     /** fIANA2JavaMap */
-    protected final static Hashtable<String, String> fIANA2JavaMap = new Hashtable<>();
+    protected final static Map<String, String> fIANA2JavaMap = new ConcurrentHashMap<>();
 
     /** fJava2IANAMap */
-    protected final static Hashtable<String, String> fJava2IANAMap = new Hashtable<>();
+    protected final static Map<String, String> fJava2IANAMap = new ConcurrentHashMap<>();
 
     //
     // Static initialization

@@ -50,11 +50,6 @@ public class DOMImplementationListImpl implements DOMImplementationList {
         fImplementations = params;    
     }
 
-    /** 
-     * Construct a list of DOMImplementations from a Vector of DOMImplementation
-     */
-
-
     /**
      * Returns the indexth item in the collection.
      * 

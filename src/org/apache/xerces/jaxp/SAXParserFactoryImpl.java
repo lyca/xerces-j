@@ -17,7 +17,7 @@
 
 package org.apache.xerces.jaxp;
 
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.xml.XMLConstants;
@@ -137,7 +137,7 @@ public class SAXParserFactoryImpl extends SAXParserFactory {
         // XXX This is ugly.  We have to collect the features and then
         // later create an XMLReader to verify the features.
         if (features == null) {
-            features = new Hashtable<>();
+            features = new HashMap<>();
         }
         features.put(name, value ? Boolean.TRUE : Boolean.FALSE);
 

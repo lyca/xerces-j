@@ -812,8 +812,6 @@ public class SchemaGrammar implements XSGrammar, XSNamespaceItem {
         fImported = importedGrammars;
     }
 
-
-
     /**
      * Get imported grammars.
      *

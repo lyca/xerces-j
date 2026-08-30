@@ -50,11 +50,6 @@ public class DOMStringListImpl implements DOMStringList {
         fStrings = params;    
     }
     
-    /** 
-     * Construct a DOMStringListImpl from a Vector of String values
-     */ 
-
-        
 	/**
 	 * @see org.w3c.dom.DOMStringList#item(int)
 	 */

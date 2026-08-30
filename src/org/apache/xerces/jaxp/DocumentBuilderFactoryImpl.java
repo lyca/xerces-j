@@ -17,7 +17,7 @@
 
 package org.apache.xerces.jaxp;
 
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.xml.XMLConstants;
@@ -135,7 +135,7 @@ public class DocumentBuilderFactoryImpl extends DocumentBuilderFactory {
 
         // Create Hashtable if none existed before
         if (attributes == null) {
-            attributes = new Hashtable<>();
+            attributes = new HashMap<>();
         }
 
         attributes.put(name, value);
@@ -290,7 +290,7 @@ public class DocumentBuilderFactoryImpl extends DocumentBuilderFactory {
         }
            
         if (features == null) {
-            features = new Hashtable<>();
+            features = new HashMap<>();
         }
         features.put(name, value ? Boolean.TRUE : Boolean.FALSE);
         // Test the feature by possibly throwing SAX exceptions
