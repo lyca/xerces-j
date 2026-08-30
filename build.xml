@@ -851,6 +851,10 @@ Authors:
               <include name="jaxp/JAXPSecureProcessingTest.class"/>
               <include name="jaxp/PropertyTest.class"/>
               <include name="dom/ids/Test.class"/>
+              <include name="dom/mem/Test.class"/>
+              <include name="dom/range/Test.class"/>
+              <include name="dom/registry/Test.class"/>
+              <include name="dom/serialization/Test.class"/>
            </fileset>
          </batchtest>
 
@@ -914,40 +918,9 @@ Authors:
         <arg value="10"/>
         <arg value="${data.dir}/personal-schema.xml"/>
     </java>
-    <echo message="Running dom.mem.Test..." />
-    <java fork="yes"
-          classname="dom.mem.Test"
-          classpathref="test.classpath"
-          failOnError="yes">
-    </java>
-    <java fork="yes"
-          classname="dom.range.Test"
-          classpathref="test.classpath"
-          failOnError="yes">
-      <arg value="all"/>
-    </java>
-<!--  
-     TODO fix this test
-     [java] error: Error occurred - Feature 'http://apache.org/xml/features/validation/schema' is not recognized.
-     [java] org.xml.sax.SAXNotRecognizedException: Feature 'http://apache.org/xml/features/validation/schema' is not recognized.
--->
-    <echo message="Running dom.serialization.Test..." />
-    <java classname="dom.serialization.Test"
-          classpathref="test.classpath"
-          failOnError="yes">
-        <arg value="${data.dir}/personal-schema.xml"/>
-        <arg value="out.xml"/>
-    </java>
-    
     <echo message="Running xinclude.Test..." />
     <java fork="yes"
           classname="xinclude.Test"
-          classpathref="test.classpath"
-          failOnError="yes">
-    </java>
-    <echo message="Running dom.registry.Test..." />
-    <java fork="yes"
-          classname="dom.registry.Test"
           classpathref="test.classpath"
           failOnError="yes">
     </java>

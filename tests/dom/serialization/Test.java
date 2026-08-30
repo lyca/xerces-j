@@ -17,90 +17,117 @@
 
 package dom.serialization;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
+import org.apache.xerces.dom.DocumentImpl;
 import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 import dom.ParserWrapper;
 
 /**
- * A java serialization test. This sample program parses a
- * document, then serializes out to a file, then reloads
- * it from the file.  The intent is to have zero exceptions
- * in the process.
- *
- * @author <a href="mailto:sanders@apache.org">Scott Sanders</a>
- * @version $Id$
+ * A java serialization test. Parses a document, serializes it, then reloads
+ * it.
  */
 public class Test {
 
-    protected static final String NAMESPACES_FEATURE_ID = "http://xml.org/sax/features/namespaces";
+    private static final String NAMESPACES_FEATURE_ID = "http://xml.org/sax/features/namespaces";
+    private static final String VALIDATION_FEATURE_ID = "http://xml.org/sax/features/validation";
+    private static final String SCHEMA_FEATURE_ID = "http://apache.org/xml/features/validation/schema";
+    private static final String DEFAULT_PARSER_NAME = "dom.wrappers.Xerces";
 
-    protected static final String DEFAULT_PARSER_NAME = "dom.wrappers.Xerces";
+    @org.junit.Test
+    public void testInMemorySerialization() throws Exception {
+        Document document = createSampleDocument();
+        byte[] bytes = serializeToBytes(document);
+        Document deserializedDoc = deserializeFromBytes(bytes);
+        assertNotNull(deserializedDoc);
 
-    public static void main(String args[]) {
+        Element root = deserializedDoc.getDocumentElement();
+        assertNotNull(root);
+        assertEquals("personnel", root.getNodeName());
+        assertEquals("boo", root.getAttributeNS("http://www.w3.org/2000/xmlns/", "foo"));
 
-        if (args.length != 2) {
-            System.out.println("Usage: dom.serialization.Test input.xml output.xml");
-            System.exit(1);
-        }
-
-        ParserWrapper parser = null;
-
-        try {
-            parser = (ParserWrapper) Class.forName(DEFAULT_PARSER_NAME).newInstance();
-        } catch (Exception e) {
-            System.err.println("error: Unable to instantiate parser (" + DEFAULT_PARSER_NAME + ")");
-        }
-
-        try {
-            parser.setFeature(NAMESPACES_FEATURE_ID, true);
-        } catch (SAXException e) {
-            System.err.println("warning: Parser does not support feature (" + NAMESPACES_FEATURE_ID + ")");
-        }
-
-        try {
-            Document document = null;
-            parser.setFeature("http://xml.org/sax/features/validation", true);
-            parser.setFeature("http://apache.org/xml/features/validation/schema", true);
-            document = parser.parse(args[0]);
-            document.getDocumentElement().setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:foo", "boo");
-            serialize(document, args[1]);
-            Document newDocument = deserialize(args[1]);
-            Document emptyDoc = new org.apache.xerces.dom.DocumentImpl();
-            emptyDoc.importNode(newDocument.getDocumentElement(), true);
-
-            System.out.println("done.");
-        } catch (Exception e) {
-            System.err.println("error: Error occurred - " + e.getMessage());
-            Exception se = e;
-            if (e instanceof SAXException) {
-                se = ((SAXException) e).getException();
-            }
-            if (se != null)
-                se.printStackTrace(System.err);
-            else
-                e.printStackTrace(System.err);
-        }
-
+        Document emptyDoc = new DocumentImpl();
+        Node imported = emptyDoc.importNode(root, true);
+        assertNotNull(imported);
+        assertEquals("personnel", imported.getNodeName());
     }
 
-    public static void serialize(Document document, String filename) throws Exception {
-        System.out.println("Serializing parsed document");
-        ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(filename));
-        out.writeObject(document);
-        out.close();
+    @org.junit.Test
+    public void testFileSerialization() throws Exception {
+        Document document = createSampleDocument();
+        File tempFile = File.createTempFile("xerces_dom_ser_", ".ser");
+        tempFile.deleteOnExit();
+
+        try {
+            serializeToFile(document, tempFile);
+            Document deserializedDoc = deserializeFromFile(tempFile);
+            assertNotNull(deserializedDoc);
+
+            Element root = deserializedDoc.getDocumentElement();
+            assertNotNull(root);
+            assertEquals("personnel", root.getNodeName());
+            assertEquals("boo", root.getAttributeNS("http://www.w3.org/2000/xmlns/", "foo"));
+
+            Document emptyDoc = new DocumentImpl();
+            Node imported = emptyDoc.importNode(root, true);
+            assertNotNull(imported);
+            assertEquals("personnel", imported.getNodeName());
+        } finally {
+            tempFile.delete();
+        }
     }
 
-    public static Document deserialize(String filename) throws Exception {
-        System.out.println("De-Serializing parsed document");
-        ObjectInputStream in = new ObjectInputStream(new FileInputStream(filename));
-        Document result = (Document) in.readObject();
-        return result;
+    private Document createSampleDocument() throws Exception {
+        ParserWrapper parser = (ParserWrapper) Class.forName(DEFAULT_PARSER_NAME).getDeclaredConstructor().newInstance();
+        parser.setFeature(NAMESPACES_FEATURE_ID, true);
+        parser.setFeature(VALIDATION_FEATURE_ID, true);
+        parser.setFeature(SCHEMA_FEATURE_ID, true);
+
+        Document document = parser.parse("data/personal-schema.xml");
+        assertNotNull(document);
+        document.getDocumentElement().setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:foo", "boo");
+        return document;
     }
 
+    private byte[] serializeToBytes(Document document) throws Exception {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try (ObjectOutputStream out = new ObjectOutputStream(baos)) {
+            out.writeObject(document);
+        }
+        return baos.toByteArray();
+    }
+
+    private Document deserializeFromBytes(byte[] bytes) throws Exception {
+        try (ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(bytes))) {
+            return (Document) in.readObject();
+        }
+    }
+
+    private void serializeToFile(Document document, File file) throws Exception {
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(file))) {
+            out.writeObject(document);
+        }
+    }
+
+    private Document deserializeFromFile(File file) throws Exception {
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(file))) {
+            return (Document) in.readObject();
+        }
+    }
+
+    public static junit.framework.Test suite() {
+        return new junit.framework.JUnit4TestAdapter(Test.class);
+    }
 }

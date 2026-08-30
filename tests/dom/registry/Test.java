@@ -15,54 +15,52 @@
  * limitations under the License.
  */
 
-
 package dom.registry;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 
 import org.apache.xerces.dom.CoreDOMImplementationImpl;
 import org.apache.xerces.dom.DOMImplementationImpl;
+import org.junit.After;
+import org.junit.Before;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 
-import dom.util.Assertion;
-
 public class Test {
 
-    public static void main(String argv[])
-    {                                  
-        
-        System.out.println("Running dom.registry.Test...");
-        // set DOMImplementationSource
+    private String fOrigProp;
+
+    @Before
+    public void setUp() {
+        fOrigProp = System.getProperty(DOMImplementationRegistry.PROPERTY);
         System.setProperty(DOMImplementationRegistry.PROPERTY,
-                          "org.apache.xerces.dom.DOMImplementationSourceImpl" +
-                          " org.apache.xerces.dom.DOMXSImplementationSourceImpl");
+                "org.apache.xerces.dom.DOMImplementationSourceImpl " +
+                "org.apache.xerces.dom.DOMXSImplementationSourceImpl");
+    }
 
-        DOMImplementationRegistry registry = null;
-        try {
-            registry = DOMImplementationRegistry.newInstance();
-            Assertion.verify(registry != null);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        try {
-            DOMImplementation i = registry.getDOMImplementation("XML");
-
-            Assertion.verify(i ==
-                             CoreDOMImplementationImpl.getDOMImplementation());
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        try {
-            DOMImplementation i =
-                registry.getDOMImplementation("XML MutationEvents");
-
-            Assertion.verify(i ==
-                             DOMImplementationImpl.getDOMImplementation());
-
-        } catch (Exception e) {
-            e.printStackTrace();
+    @After
+    public void tearDown() {
+        if (fOrigProp != null) {
+            System.setProperty(DOMImplementationRegistry.PROPERTY, fOrigProp);
+        } else {
+            System.clearProperty(DOMImplementationRegistry.PROPERTY);
         }
     }
-}    
+
+    @org.junit.Test
+    public void testRegistryBootstrap() throws Exception {
+        DOMImplementationRegistry registry = DOMImplementationRegistry.newInstance();
+        assertNotNull(registry);
+
+        DOMImplementation coreImpl = registry.getDOMImplementation("XML");
+        assertSame(CoreDOMImplementationImpl.getDOMImplementation(), coreImpl);
+
+        DOMImplementation domImpl = registry.getDOMImplementation("XML MutationEvents");
+        assertSame(DOMImplementationImpl.getDOMImplementation(), domImpl);
+    }
+
+    public static junit.framework.Test suite() {
+        return new junit.framework.JUnit4TestAdapter(Test.class);
+    }
+}
