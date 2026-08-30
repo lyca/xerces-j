@@ -1,0 +1,35 @@
+name: Gradle CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+    types:
+      - opened
+      - reopened
+      - synchronize
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Gradle Build with Java ${{ matrix.jdk }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        jdk: ['8', '11', '17', '21']
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up JDK ${{ matrix.jdk }}
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: ${{ matrix.jdk }}
+
+    - name: Make gradlew executable
+      run: chmod +x gradlew
+
+    - name: Gradle Build & Test
+      run: ./gradlew build samplesJar --info

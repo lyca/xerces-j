@@ -8,3 +8,8 @@ out.xml
 .settings/
 .classpath
 .project
+junit*.properties
+
+# Gradle
+.gradle/
+gradle/wrapper/gradle-wrapper.jar
