@@ -48,7 +48,7 @@ public class SoftReferenceSymbolTable extends SymbolTable {
      */
     protected SREntry[] fBuckets = null;
 
-    private final ReferenceQueue fReferenceQueue;
+    private final ReferenceQueue<SREntryData> fReferenceQueue;
     
     //
     // Constructors
@@ -89,7 +89,7 @@ public class SoftReferenceSymbolTable extends SymbolTable {
         fThreshold = (int)(fTableSize * loadFactor);
         fCount = 0;
 
-        fReferenceQueue = new ReferenceQueue();
+        fReferenceQueue = new ReferenceQueue<>();
     }
 
     /**
@@ -124,13 +124,14 @@ public class SoftReferenceSymbolTable extends SymbolTable {
      *
      * @param symbol The new symbol.
      */
+    @Override
     public String addSymbol(String symbol) {
         clean();
         // search for identical symbol
         int collisionCount = 0;
         int bucket = hash(symbol) % fTableSize;
         for (SREntry entry = fBuckets[bucket]; entry != null; entry = entry.next) {
-            SREntryData data = (SREntryData)entry.get();
+            SREntryData data = entry.get();
             if (data == null) {
                 continue;
             }
@@ -173,13 +174,14 @@ public class SoftReferenceSymbolTable extends SymbolTable {
      * @param offset The offset into the buffer of the new symbol.
      * @param length The length of the new symbol in the buffer.
      */
+    @Override
     public String addSymbol(char[] buffer, int offset, int length) {
         clean();
         // search for identical symbol
         int collisionCount = 0;
         int bucket = hash(buffer, offset, length) % fTableSize;
         OUTER: for (SREntry entry = fBuckets[bucket]; entry != null; entry = entry.next) {
-            SREntryData data = (SREntryData)entry.get();
+            SREntryData data = entry.get();
             if (data == null) {
                 continue;
             }
@@ -225,6 +227,7 @@ public class SoftReferenceSymbolTable extends SymbolTable {
      * number of keys in the SymbolTable exceeds this hashtable's capacity 
      * and load factor. 
      */
+    @Override
     protected void rehash() {
         rehashCommon(fBuckets.length * 2 + 1);
     }
@@ -247,6 +250,7 @@ public class SoftReferenceSymbolTable extends SymbolTable {
      * method is called automatically when the number keys in one of the 
      * SymbolTable's buckets exceeds the given collision threshold.
      */
+    @Override
     protected void rebalance() {
         if (fHashMultipliers == null) {
             fHashMultipliers = new int[MULTIPLIERS_SIZE];
@@ -270,7 +274,7 @@ public class SoftReferenceSymbolTable extends SymbolTable {
                 SREntry e = old;
                 old = old.next;
 
-                SREntryData data = (SREntryData)e.get();
+                SREntryData data = e.get();
                 if (data != null) {
                     int index = hash(data.symbol) % newCapacity;
                     if (newTable[index] != null) {
@@ -296,13 +300,14 @@ public class SoftReferenceSymbolTable extends SymbolTable {
      *
      * @param symbol The symbol to look for.
      */
+    @Override
     public boolean containsSymbol(String symbol) {
 
         // search for identical symbol
         int bucket = hash(symbol) % fTableSize;
         int length = symbol.length();
         OUTER: for (SREntry entry = fBuckets[bucket]; entry != null; entry = entry.next) {
-            SREntryData data = (SREntryData)entry.get();
+            SREntryData data = entry.get();
             if (data == null) {
                 continue;
             }
@@ -328,12 +333,13 @@ public class SoftReferenceSymbolTable extends SymbolTable {
      * @param offset The offset into the buffer.
      * @param length The length of the symbol in the buffer.
      */
+    @Override
     public boolean containsSymbol(char[] buffer, int offset, int length) {
 
         // search for identical symbol
         int bucket = hash(buffer, offset, length) % fTableSize;
         OUTER: for (SREntry entry = fBuckets[bucket]; entry != null; entry = entry.next) {
-            SREntryData data = (SREntryData)entry.get();
+            SREntryData data = entry.get();
             if (data == null) {
                 continue;
             }
@@ -396,7 +402,7 @@ public class SoftReferenceSymbolTable extends SymbolTable {
      * 
      * The "SR" stands for SoftReference.
      */
-    protected static final class SREntry extends SoftReference {
+    protected static final class SREntry extends SoftReference<SREntryData> {
 
         /** The next entry. */
         public SREntry next;
@@ -415,7 +421,7 @@ public class SoftReferenceSymbolTable extends SymbolTable {
          * Constructs a new entry from the specified symbol and next entry
          * reference.
          */
-        public SREntry(String internedSymbol, SREntry next, int bucket, ReferenceQueue q) {
+        public SREntry(String internedSymbol, SREntry next, int bucket, ReferenceQueue<SREntryData> q) {
             super(new SREntryData(internedSymbol), q);
             initialize(next, bucket);
         }
@@ -424,7 +430,7 @@ public class SoftReferenceSymbolTable extends SymbolTable {
          * Constructs a new entry from the specified symbol information and
          * next entry reference.
          */
-        public SREntry(String internedSymbol, char[] ch, int offset, int length, SREntry next, int bucket, ReferenceQueue q) {
+        public SREntry(String internedSymbol, char[] ch, int offset, int length, SREntry next, int bucket, ReferenceQueue<SREntryData> q) {
             super(new SREntryData(internedSymbol, ch, offset, length), q);
             initialize(next, bucket);
         }
