@@ -26,7 +26,8 @@ import java.nio.charset.StandardCharsets;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Locale;
 
 import org.apache.xerces.dom.DOMMessageFormatter;
@@ -79,23 +80,23 @@ public final class HTMLdtd
      * Table of reverse character reference mapping. Character codes are held
      * as single-character strings, mapped to their reference name.
      */
-    private static Hashtable<Integer, String> _byChar;
+    private static Map<Integer, String> _byChar;
 
 
     /**
      * Table of entity name to value mapping. Entities are held as strings,
      * character references as <code>Character</code> objects.
      */
-    private static Hashtable<String, Integer> _byName;
+    private static Map<String, Integer> _byName;
 
 
-    private static Hashtable<String, String[]> _boolAttrs;
+    private static Map<String, String[]> _boolAttrs;
 
 
     /**
      * Holds element definitions.
      */
-    private static Hashtable<String, Integer> _elemDefs;
+    private static Map<String, Integer> _elemDefs;
 
 
     /**
@@ -375,8 +376,8 @@ public final class HTMLdtd
         if ( _byName != null )
             return;
         try {
-            _byName = new Hashtable<>();
-            _byChar = new Hashtable<>();
+            _byName = new HashMap<>();
+            _byChar = new HashMap<>();
             is = HTMLdtd.class.getResourceAsStream( ENTITIES_RESOURCE );
             if ( is == null ) {
             	throw new RuntimeException( 
@@ -476,7 +477,7 @@ public final class HTMLdtd
 
     static
     {
-        _elemDefs = new Hashtable<>();
+        _elemDefs = new HashMap<>();
         defineElement( "ADDRESS", CLOSE_P );
         defineElement( "AREA", EMPTY );
         defineElement( "BASE",  EMPTY | ALLOWED_HEAD );
@@ -530,7 +531,7 @@ public final class HTMLdtd
         defineElement( "TR", ELEM_CONTENT | OPT_CLOSING | CLOSE_TABLE );
         defineElement( "UL", ELEM_CONTENT | CLOSE_P );
 
-        _boolAttrs = new Hashtable<>();
+        _boolAttrs = new HashMap<>();
         defineBoolean( "AREA", "href" );
         defineBoolean( "BUTTON", "disabled" );
         defineBoolean( "DIR", "compact" );

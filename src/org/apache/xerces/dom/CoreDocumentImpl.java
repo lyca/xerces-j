@@ -25,6 +25,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.Collections;
 import java.util.Map;
 import java.util.WeakHashMap;
 
@@ -138,7 +139,7 @@ extends ParentNode implements Document  {
     protected Map userData;  // serialized as Hashtable
 
     /** Identifiers. */
-    protected Hashtable<String, Element> identifiers;
+    protected Map<String, Element> identifiers;
 
     // DOM Level 3: normalizeDocument
     transient DOMNormalizer domNormalizer = null;
@@ -1143,7 +1144,7 @@ extends ParentNode implements Document  {
                         copyEventListeners(at, nat);
                         
                         // remove user data from old node
-                        Hashtable data = removeUserDataTable(at);
+                        Map data = removeUserDataTable(at);
                         
                         // move children to new node
                         Node child = at.getFirstChild();
@@ -1188,7 +1189,7 @@ extends ParentNode implements Document  {
         copyEventListeners(el, nel);
         
         // remove user data from old node
-        Hashtable data = removeUserDataTable(el);
+        Map data = removeUserDataTable(el);
         
         // remove old node from parent if any
         Node parent = el.getParentNode();
@@ -1634,7 +1635,7 @@ extends ParentNode implements Document  {
     HashMap reversedIdentifiers)
     throws DOMException {
         Node newnode=null;
-		Hashtable userData = null;
+		Map userData = null;
 
         // Sigh. This doesn't work; too many nodes have private data that
         // would have to be manually tweaked. May be able to add local
@@ -1693,7 +1694,7 @@ extends ParentNode implements Document  {
                     String elementId = (String) reversedIdentifiers.get(source);
                     if (elementId != null) {
                         if (identifiers == null)
-                            identifiers = new Hashtable<>();
+                            identifiers = new HashMap<>();
 
                         identifiers.put(elementId, newElement);
                     }
@@ -1881,7 +1882,7 @@ extends ParentNode implements Document  {
     @Override
     public Node adoptNode(Node source) {
         NodeImpl node;
-		Hashtable userData = null;
+		Map userData = null;
         try {
             node = (NodeImpl) source;
         } catch (ClassCastException e) {
@@ -2123,7 +2124,7 @@ extends ParentNode implements Document  {
         }
 
         if (identifiers == null) {
-            identifiers = new Hashtable<>();
+            identifiers = new HashMap<>();
         }
 
         identifiers.put(idName, element);
@@ -2194,10 +2195,10 @@ extends ParentNode implements Document  {
         }
 
         if (identifiers == null) {
-            identifiers = new Hashtable<>();
+            identifiers = new HashMap<>();
         }
 
-        return identifiers.keys();
+        return Collections.enumeration(identifiers.keySet());
 
     } // getIdentifiers():Enumeration
 
@@ -2460,7 +2461,7 @@ extends ParentNode implements Document  {
     Object data, UserDataHandler handler) {
         if (data == null) {
             if (userData != null) {
-                Hashtable t = (Hashtable) userData.get(n);
+                Map t = (Map) userData.get(n);
                 if (t != null) {
                     Object o = t.remove(key);
                     if (o != null) {
@@ -2472,16 +2473,16 @@ extends ParentNode implements Document  {
             return null;
         }
         else {
-            Hashtable t;
+            Map t;
             if (userData == null) {
                 userData = new WeakHashMap();
-                t = new Hashtable();
+                t = new HashMap();
                 userData.put(n, t);
             }
             else {
-                t = (Hashtable) userData.get(n);
+                t = (Map) userData.get(n);
                 if (t == null) {
-                    t = new Hashtable();
+                    t = new HashMap();
                     userData.put(n, t);
                 }
             }
@@ -2509,7 +2510,7 @@ extends ParentNode implements Document  {
         if (userData == null) {
             return null;
         }
-        Hashtable t = (Hashtable) userData.get(n);
+        Map t = (Map) userData.get(n);
         if (t == null) {
             return null;
         }
@@ -2521,11 +2522,11 @@ extends ParentNode implements Document  {
         return null;
     }
 
-	protected Hashtable getUserDataRecord(Node n){
+	protected Map getUserDataRecord(Node n){
         if (userData == null) {
             return null;
         }
-        Hashtable t = (Hashtable) userData.get(n);
+        Map t = (Map) userData.get(n);
         if (t == null) {
             return null;
         }
@@ -2537,11 +2538,11 @@ extends ParentNode implements Document  {
      * @param n The node this operation applies to.
      * @return The removed table.
      */
-    Hashtable removeUserDataTable(Node n) {
+    Map removeUserDataTable(Node n) {
         if (userData == null) {
             return null;
         }
-        return (Hashtable) userData.get(n);
+        return (Map) userData.get(n);
     }
 
     /**
@@ -2549,7 +2550,7 @@ extends ParentNode implements Document  {
      * @param n The node this operation applies to.
      * @param data The user data table.
      */
-    void setUserDataTable(Node n, Hashtable data) {
+    void setUserDataTable(Node n, Map data) {
         if (userData == null) {
             userData = new WeakHashMap();
         }
@@ -2568,9 +2569,9 @@ extends ParentNode implements Document  {
         if (userData == null) {
             return;
         }
-        //Hashtable t = (Hashtable) userData.get(n);
+        //Map t = (Map) userData.get(n);
 		if(n instanceof NodeImpl){
-			Hashtable t = ((NodeImpl)n).getUserDataRecord();
+			Map t = ((NodeImpl)n).getUserDataRecord();
 			if (t == null || t.isEmpty()) {
 				return;
 			}
@@ -2585,7 +2586,7 @@ extends ParentNode implements Document  {
      * @param operation The operation - import, clone, or delete.
 	 * @param handlers Data associated with n.
 	*/
-	void callUserDataHandlers(Node n, Node c, short operation, Hashtable userData) {
+	void callUserDataHandlers(Node n, Node c, short operation, Map userData) {
         if (userData == null || userData.isEmpty()) {
             return;
         }
@@ -2621,7 +2622,7 @@ extends ParentNode implements Document  {
         Enumeration nodes = userData.keys();
         while (nodes.hasMoreElements()) {
             Object node = nodes.nextElement();
-            Hashtable t = (Hashtable) userData.get(node);
+            Map t = (Map) userData.get(node);
             if (t != null && !t.isEmpty()) {
                 Enumeration keys = t.keys();
                 while (keys.hasMoreElements()) {

@@ -17,7 +17,8 @@
 package org.apache.wml.dom;
 
 import java.lang.reflect.Constructor;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.wml.WMLDocument;
 import org.apache.xerces.dom.DocumentImpl;
@@ -37,7 +38,7 @@ public class WMLDocumentImpl extends DocumentImpl implements WMLDocument {
     
     private static final long serialVersionUID = -6582904849512384104L;
     
-    private static Hashtable        _elementTypesWML;
+    private static Map<String, Class<?>> _elementTypesWML;
     private static final Class[]    _elemClassSigWML =
         new Class[] { WMLDocumentImpl.class, String.class };
     
@@ -77,7 +78,7 @@ public class WMLDocumentImpl extends DocumentImpl implements WMLDocument {
     }
     
     static {
-        _elementTypesWML = new Hashtable();
+        _elementTypesWML = new HashMap<>();
         _elementTypesWML.put("b", WMLBElementImpl.class);
         _elementTypesWML.put("noop", WMLNoopElementImpl.class);
         _elementTypesWML.put("a", WMLAElementImpl.class);

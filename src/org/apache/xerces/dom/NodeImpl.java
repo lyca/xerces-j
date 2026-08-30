@@ -20,7 +20,7 @@ package org.apache.xerces.dom;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.util.Hashtable;
+import java.util.Map;
 
 import javax.xml.transform.TransformerException;
 
@@ -1993,7 +1993,7 @@ public abstract class NodeImpl
         return ownerDocument().getUserData(this, key);
     }
 
-	protected Hashtable getUserDataRecord(){
+	protected Map getUserDataRecord(){
         return ownerDocument().getUserDataRecord(this);
 	}
 

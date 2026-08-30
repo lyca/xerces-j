@@ -44,8 +44,10 @@ package org.apache.xml.serialize;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
-import java.util.Hashtable;
-import java.util.Vector;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.xerces.dom.DOMErrorImpl;
 import org.apache.xerces.dom.DOMLocatorImpl;
@@ -164,7 +166,7 @@ public abstract class BaseMarkupSerializer
      * Vector holding comments and PIs that come before the root
      * element (even after it), see {@link #serializePreRoot}.
      */
-    private Vector          _preRoot;
+    private List<String> _preRoot;
 
 
     /**
@@ -187,7 +189,7 @@ public abstract class BaseMarkupSerializer
      * Accumulated here prior to starting an element and placing this
      * list in the element state.
      */
-    protected Hashtable     _prefixes;
+    protected Map<String, String> _prefixes;
 
 
     /**
@@ -621,8 +623,8 @@ public abstract class BaseMarkupSerializer
         // the PI directly but place it in the pre-root vector.
         if ( isDocumentState() ) {
             if ( _preRoot == null )
-                _preRoot = new Vector();
-            _preRoot.addElement( fStrBuffer.toString() );
+                _preRoot = new ArrayList<>();
+            _preRoot.add( fStrBuffer.toString() );
         } else {
             _printer.indent();
             printText( fStrBuffer.toString(), true, true );
@@ -668,8 +670,8 @@ public abstract class BaseMarkupSerializer
         // the comment directly but place it in the pre-root vector.
         if ( isDocumentState() ) {
             if ( _preRoot == null )
-                _preRoot = new Vector();
-            _preRoot.addElement( fStrBuffer.toString() );
+                _preRoot = new ArrayList<>();
+            _preRoot.add( fStrBuffer.toString() );
         } else {
             // Indent this element on a new line if the first
             // content of the parent element or immediately
@@ -801,7 +803,7 @@ public abstract class BaseMarkupSerializer
         throws SAXException
     {
         if ( _prefixes == null )
-            _prefixes = new Hashtable();
+            _prefixes = new HashMap<>();
         _prefixes.put( uri, prefix == null ? "" : prefix );
     }
 
@@ -1375,11 +1377,11 @@ public abstract class BaseMarkupSerializer
 
         if ( _preRoot != null ) {
             for ( i = 0 ; i < _preRoot.size() ; ++i ) {
-                printText( (String) _preRoot.elementAt( i ), true, true );
+                printText( _preRoot.get(i), true, true );
                 if ( _indenting )
                 _printer.breakLine();
             }
-            _preRoot.removeAllElements();
+            _preRoot.clear();
         }
     }
 

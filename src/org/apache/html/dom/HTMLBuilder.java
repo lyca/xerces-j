@@ -17,7 +17,8 @@
 package org.apache.html.dom;
 
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.xerces.dom.ElementImpl;
 import org.apache.xerces.dom.ProcessingInstructionImpl;
@@ -76,7 +77,7 @@ public class HTMLBuilder
      * nodes may precede the document element (comment and PI), and they are accumulated
      * in this vector.
      */
-    protected Vector<Node> _preRootNodes;
+    protected List<Node> _preRootNodes;
 
     
     public void startDocument()
@@ -125,7 +126,7 @@ public class HTMLBuilder
 	    if ( _preRootNodes != null )
 	    {
 		for ( i = _preRootNodes.size() ; i-- > 0 ; )
-		    _document.insertBefore( (Node) _preRootNodes.elementAt( i ), elem );
+		    _document.insertBefore( (Node) _preRootNodes.get(i), elem );
 		_preRootNodes = null;
 	    }
 	     
@@ -201,8 +202,8 @@ public class HTMLBuilder
         if ( _current == null && _document == null )
 	{
 	    if ( _preRootNodes == null )
-		_preRootNodes = new Vector<>();
-	    _preRootNodes.addElement( new ProcessingInstructionImpl( null, target, instruction ) );
+		_preRootNodes = new ArrayList<>();
+	    _preRootNodes.add( new ProcessingInstructionImpl( null, target, instruction ) );
 	}
 	else
         if ( _current == null && _document != null )

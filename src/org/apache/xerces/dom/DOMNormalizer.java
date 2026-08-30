@@ -19,7 +19,8 @@ package org.apache.xerces.dom;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.xerces.impl.Constants;
 import org.apache.xerces.impl.RevalidationHandler;
@@ -1457,27 +1458,21 @@ public class DOMNormalizer implements XMLDocumentHandler {
         protected CoreDocumentImpl fDocument;
         protected ElementImpl fElement;
 
-        protected final Vector<String> fDTDTypes = new Vector<>(5);
-        protected final Vector<Augmentations> fAugmentations = new Vector<>(5);
+        protected final List<String> fDTDTypes = new ArrayList<>(5);
+        protected final List<Augmentations> fAugmentations = new ArrayList<>(5);
 
         public void setAttributes(AttributeMap attributes, CoreDocumentImpl doc, ElementImpl elem) {
             fDocument = doc;
             fAttributes = attributes;
             fElement = elem;
+            fDTDTypes.clear();
+            fAugmentations.clear();
             if (attributes != null) {
                 int length = attributes.getLength();
-                fDTDTypes.setSize(length);
-                fAugmentations.setSize(length);
-                // REVISIT: this implementation does not store any value in augmentations
-                //          and basically not keeping augs in parallel to attributes map
-                //          untill all attributes are added (default attributes)
                 for (int i = 0; i < length; i++) {
-                    fAugmentations.setElementAt(new AugmentationsImpl(), i);
+                    fDTDTypes.add(null);
+                    fAugmentations.add(new AugmentationsImpl());
                 }
-            } 
-            else {
-                fDTDTypes.setSize(0);
-                fAugmentations.setSize(0);
             }
         }
 
@@ -1500,8 +1495,8 @@ public class DOMNormalizer implements XMLDocumentHandler {
                 // REVISIT: the following should also update ID table
                 attr.setNodeValue(attrValue);
                 index = fElement.setXercesAttributeNode(attr);
-                fDTDTypes.insertElementAt(attrType, index);
-                fAugmentations.insertElementAt(new AugmentationsImpl(), index);
+                fDTDTypes.add(index, attrType);
+                fAugmentations.add(index, new AugmentationsImpl());
                 attr.setSpecified(false);
             }            
             else {
@@ -1592,11 +1587,11 @@ public class DOMNormalizer implements XMLDocumentHandler {
         }
 
         public void setType(int attrIndex, String attrType) {
-            fDTDTypes.setElementAt(attrType, attrIndex);
+            fDTDTypes.set(attrIndex, attrType);
         }
 
         public String getType(int index) {
-            String type = (String) fDTDTypes.elementAt(index);
+            String type = fDTDTypes.get(index);
             return (type != null) ? getReportableType(type) : "CDATA";
         }
 
@@ -1667,7 +1662,7 @@ public class DOMNormalizer implements XMLDocumentHandler {
         }
 
         public Augmentations getAugmentations (int attributeIndex){
-            return(Augmentations)fAugmentations.elementAt(attributeIndex);
+            return fAugmentations.get(attributeIndex);
         }
 
         public Augmentations getAugmentations (String uri, String localPart){ 
@@ -1687,7 +1682,7 @@ public class DOMNormalizer implements XMLDocumentHandler {
          * @param augs      The augmentations.
          */
         public void setAugmentations(int attrIndex, Augmentations augs) {
-            fAugmentations.setElementAt(augs, attrIndex);
+            fAugmentations.set(attrIndex, augs);
         }
     }
 

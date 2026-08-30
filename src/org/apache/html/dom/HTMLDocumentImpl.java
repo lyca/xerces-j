@@ -19,7 +19,8 @@ package org.apache.html.dom;
 
 import java.io.StringWriter;
 import java.lang.reflect.Constructor;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Locale;
 
 import org.apache.xerces.dom.DocumentImpl;
@@ -120,7 +121,7 @@ public class HTMLDocumentImpl
      *
      * @see #createElement
      */
-    private static Hashtable<String, Class<?>> _elementTypesHTML;
+    private static Map<String, Class<?>> _elementTypesHTML;
 
 
     /**
@@ -754,7 +755,7 @@ public class HTMLDocumentImpl
 
         if ( _elementTypesHTML != null )
             return;
-        _elementTypesHTML = new Hashtable<>( 63 );
+        _elementTypesHTML = new HashMap<>(63);
         populateElementType( "A", "HTMLAnchorElementImpl" );
         populateElementType( "APPLET", "HTMLAppletElementImpl" );
         populateElementType( "AREA", "HTMLAreaElementImpl" );

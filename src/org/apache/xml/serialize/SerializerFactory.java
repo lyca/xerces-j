@@ -20,7 +20,8 @@ package org.apache.xml.serialize;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 /**
@@ -49,7 +50,7 @@ public abstract class SerializerFactory {
      */
     public static final String FactoriesProperty = "org.apache.xml.serialize.factories";
 
-    private static Hashtable<String, SerializerFactory> _factories = new Hashtable<>();
+    private static Map<String, SerializerFactory> _factories = new HashMap<>();
 
     static
     {

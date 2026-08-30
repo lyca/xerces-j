@@ -18,7 +18,8 @@
 package org.apache.xml.serialize;
 
 import java.io.UnsupportedEncodingException;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Locale;
 
 import org.apache.xerces.util.EncodingMap;
@@ -58,7 +59,7 @@ public class Encodings
     // note that the size of this Hashtable
     // is bounded by the number of encodings recognized by EncodingMap;
     // therefore it poses no static mutability risk.
-    static Hashtable<String, EncodingInfo> _encodings = new Hashtable<>();
+    static Map<String, EncodingInfo> _encodings = new HashMap<>();
 
     /**
      * @param encoding a MIME charset name, or null

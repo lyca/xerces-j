@@ -22,11 +22,13 @@ import java.lang.ref.Reference;
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Vector;
 
 import org.apache.xerces.dom.events.EventImpl;
 import org.apache.xerces.dom.events.MouseEventImpl;
@@ -137,7 +139,7 @@ public class DocumentImpl
      * @see NodeImpl
      * @see LEntry
      */
-    protected Hashtable<NodeImpl, Vector<LEntry>> eventListeners;
+    protected Map<NodeImpl, List<LEntry>> eventListeners;
 
     /** Bypass mutation events firing. */
     protected boolean mutationEvents = false;
@@ -595,9 +597,9 @@ public class DocumentImpl
      * @param node The node to add/remove from the hashtable depending on listeners being null or not
      * @param listeners A vector of LEntry or null. If this arg has a value then the node will be put in the table
      */
-    protected void setEventListeners(NodeImpl node, Vector<LEntry> listeners) {
+    protected void setEventListeners(NodeImpl node, List<LEntry> listeners) {
         if (eventListeners == null) {
-            eventListeners = new Hashtable<>();
+            eventListeners = new HashMap<>();
         }
         if (listeners == null) {
             eventListeners.remove(node);
@@ -615,7 +617,7 @@ public class DocumentImpl
     /**
      * Retreive event listener registered on a given node
      */
-    protected Vector<LEntry> getEventListeners(NodeImpl n) {
+    protected List<LEntry> getEventListeners(NodeImpl n) {
         if (eventListeners == null) {
             return null;
         }
@@ -686,12 +688,12 @@ public class DocumentImpl
         // Simplest way to code that is to zap the previous entry, if any.
         removeEventListener(node, type, listener, useCapture);
 	    
-        Vector<LEntry> nodeListeners = getEventListeners(node);
+        List<LEntry> nodeListeners = getEventListeners(node);
         if(nodeListeners == null) {
-            nodeListeners = new Vector<>();
+            nodeListeners = new ArrayList<>();
             setEventListeners(node, nodeListeners);
         }
-        nodeListeners.addElement(new LEntry(type, listener, useCapture));
+        nodeListeners.add(new LEntry(type, listener, useCapture));
 	    
         // Record active listener
         LCount lc = LCount.lookup(type);
@@ -724,7 +726,7 @@ public class DocumentImpl
         // If this couldn't be a valid listener registration, ignore request
         if (type == null || type.length() == 0 || listener == null)
             return;
-        Vector<LEntry> nodeListeners = getEventListeners(node);
+        List<LEntry> nodeListeners = getEventListeners(node);
         if (nodeListeners == null)
             return;
 
@@ -732,10 +734,10 @@ public class DocumentImpl
         // each listener may be registered only once per type per phase.
         // count-down is OK for deletions!
         for (int i = nodeListeners.size() - 1; i >= 0; --i) {
-            LEntry le = (LEntry) nodeListeners.elementAt(i);
+            LEntry le = nodeListeners.get(i);
             if (le.useCapture == useCapture && le.listener == listener && 
                 le.type.equals(type)) {
-                nodeListeners.removeElementAt(i);
+                nodeListeners.remove(i);
                 // Storage management: Discard empty listener lists
                 if (nodeListeners.size() == 0)
                     setEventListeners(node, null);
@@ -757,11 +759,11 @@ public class DocumentImpl
     } // removeEventListener(NodeImpl,String,EventListener,boolean) :void
 
     protected void copyEventListeners(NodeImpl src, NodeImpl tgt) {
-        Vector<LEntry> nodeListeners = getEventListeners(src);
+        List<LEntry> nodeListeners = getEventListeners(src);
         if (nodeListeners == null) {
             return;
         }
-        setEventListeners(tgt, (Vector<LEntry>) nodeListeners.clone());
+        setEventListeners(tgt, new ArrayList<>(nodeListeners));
     }
 
     /**
@@ -871,13 +873,13 @@ public class DocumentImpl
                 // Handle all capturing listeners on this node
                 NodeImpl nn = (NodeImpl) pv.get(j);
                 evt.currentTarget = nn;
-                Vector<LEntry> nodeListeners = getEventListeners(nn);
+                List<LEntry> nodeListeners = getEventListeners(nn);
                 if (nodeListeners != null) {
-                    Vector<LEntry> nl = (Vector<LEntry>) nodeListeners.clone();
+                    List<LEntry> nl = new ArrayList<>(nodeListeners);
                     // call listeners in the order in which they got registered
                     int nlsize = nl.size();
                     for (int i = 0; i < nlsize; i++) {
-                        LEntry le = (LEntry) nl.elementAt(i);
+                        LEntry le = nl.get(i);
                         if (le.useCapture && le.type.equals(evt.type) &&
                             nodeListeners.contains(le)) {
                             try {
@@ -900,13 +902,13 @@ public class DocumentImpl
             // node are _not_ invoked, even during the capture phase.
             evt.eventPhase = Event.AT_TARGET;
             evt.currentTarget = node;
-            Vector<LEntry> nodeListeners = getEventListeners(node);
+            List<LEntry> nodeListeners = getEventListeners(node);
             if (!evt.stopPropagation && nodeListeners != null) {
-                Vector<LEntry> nl = (Vector<LEntry>) nodeListeners.clone();
+                List<LEntry> nl = new ArrayList<>(nodeListeners);
                 // call listeners in the order in which they got registered
                 int nlsize = nl.size();
                 for (int i = 0; i < nlsize; i++) {
-                    LEntry le = (LEntry) nl.elementAt(i);
+                    LEntry le = nl.get(i);
                     if (!le.useCapture && le.type.equals(evt.type) &&
                         nodeListeners.contains(le)) {
                         try {
@@ -935,12 +937,12 @@ public class DocumentImpl
                     evt.currentTarget = nn;
                     nodeListeners = getEventListeners(nn);
                     if (nodeListeners != null) {
-                        Vector<LEntry> nl = (Vector<LEntry>) nodeListeners.clone();
+                        List<LEntry> nl = new ArrayList<>(nodeListeners);
                         // call listeners in the order in which they got
                         // registered
                         int nlsize = nl.size();
                         for (int i = 0; i < nlsize; i++) {
-                            LEntry le = (LEntry) nl.elementAt(i);
+                            LEntry le = nl.get(i);
                             if (!le.useCapture && le.type.equals(evt.type) &&
                                 nodeListeners.contains(le)) {
                                 try {

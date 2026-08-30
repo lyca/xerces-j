@@ -19,6 +19,7 @@ package org.apache.xerces.dom;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.List;
 import java.util.Vector;
 
 import org.w3c.dom.DOMStringList;
