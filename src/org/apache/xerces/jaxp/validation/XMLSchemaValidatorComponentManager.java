@@ -166,7 +166,7 @@ final class XMLSchemaValidatorComponentManager extends ParserConfigurationSettin
     private boolean fUseGrammarPoolOnly;
     
     /** Lookup map for components required for validation. **/
-    private final HashMap fComponents = new HashMap();
+    private final Map<String, Object> fComponents = new HashMap<>();
     
     //
     // Components
@@ -192,10 +192,10 @@ final class XMLSchemaValidatorComponentManager extends ParserConfigurationSettin
     //
     
     /** Stores initial feature values for validator reset. */
-    private final HashMap fInitFeatures = new HashMap();
+    private final Map<String, Boolean> fInitFeatures = new HashMap<>();
     
     /** Stores initial property values for validator reset. */
-    private final HashMap fInitProperties = new HashMap();
+    private final Map<String, Object> fInitProperties = new HashMap<>();
     
     /** Stores the initial security manager. */
     private final SecurityManager fInitSecurityManager;
@@ -296,6 +296,7 @@ final class XMLSchemaValidatorComponentManager extends ParserConfigurationSettin
      *                                   it is <strong>really</strong>
      *                                   a critical error.
      */
+    @Override
     public boolean getFeature(String featureId)
             throws XMLConfigurationException {
         if (PARSER_SETTINGS.equals(featureId)) {
@@ -358,6 +359,7 @@ final class XMLSchemaValidatorComponentManager extends ParserConfigurationSettin
      *                                   it is <strong>really</strong>
      *                                   a critical error.
      */
+    @Override
     public Object getProperty(String propertyId)
             throws XMLConfigurationException {
         if (LOCALE.equals(propertyId)) {

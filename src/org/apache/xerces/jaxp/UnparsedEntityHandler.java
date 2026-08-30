@@ -18,6 +18,7 @@
 package org.apache.xerces.jaxp;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.xerces.impl.validation.EntityState;
 import org.apache.xerces.impl.validation.ValidationManager;
@@ -48,7 +49,7 @@ final class UnparsedEntityHandler implements XMLDTDFilter, EntityState {
     private final ValidationManager fValidationManager;
     
     /** Map for tracking unparsed entities. */
-    private HashMap fUnparsedEntities = null;
+    private Map<String, String> fUnparsedEntities = null;
     
     UnparsedEntityHandler(ValidationManager manager) {
         fValidationManager = manager;
@@ -165,11 +166,12 @@ final class UnparsedEntityHandler implements XMLDTDFilter, EntityState {
         }
     }
 
+    @Override
     public void unparsedEntityDecl(String name,
             XMLResourceIdentifier identifier, String notation,
             Augmentations augmentations) throws XNIException {
         if (fUnparsedEntities == null) {
-            fUnparsedEntities = new HashMap();
+            fUnparsedEntities = new HashMap<>();
         }
         fUnparsedEntities.put(name, name);
         if (fDTDHandler != null) {
@@ -234,11 +236,12 @@ final class UnparsedEntityHandler implements XMLDTDFilter, EntityState {
     /*
      * EntityState methods
      */
-
+    @Override
     public boolean isEntityDeclared(String name) {
         return false;
     }
 
+    @Override
     public boolean isEntityUnparsed(String name) {
         if (fUnparsedEntities != null) {
             return fUnparsedEntities.containsKey(name);
@@ -249,7 +252,6 @@ final class UnparsedEntityHandler implements XMLDTDFilter, EntityState {
     /*
      * Other methods
      */
-    
     public void reset() {
         if (fUnparsedEntities != null && !fUnparsedEntities.isEmpty()) {
             // should only clear this if the last document contained unparsed entities

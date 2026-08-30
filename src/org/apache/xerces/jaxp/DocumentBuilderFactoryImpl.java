@@ -18,6 +18,7 @@
 package org.apache.xerces.jaxp;
 
 import java.util.Hashtable;
+import java.util.Map;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
@@ -70,8 +71,8 @@ public class DocumentBuilderFactoryImpl extends DocumentBuilderFactory {
         Constants.XERCES_FEATURE_PREFIX + Constants.CREATE_CDATA_NODES_FEATURE;
     
     /** These are DocumentBuilderFactory attributes not DOM attributes */
-    private Hashtable attributes;
-    private Hashtable features;
+    private Map<String, Object> attributes;
+    private Map<String, Boolean> features;
     private Schema grammar;
     private boolean isXIncludeAware;
     
@@ -84,6 +85,7 @@ public class DocumentBuilderFactoryImpl extends DocumentBuilderFactory {
      * Creates a new instance of a {@link javax.xml.parsers.DocumentBuilder}
      * using the currently configured parameters.
      */
+    @Override
     public DocumentBuilder newDocumentBuilder()
         throws ParserConfigurationException 
     {
@@ -115,6 +117,7 @@ public class DocumentBuilderFactoryImpl extends DocumentBuilderFactory {
      * @param name    name of attribute
      * @param value   null means to remove attribute
      */
+    @Override
     public void setAttribute(String name, Object value)
         throws IllegalArgumentException
     {
@@ -132,7 +135,7 @@ public class DocumentBuilderFactoryImpl extends DocumentBuilderFactory {
 
         // Create Hashtable if none existed before
         if (attributes == null) {
-            attributes = new Hashtable();
+            attributes = new Hashtable<>();
         }
 
         attributes.put(name, value);
@@ -153,6 +156,7 @@ public class DocumentBuilderFactoryImpl extends DocumentBuilderFactory {
      * @return the requested attribute
      * @throws IllegalArgumentException if no property or feature is found for the provided name
      */
+    @Override
     public Object getAttribute(String name)
         throws IllegalArgumentException
     {
@@ -183,24 +187,29 @@ public class DocumentBuilderFactoryImpl extends DocumentBuilderFactory {
             }
         }
     }
-    
+
+    @Override
     public Schema getSchema() {
         return grammar;
     }
-    
+
+    @Override
     public void setSchema(Schema grammar) {
         this.grammar = grammar;
     }
-    
+
+    @Override
     public boolean isXIncludeAware() {
         return this.isXIncludeAware;
     }
-    
+
+    @Override
     public void setXIncludeAware(boolean state) {
         this.isXIncludeAware = state;
     }
-    
-    public boolean getFeature(String name) 
+
+    @Override
+    public boolean getFeature(String name)
         throws ParserConfigurationException {
         if (name.equals(XMLConstants.FEATURE_SECURE_PROCESSING)) {
             return fSecureProcess;
@@ -241,8 +250,9 @@ public class DocumentBuilderFactoryImpl extends DocumentBuilderFactory {
             throw new ParserConfigurationException(e.getMessage());
         }
     }
-    
-    public void setFeature(String name, boolean value) 
+
+    @Override
+    public void setFeature(String name, boolean value)
         throws ParserConfigurationException {
         // If this is the secure processing feature, save it then return.
         if (name.equals(XMLConstants.FEATURE_SECURE_PROCESSING)) {
@@ -280,7 +290,7 @@ public class DocumentBuilderFactoryImpl extends DocumentBuilderFactory {
         }
            
         if (features == null) {
-            features = new Hashtable();
+            features = new Hashtable<>();
         }
         features.put(name, value ? Boolean.TRUE : Boolean.FALSE);
         // Test the feature by possibly throwing SAX exceptions

@@ -18,7 +18,6 @@
 package org.apache.xerces.jaxp;
 
 import java.io.IOException;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -108,12 +107,12 @@ public class DocumentBuilderImpl extends DocumentBuilder
     /** Initial EntityResolver */
     private final EntityResolver fInitEntityResolver;
     
-    DocumentBuilderImpl(DocumentBuilderFactoryImpl dbf, Hashtable dbfAttrs, Hashtable features)
+    DocumentBuilderImpl(DocumentBuilderFactoryImpl dbf, Map<String, Object> dbfAttrs, Map<String, Boolean> features)
         throws SAXNotRecognizedException, SAXNotSupportedException {
         this(dbf, dbfAttrs, features, false);
     }
 
-    DocumentBuilderImpl(DocumentBuilderFactoryImpl dbf, Hashtable dbfAttrs, Hashtable features, boolean secureProcessing)
+    DocumentBuilderImpl(DocumentBuilderFactoryImpl dbf, Map<String, Object> dbfAttrs, Map<String, Boolean> features, boolean secureProcessing)
         throws SAXNotRecognizedException, SAXNotSupportedException
     {
         domParser = new DOMParser();
@@ -202,7 +201,7 @@ public class DocumentBuilderImpl extends DocumentBuilder
         fInitEntityResolver = domParser.getEntityResolver();
     }
     
-    private void setFeatures(Hashtable features)
+    private void setFeatures(Map<String, Boolean> features)
         throws SAXNotSupportedException, SAXNotRecognizedException {
         if (features != null) {
             Iterator entries = features.entrySet().iterator();
@@ -226,7 +225,7 @@ public class DocumentBuilderImpl extends DocumentBuilder
      *
      * @param dbfAttrs attributes to set on the underlying DOMParser
      */
-    private void setDocumentBuilderFactoryAttributes(Hashtable dbfAttrs)
+    private void setDocumentBuilderFactoryAttributes(Map<String, Object> dbfAttrs)
         throws SAXNotSupportedException, SAXNotRecognizedException
     {
         if (dbfAttrs == null) {
@@ -280,14 +279,17 @@ public class DocumentBuilderImpl extends DocumentBuilder
      * one to get a DOM Level 2 DOMImplementation object and then use DOM
      * Level 2 methods to create a DOM Document object.
      */
+    @Override
     public Document newDocument() {
         return new org.apache.xerces.dom.DocumentImpl();
     }
 
+    @Override
     public DOMImplementation getDOMImplementation() {
         return DOMImplementationImpl.getDOMImplementation();
     }
 
+    @Override
     public Document parse(InputSource is) throws SAXException, IOException {
         if (is == null) {
             throw new IllegalArgumentException(
@@ -313,6 +315,7 @@ public class DocumentBuilderImpl extends DocumentBuilder
      * @return true if this parser is configured to understand namespaces; false otherwise
      * @see #NAMESPACES_FEATURE
      */
+    @Override
     public boolean isNamespaceAware() {
         try {
             return domParser.getFeature(NAMESPACES_FEATURE);
@@ -322,6 +325,7 @@ public class DocumentBuilderImpl extends DocumentBuilder
         }
     }
 
+    @Override
     public boolean isValidating() {
         try {
             return domParser.getFeature(VALIDATION_FEATURE);
@@ -337,6 +341,7 @@ public class DocumentBuilderImpl extends DocumentBuilder
      * @return the state of XInclude processing mode
      * @see #XINCLUDE_FEATURE
      */
+    @Override
     public boolean isXIncludeAware() {
         try {
             return domParser.getFeature(XINCLUDE_FEATURE);
@@ -346,17 +351,21 @@ public class DocumentBuilderImpl extends DocumentBuilder
         }
     }
 
+    @Override
     public void setEntityResolver(EntityResolver er) {
         domParser.setEntityResolver(er);
     }
 
+    @Override
     public void setErrorHandler(ErrorHandler eh) {
         domParser.setErrorHandler(eh);
     }
-    
+
+    @Override
     public Schema getSchema() {
         return grammar;
     }
+    @Override
     
     public void reset() {
         /* Restore the initial error handler. */

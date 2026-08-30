@@ -207,34 +207,42 @@ final class ValidatorHandlerImpl extends ValidatorHandler implements
     /*
      * ValidatorHandler methods
      */
+    @Override
     
     public void setContentHandler(ContentHandler receiver) {
         fContentHandler = receiver;
     }
+    @Override
     
     public ContentHandler getContentHandler() {
         return fContentHandler;
     }
+    @Override
 
     public void setErrorHandler(ErrorHandler errorHandler) {
         fComponentManager.setErrorHandler(errorHandler);
     }
+    @Override
 
     public ErrorHandler getErrorHandler() {
         return fComponentManager.getErrorHandler();
     }
+    @Override
 
     public void setResourceResolver(LSResourceResolver resourceResolver) {
         fComponentManager.setResourceResolver(resourceResolver);
     }
+    @Override
 
     public LSResourceResolver getResourceResolver() {
         return fComponentManager.getResourceResolver();
     }
+    @Override
 
     public TypeInfoProvider getTypeInfoProvider() {
         return fTypeInfoProvider;
     }
+    @Override
     
     public boolean getFeature(String name)
         throws SAXNotRecognizedException, SAXNotSupportedException {
@@ -262,6 +270,7 @@ final class ValidatorHandlerImpl extends ValidatorHandler implements
             }
         }
     }
+    @Override
     
     public void setFeature(String name, boolean value)
         throws SAXNotRecognizedException, SAXNotSupportedException {
@@ -290,6 +299,7 @@ final class ValidatorHandlerImpl extends ValidatorHandler implements
             }
         }
     }
+    @Override
     
     public Object getProperty(String name)
         throws SAXNotRecognizedException, SAXNotSupportedException {
@@ -314,6 +324,7 @@ final class ValidatorHandlerImpl extends ValidatorHandler implements
             }
         }
     }
+    @Override
     
     public void setProperty(String name, Object object)
         throws SAXNotRecognizedException, SAXNotSupportedException {
@@ -360,6 +371,7 @@ final class ValidatorHandlerImpl extends ValidatorHandler implements
     /*
      * XMLDocumentHandler methods
      */
+    @Override
 
     public void startDocument(XMLLocator locator, String encoding,
             NamespaceContext namespaceContext, Augmentations augs)
@@ -381,6 +393,7 @@ final class ValidatorHandlerImpl extends ValidatorHandler implements
             String systemId, Augmentations augs) throws XNIException {}
 
     public void comment(XMLString text, Augmentations augs) throws XNIException {}
+    @Override
 
     public void processingInstruction(String target, XMLString data,
             Augmentations augs) throws XNIException {
@@ -393,6 +406,7 @@ final class ValidatorHandlerImpl extends ValidatorHandler implements
             }
         }
     }
+    @Override
 
     public void startElement(QName element, XMLAttributes attributes,
             Augmentations augs) throws XNIException {
@@ -427,6 +441,7 @@ final class ValidatorHandlerImpl extends ValidatorHandler implements
 
     public void endGeneralEntity(String name, Augmentations augs)
             throws XNIException {}
+    @Override
 
     public void characters(XMLString text, Augmentations augs)
             throws XNIException {
@@ -444,6 +459,7 @@ final class ValidatorHandlerImpl extends ValidatorHandler implements
             }
         }
     }
+    @Override
 
     public void ignorableWhitespace(XMLString text, Augmentations augs)
             throws XNIException {
@@ -456,6 +472,7 @@ final class ValidatorHandlerImpl extends ValidatorHandler implements
             }
         }
     }
+    @Override
 
     public void endElement(QName element, Augmentations augs)
             throws XNIException {
@@ -477,6 +494,7 @@ final class ValidatorHandlerImpl extends ValidatorHandler implements
     public void startCDATA(Augmentations augs) throws XNIException {}
 
     public void endCDATA(Augmentations augs) throws XNIException {}
+    @Override
 
     public void endDocument(Augmentations augs) throws XNIException {
         if (fContentHandler != null) {
@@ -499,6 +517,7 @@ final class ValidatorHandlerImpl extends ValidatorHandler implements
     /*
      * ContentHandler methods
      */
+    @Override
 
     public void setDocumentLocator(Locator locator) {
         fSAXLocatorWrapper.setLocator(locator);
@@ -506,6 +525,7 @@ final class ValidatorHandlerImpl extends ValidatorHandler implements
             fContentHandler.setDocumentLocator(locator);
         }
     }
+    @Override
 
     public void startDocument() throws SAXException {
         fComponentManager.reset();
@@ -528,6 +548,7 @@ final class ValidatorHandlerImpl extends ValidatorHandler implements
             throw Util.toSAXException(e);
         }
     }
+    @Override
 
     public void endDocument() throws SAXException {
         fSAXLocatorWrapper.setLocator(null);
@@ -541,6 +562,7 @@ final class ValidatorHandlerImpl extends ValidatorHandler implements
             throw Util.toSAXException(e);
         }
     }
+    @Override
 
     public void startPrefixMapping(String prefix, String uri)
             throws SAXException {
@@ -563,12 +585,14 @@ final class ValidatorHandlerImpl extends ValidatorHandler implements
             fContentHandler.startPrefixMapping(prefix, uri);
         }
     }
+    @Override
 
     public void endPrefixMapping(String prefix) throws SAXException {
         if (fContentHandler != null) {
             fContentHandler.endPrefixMapping(prefix);
         }
     }
+    @Override
 
     public void startElement(String uri, String localName, String qName,
             Attributes atts) throws SAXException {
@@ -598,6 +622,7 @@ final class ValidatorHandlerImpl extends ValidatorHandler implements
             throw Util.toSAXException(e);
         }
     }
+    @Override
 
     public void endElement(String uri, String localName, String qName)
             throws SAXException {
@@ -615,6 +640,7 @@ final class ValidatorHandlerImpl extends ValidatorHandler implements
             fNamespaceContext.popContext();
         }
     }
+    @Override
 
     public void characters(char[] ch, int start, int length)
             throws SAXException {
@@ -629,6 +655,7 @@ final class ValidatorHandlerImpl extends ValidatorHandler implements
             throw Util.toSAXException(e);
         }
     }
+    @Override
 
     public void ignorableWhitespace(char[] ch, int start, int length)
             throws SAXException {
@@ -643,6 +670,7 @@ final class ValidatorHandlerImpl extends ValidatorHandler implements
             throw Util.toSAXException(e);
         }
     }
+    @Override
 
     public void processingInstruction(String target, String data)
             throws SAXException {
@@ -655,6 +683,7 @@ final class ValidatorHandlerImpl extends ValidatorHandler implements
             fContentHandler.processingInstruction(target, data);
         }
     }
+    @Override
 
     public void skippedEntity(String name) throws SAXException {
         // there seems to be no corresponding method on XMLDocumentFilter.

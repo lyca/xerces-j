@@ -165,6 +165,7 @@ class DurationImpl
      *      -1 if this duration is negative, 0 if the duration is zero,
      *      and 1 if the duration is postive.
      */
+    @Override
     public int getSign() {
 
         return signum;
@@ -692,6 +693,7 @@ class DurationImpl
 	 * @see #isShorterThan(Duration)
 	 * @see #isLongerThan(Duration)
 	 */
+    @Override
     public int compare(Duration rhs) {
     	
     	BigInteger maxintAsBigInteger = BigInteger.valueOf(Integer.MAX_VALUE);
@@ -944,6 +946,7 @@ class DurationImpl
      * 
      * @see Object#hashCode() 
      */
+    @Override
     public int hashCode() {
         // component wise hash is not correct because 1day = 24hours
         Calendar cal = TEST_POINTS[0].toGregorianCalendar();
@@ -970,6 +973,7 @@ class DurationImpl
      * @return
      *      Always return a non-null valid String object.
      */
+    @Override
     public String toString() {
         StringBuffer buf = new StringBuffer();
         if (signum < 0) {
@@ -1057,6 +1061,7 @@ class DurationImpl
      * @throws NullPointerException
      *      If the field parameter is null.
      */
+    @Override
     public boolean isSet(DatatypeConstants.Field field) {
     	
     	if (field == null) {
@@ -1122,6 +1127,7 @@ class DurationImpl
      * @throws NullPointerException
      *      If the field parameter is null.
      */
+    @Override
     public Number getField(DatatypeConstants.Field field) {
 
 		if (field == null) {
@@ -1190,6 +1196,7 @@ class DurationImpl
      *      its value as an integer by using the {@link Number#intValue()}
      *      method. If the YEARS field is not present, return 0.
      */
+    @Override
     public int getYears() {
         return getInt(DatatypeConstants.YEARS);
     }
@@ -1203,6 +1210,7 @@ class DurationImpl
      * 
      * @return Months of this <code>Duration</code>.
      */
+    @Override
     public int getMonths() {
         return getInt(DatatypeConstants.MONTHS);
     }
@@ -1216,6 +1224,7 @@ class DurationImpl
      * 
      * @return Days of this <code>Duration</code>.
      */
+    @Override
     public int getDays() {
         return getInt(DatatypeConstants.DAYS);
     }
@@ -1230,6 +1239,7 @@ class DurationImpl
      * @return Hours of this <code>Duration</code>.
      * 
      */
+    @Override
     public int getHours() {
         return getInt(DatatypeConstants.HOURS);
     }
@@ -1244,6 +1254,7 @@ class DurationImpl
      * @return Minutes of this <code>Duration</code>.
      * 
      */
+    @Override
     public int getMinutes() {
         return getInt(DatatypeConstants.MINUTES);
     }
@@ -1259,6 +1270,7 @@ class DurationImpl
      *   will be discarded (for example, if the actual value is 2.5,
      *   this method returns 2)
      */
+    @Override
     public int getSeconds() {
         return getInt(DatatypeConstants.SECONDS);
     }
@@ -1410,6 +1422,7 @@ class DurationImpl
      * 
      * @throws NullPointerException If the startTimeInstant parameter is null.
      */
+    @Override
     public Duration normalizeWith(Calendar startTimeInstant) {
 
         Calendar c = (Calendar) startTimeInstant.clone();
@@ -1450,6 +1463,7 @@ class DurationImpl
      * 
      * @see #multiply(BigDecimal)
      */
+    @Override
     public Duration multiply(int factor) {
         return multiply(BigDecimal.valueOf(factor));
     }
@@ -1501,6 +1515,7 @@ class DurationImpl
      * <code>null</code>.
      *
      */
+    @Override
     public Duration multiply(BigDecimal factor) {
         BigDecimal carry = ZERO;
         int factorSign = factor.signum();
@@ -1654,6 +1669,7 @@ class DurationImpl
      * 
      * @see #subtract(Duration)
      */
+    @Override
     public Duration add(final Duration rhs) {
         Duration lhs = this;
         BigDecimal[] buf = new BigDecimal[6];
@@ -1821,6 +1837,7 @@ class DurationImpl
      * 
      * @see #add(Duration)
      */
+    @Override
     public Duration subtract(final Duration rhs) {
         return add(rhs.negate());
     }
@@ -1837,6 +1854,7 @@ class DurationImpl
      * @return
      *      always return a non-null valid {@link Duration} object.
      */
+    @Override
     public Duration negate() {
         return new DurationImpl(
             signum <= 0,
@@ -1900,6 +1918,7 @@ class DurationImpl
      * @throws NullPointerException
      *      if the calendar parameter is null.
      */
+    @Override
     public void addTo(Calendar calendar) {
         calendar.add(Calendar.YEAR, getYears() * signum);
         calendar.add(Calendar.MONTH, getMonths() * signum);
@@ -1937,6 +1956,7 @@ class DurationImpl
      * @throws NullPointerException
      *      if the date parameter is null.
      */
+    @Override
     public void addTo(Date date) {
         Calendar cal = new GregorianCalendar();
         cal.setTime(date); // this will throw NPE if date==null

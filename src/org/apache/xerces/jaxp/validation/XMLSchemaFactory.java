@@ -138,6 +138,7 @@ public final class XMLSchemaFactory extends SchemaFactory {
      * @throws IllegalArgumentException If <code>schemaLanguage.length() == 0</code>
      *   or <code>schemaLanguage</code> does not specify a <a href="#schemaLanguage">valid</a> schema language.
      */
+    @Override
     public boolean isSchemaLanguageSupported(String schemaLanguage) {
         if (schemaLanguage == null) {
             throw new NullPointerException(JAXPValidationMessageFormatter.formatMessage(fXMLSchemaLoader.getLocale(), 
@@ -151,26 +152,31 @@ public final class XMLSchemaFactory extends SchemaFactory {
         return schemaLanguage.equals(XMLConstants.W3C_XML_SCHEMA_NS_URI) ||
                 schemaLanguage.equals(Constants.W3C_XML_SCHEMA10_NS_URI);
     }
+    @Override
     
     public LSResourceResolver getResourceResolver() {
         return fLSResourceResolver;
     }
+    @Override
     
     public void setResourceResolver(LSResourceResolver resourceResolver) {
         fLSResourceResolver = resourceResolver;
         fDOMEntityResolverWrapper.setEntityResolver(resourceResolver);
         fXMLSchemaLoader.setEntityResolver(fDOMEntityResolverWrapper);
     }
+    @Override
     
     public ErrorHandler getErrorHandler() {
         return fErrorHandler;
     }
+    @Override
     
     public void setErrorHandler(ErrorHandler errorHandler) {
         fErrorHandler = errorHandler;
         fErrorHandlerWrapper.setErrorHandler(errorHandler != null ? errorHandler : DraconianErrorHandler.getInstance());
         fXMLSchemaLoader.setErrorHandler(fErrorHandlerWrapper);
-    }  
+    }
+    @Override  
     
     public Schema newSchema( Source[] schemas ) throws SAXException {
         
@@ -270,6 +276,7 @@ public final class XMLSchemaFactory extends SchemaFactory {
         propagateFeatures(schema);
         return schema;
     }
+    @Override
     
     public Schema newSchema() throws SAXException {
         /*
@@ -285,8 +292,7 @@ public final class XMLSchemaFactory extends SchemaFactory {
         propagateFeatures(schema);
         return schema;
     }
-    
-    public Schema newSchema(XMLGrammarPool pool) throws SAXException {
+        public Schema newSchema(XMLGrammarPool pool) throws SAXException {
         // If the "use-grammar-pool-only" feature is set to true
         // prevent the application's grammar pool from being mutated
         // by wrapping it in a ReadOnlyGrammarPool.
@@ -296,6 +302,7 @@ public final class XMLSchemaFactory extends SchemaFactory {
         propagateFeatures(schema);
         return schema;
     }
+    @Override
     
     public boolean getFeature(String name) 
         throws SAXNotRecognizedException, SAXNotSupportedException {
@@ -335,6 +342,7 @@ public final class XMLSchemaFactory extends SchemaFactory {
             }
         }
     }
+    @Override
     
     public Object getProperty(String name) 
         throws SAXNotRecognizedException, SAXNotSupportedException {
@@ -367,6 +375,7 @@ public final class XMLSchemaFactory extends SchemaFactory {
             }
         }
     }
+    @Override
     
     public void setFeature(String name, boolean value)
         throws SAXNotRecognizedException, SAXNotSupportedException {
@@ -410,6 +419,7 @@ public final class XMLSchemaFactory extends SchemaFactory {
             }
         }
     }
+    @Override
     
     public void setProperty(String name, Object object)
         throws SAXNotRecognizedException, SAXNotSupportedException {

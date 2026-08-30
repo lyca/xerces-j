@@ -18,6 +18,7 @@
 package org.apache.xerces.jaxp.validation;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.transform.dom.DOMResult;
 
@@ -105,7 +106,7 @@ final class DOMResultBuilder implements DOMDocumentHandler {
     private Node fCurrentNode;
     private Node fFragmentRoot;
     
-    private final ArrayList fTargetChildren = new ArrayList();
+    private final List<Node> fTargetChildren = new ArrayList<>();
     
     private boolean fIgnoreChars;
     

@@ -19,7 +19,6 @@ package org.apache.xerces.jaxp;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -107,7 +106,7 @@ public class SAXParserImpl extends javax.xml.parsers.SAXParser
      * Create a SAX parser with the associated features
      * @param features Hashtable of SAX features, may be null
      */
-    SAXParserImpl(SAXParserFactoryImpl spf, Hashtable features) 
+    SAXParserImpl(SAXParserFactoryImpl spf, Map<String, Boolean> features) 
         throws SAXException {
         this(spf, features, false);
     }
@@ -116,7 +115,7 @@ public class SAXParserImpl extends javax.xml.parsers.SAXParser
      * Create a SAX parser with the associated features
      * @param features Hashtable of SAX features, may be null
      */
-    SAXParserImpl(SAXParserFactoryImpl spf, Hashtable features, boolean secureProcessing)
+    SAXParserImpl(SAXParserFactoryImpl spf, Map<String, Boolean> features, boolean secureProcessing)
         throws SAXException
     {
         // Instantiate a SAXParser directly and not through SAX so that we use the right ClassLoader
@@ -207,7 +206,7 @@ public class SAXParserImpl extends javax.xml.parsers.SAXParser
      * XXX Does not handle possible conflicts between SAX feature names and
      * JAXP specific feature names, eg. SAXParserFactory.isValidating()
      */
-    private void setFeatures(Hashtable features)
+    private void setFeatures(Map<String, Boolean> features)
         throws SAXNotSupportedException, SAXNotRecognizedException {
         if (features != null) {
             Iterator entries = features.entrySet().iterator();
@@ -220,6 +219,7 @@ public class SAXParserImpl extends javax.xml.parsers.SAXParser
         }
     }
 
+    @Override
     public Parser getParser() throws SAXException {
         // Xerces2 AbstractSAXParser implements SAX1 Parser
         // assert(xmlReader instanceof Parser);
@@ -230,10 +230,12 @@ public class SAXParserImpl extends javax.xml.parsers.SAXParser
      * Returns the XMLReader that is encapsulated by the implementation of
      * this class.
      */
+    @Override
     public XMLReader getXMLReader() {
         return xmlReader;
     }
 
+    @Override
     public boolean isNamespaceAware() {
         try {
             return xmlReader.getFeature(NAMESPACES_FEATURE);
@@ -243,6 +245,7 @@ public class SAXParserImpl extends javax.xml.parsers.SAXParser
         }
     }
 
+    @Override
     public boolean isValidating() {
         try {
             return xmlReader.getFeature(VALIDATION_FEATURE);
@@ -256,6 +259,7 @@ public class SAXParserImpl extends javax.xml.parsers.SAXParser
      * Gets the XInclude processing mode for this parser
      * @return the state of XInclude processing mode
      */
+    @Override
     public boolean isXIncludeAware() {
         try {
             return xmlReader.getFeature(XINCLUDE_FEATURE);
@@ -269,6 +273,7 @@ public class SAXParserImpl extends javax.xml.parsers.SAXParser
      * Sets the particular property in the underlying implementation of 
      * org.xml.sax.XMLReader.
      */
+    @Override
     public void setProperty(String name, Object value)
         throws SAXNotRecognizedException, SAXNotSupportedException {
         xmlReader.setProperty(name, value);
@@ -278,6 +283,7 @@ public class SAXParserImpl extends javax.xml.parsers.SAXParser
      * returns the particular property requested for in the underlying 
      * implementation of org.xml.sax.XMLReader.
      */
+    @Override
     public Object getProperty(String name)
         throws SAXNotRecognizedException, SAXNotSupportedException {
         return xmlReader.getProperty(name);
@@ -312,11 +318,13 @@ public class SAXParserImpl extends javax.xml.parsers.SAXParser
         }
         xmlReader.parse(is);
     }
-     
+
+    @Override
     public Schema getSchema() {
         return grammar;
     }
-    
+
+    @Override
     public void reset() {
         try {
             /** Restore initial values of features and properties. **/
@@ -361,8 +369,8 @@ public class SAXParserImpl extends javax.xml.parsers.SAXParser
      */
     public static class JAXPSAXParser extends org.apache.xerces.parsers.SAXParser {
         
-        private final HashMap fInitFeatures = new HashMap();
-        private final HashMap fInitProperties = new HashMap();
+        private final Map<String, Boolean> fInitFeatures = new HashMap<>();
+        private final Map<String, Object> fInitProperties = new HashMap<>();
         private final SAXParserImpl fSAXParser;
 
         public JAXPSAXParser() {
@@ -439,6 +447,7 @@ public class SAXParserImpl extends javax.xml.parsers.SAXParser
          * of properties. This keeps us from affecting the performance of the
          * SAXParser when it is created with XMLReaderFactory.
          */
+        @Override
         public synchronized void setProperty(String name, Object value)
             throws SAXNotRecognizedException, SAXNotSupportedException {
             if (name == null) {
@@ -513,7 +522,8 @@ public class SAXParserImpl extends javax.xml.parsers.SAXParser
             }
             super.setProperty(name, value);
         }
-        
+
+        @Override
         public synchronized Object getProperty(String name)
             throws SAXNotRecognizedException, SAXNotSupportedException {
             if (name == null) {

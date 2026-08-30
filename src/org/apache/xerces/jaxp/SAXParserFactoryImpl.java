@@ -18,6 +18,7 @@
 package org.apache.xerces.jaxp;
 
 import java.util.Hashtable;
+import java.util.Map;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
@@ -54,7 +55,7 @@ public class SAXParserFactoryImpl extends SAXParserFactory {
     private static final String XINCLUDE_FEATURE = 
         Constants.XERCES_FEATURE_PREFIX + Constants.XINCLUDE_FEATURE;
     
-    private Hashtable features;
+    private Map<String, Boolean> features;
     private Schema grammar;
     private boolean isXIncludeAware;
     
@@ -68,6 +69,7 @@ public class SAXParserFactoryImpl extends SAXParserFactory {
      * configured factory parameters.
      * @return javax.xml.parsers.SAXParser
      */
+    @Override
     public SAXParser newSAXParser()
         throws ParserConfigurationException {
         
@@ -106,6 +108,7 @@ public class SAXParserFactoryImpl extends SAXParserFactory {
      * Sets the particular feature in the underlying implementation of 
      * org.xml.sax.XMLReader.
      */
+    @Override
     public void setFeature(String name, boolean value)
         throws ParserConfigurationException, SAXNotRecognizedException, 
 		SAXNotSupportedException {
@@ -134,7 +137,7 @@ public class SAXParserFactoryImpl extends SAXParserFactory {
         // XXX This is ugly.  We have to collect the features and then
         // later create an XMLReader to verify the features.
         if (features == null) {
-            features = new Hashtable();
+            features = new Hashtable<>();
         }
         features.put(name, value ? Boolean.TRUE : Boolean.FALSE);
 
@@ -156,6 +159,7 @@ public class SAXParserFactoryImpl extends SAXParserFactory {
      * returns the particular property requested for in the underlying 
      * implementation of org.xml.sax.XMLReader.
      */
+    @Override
     public boolean getFeature(String name)
         throws ParserConfigurationException, SAXNotRecognizedException,
 		SAXNotSupportedException {
@@ -178,19 +182,23 @@ public class SAXParserFactoryImpl extends SAXParserFactory {
         // feature value
         return newSAXParserImpl().getXMLReader().getFeature(name);
     }
-    
+
+    @Override
     public Schema getSchema() {
         return grammar;
     }
 
+    @Override
     public void setSchema(Schema grammar) {
         this.grammar = grammar;
     }
 
+    @Override
     public boolean isXIncludeAware() {
         return this.isXIncludeAware;
     }
 
+    @Override
     public void setXIncludeAware(boolean state) {
         this.isXIncludeAware = state;
     }

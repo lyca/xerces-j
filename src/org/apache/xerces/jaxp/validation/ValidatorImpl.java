@@ -97,6 +97,7 @@ final class ValidatorImpl extends Validator implements PSVIProvider {
         setErrorHandler(null);
         setResourceResolver(null);
     }
+    @Override
 
     public void validate(Source source, Result result)
         throws SAXException, IOException {
@@ -139,24 +140,29 @@ final class ValidatorImpl extends Validator implements PSVIProvider {
                     "SourceNotAccepted", new Object [] {source.getClass().getName()}));
         }
     }
+    @Override
 
     public void setErrorHandler(ErrorHandler errorHandler) {
         fErrorHandlerChanged = (errorHandler != null);
         fComponentManager.setErrorHandler(errorHandler);
     }
+    @Override
 
     public ErrorHandler getErrorHandler() {
         return fComponentManager.getErrorHandler();
     }
+    @Override
 
     public void setResourceResolver(LSResourceResolver resourceResolver) {
         fResourceResolverChanged = (resourceResolver != null);
         fComponentManager.setResourceResolver(resourceResolver);
     }
+    @Override
 
     public LSResourceResolver getResourceResolver() {
         return fComponentManager.getResourceResolver();
     }
+    @Override
     
     public boolean getFeature(String name) 
         throws SAXNotRecognizedException, SAXNotSupportedException {
@@ -194,6 +200,7 @@ final class ValidatorImpl extends Validator implements PSVIProvider {
             }
         }
     }
+    @Override
     
     public void setFeature(String name, boolean value)
         throws SAXNotRecognizedException, SAXNotSupportedException {
@@ -233,6 +240,7 @@ final class ValidatorImpl extends Validator implements PSVIProvider {
         }
         fConfigurationChanged = true;
     }
+    @Override
     
     public Object getProperty(String name)
         throws SAXNotRecognizedException, SAXNotSupportedException {
@@ -261,6 +269,7 @@ final class ValidatorImpl extends Validator implements PSVIProvider {
             }
         }
     }
+    @Override
     
     public void setProperty(String name, Object object)
         throws SAXNotRecognizedException, SAXNotSupportedException {
@@ -291,6 +300,7 @@ final class ValidatorImpl extends Validator implements PSVIProvider {
         }
         fConfigurationChanged = true;
     }
+    @Override
     
     public void reset() {
         // avoid resetting features and properties if the state the validator

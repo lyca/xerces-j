@@ -1010,6 +1010,7 @@ class XMLGregorianCalendarImpl
      * @see #getEon()
      * @see #getEonAndYear()
      */
+    @Override
     public int getYear() {
 	   return year;
     }
@@ -1059,6 +1060,7 @@ class XMLGregorianCalendarImpl
      * @return year  of this <code>XMLGregorianCalendar</code>.
      * 
      */
+    @Override
     public int getMonth() {
         return month;
     }
@@ -1071,6 +1073,7 @@ class XMLGregorianCalendarImpl
      * 
      * @see #setDay(int)
      */
+    @Override
     public int getDay() {
         return day;
     }
@@ -1084,6 +1087,7 @@ class XMLGregorianCalendarImpl
      * 
      * @see #setTimezone(int)
      */
+    @Override
     public int getTimezone() {
         return timezone;
     }
@@ -1096,6 +1100,7 @@ class XMLGregorianCalendarImpl
      * <a href="#datetimefield-hour">hour field of date/time field mapping table</a>.</p>
      * @see #setTime(int, int, int)
      */
+    @Override
     public int getHour() {
         return hour;
     }
@@ -1108,6 +1113,7 @@ class XMLGregorianCalendarImpl
      * <a href="#datetimefield-minute">minute field of date/time field mapping table</a>.</p>
      * @see #setTime(int, int, int)
      */
+    @Override
     public int getMinute() {
         return minute;
     }
@@ -1130,6 +1136,7 @@ class XMLGregorianCalendarImpl
      * @see #getMillisecond()
      * @see #setTime(int, int, int)
      */
+    @Override
     public int getSecond() {
 	   return second;
     }
@@ -1170,6 +1177,7 @@ class XMLGregorianCalendarImpl
      * @see #getFractionalSecond()
      * @see #setTime(int, int, int)
      */
+    @Override
     public int getMillisecond() {
         if (fractionalSecond == null) {
             return DatatypeConstants.FIELD_UNDEFINED;
@@ -1199,6 +1207,7 @@ class XMLGregorianCalendarImpl
      * @see #getSecond()
      * @see #setTime(int, int, int, BigDecimal)
      */
+    @Override
     public BigDecimal getFractionalSecond() {
 	   return fractionalSecond;
     }
@@ -1216,6 +1225,7 @@ class XMLGregorianCalendarImpl
      * outside value constraints for the field as specified in 
      * <a href="#datetimefieldmapping">date/time field mapping table</a>.
      */
+    @Override
     public void setYear(BigInteger year) {
         if (year == null) {
             this.eon = null;
@@ -1241,6 +1251,7 @@ class XMLGregorianCalendarImpl
      * @param year value constraints are summarized in <a href="#datetimefield-year">year field of date/time field mapping table</a>.
      *   If year is {@link DatatypeConstants#FIELD_UNDEFINED}, then eon is set to <code>null</code>.
      */
+    @Override
     public void setYear(int year) { 
         if (year == DatatypeConstants.FIELD_UNDEFINED) {
             this.year = DatatypeConstants.FIELD_UNDEFINED;
@@ -1287,6 +1298,7 @@ class XMLGregorianCalendarImpl
      * outside value constraints for the field as specified in 
      * <a href="#datetimefieldmapping">date/time field mapping table</a>.
      */
+    @Override
     public void setMonth(int month) { 
         checkFieldValueConstraint(MONTH, month);
         this.month = month;
@@ -1303,6 +1315,7 @@ class XMLGregorianCalendarImpl
      * outside value constraints for the field as specified in 
      * <a href="#datetimefieldmapping">date/time field mapping table</a>.
      */
+    @Override
     public void setDay(int day) {  
         checkFieldValueConstraint(DAY, day);
         this.day = day;
@@ -1320,6 +1333,7 @@ class XMLGregorianCalendarImpl
      * outside value constraints for the field as specified in 
      * <a href="#datetimefieldmapping">date/time field mapping table</a>.
      */
+    @Override
     public void setTimezone(int offset) {
         checkFieldValueConstraint(TIMEZONE, offset);
         this.timezone = offset;
@@ -1341,6 +1355,7 @@ class XMLGregorianCalendarImpl
      * outside value constraints for the field as specified in 
      * <a href="#datetimefieldmapping">date/time field mapping table</a>.
      */
+    @Override
     public void setTime(int hour, int minute, int second) {
         setTime(hour, minute, second, null);
     }
@@ -1359,16 +1374,19 @@ class XMLGregorianCalendarImpl
             );
         }
     }
+    @Override
 
     public void setHour(int hour) {
         checkFieldValueConstraint(HOUR, hour);
         this.hour = hour;
     }
+    @Override
 
     public void setMinute(int minute) {
         checkFieldValueConstraint(MINUTE, minute);
         this.minute = minute;
     }
+    @Override
 
     public void setSecond(int second) {
         checkFieldValueConstraint(SECOND, second);
@@ -1392,6 +1410,7 @@ class XMLGregorianCalendarImpl
      * outside value constraints for the field as specified in 
      * <a href="#datetimefieldmapping">date/time field mapping table</a>.
      */
+    @Override
     public void setTime(
             int hour,
             int minute,
@@ -1419,6 +1438,7 @@ class XMLGregorianCalendarImpl
      * outside value constraints for the field as specified in 
      * <a href="#datetimefieldmapping">date/time field mapping table</a>.
      */
+    @Override
     public void setTime(int hour, int minute, int second, int millisecond) {
         setHour(hour);
         setMinute(minute);
@@ -1448,6 +1468,7 @@ class XMLGregorianCalendarImpl
      * @throws NullPointerException if <code>lhs</code> or <code>rhs</code> 
      * parameters are null. 
      */
+    @Override
     public int compare(XMLGregorianCalendar rhs) {
 
         //MLGregorianCalendar lhs = this;
@@ -1529,6 +1550,7 @@ class XMLGregorianCalendarImpl
      * <p>2000-03-04T23:00:00+03:00 normalizes to 2000-03-04T20:00:00Z</p>
      * <p>Implements W3C XML Schema Part 2, Section 3.2.7.3 (A).</p>
      */
+    @Override
     public XMLGregorianCalendar normalize() {
 
         XMLGregorianCalendar normalized = normalizeToTimezone(this, timezone);
@@ -1694,6 +1716,7 @@ class XMLGregorianCalendarImpl
      *
      * @return <code>true</code> when <code>compare(this,(XMLGregorianCalendar)obj) == EQUAL.</code>.
      */
+    @Override
     public boolean equals(Object obj) {
         if (obj == this) {
             return true;
@@ -1709,6 +1732,7 @@ class XMLGregorianCalendarImpl
      * 
      * @return hash code of this object.
      */
+    @Override
     public int hashCode() {
 
         // Following two dates compare to EQUALS since in different timezones.
@@ -1778,6 +1802,7 @@ class XMLGregorianCalendarImpl
      * @throws java.lang.IllegalStateException if the combination of set fields
      *    does not match one of the eight defined XML Schema builtin date/time datatypes. 
      */
+    @Override
     public String toXMLFormat() {
 
         QName typekind = getXMLSchemaType();
@@ -1925,6 +1950,7 @@ class XMLGregorianCalendarImpl
      *   {@link DatatypeConstants#GMONTH} or
      *   {@link DatatypeConstants#GDAY}.
      */
+    @Override
     public QName getXMLSchemaType() {
     	
     	// DATETIME
@@ -2021,6 +2047,7 @@ class XMLGregorianCalendarImpl
      * Validate instance by <code>getXMLSchemaType()</code> constraints.
      * @return true if data values are valid.
      */
+    @Override
     public boolean isValid() {
         // since setters do not allow for invalid values, 
         // (except for exceptional case of year field of zero),
@@ -2075,6 +2102,7 @@ class XMLGregorianCalendarImpl
      * 
      * @throws NullPointerException  when <code>duration</code> parameter is <code>null</code>.
      */
+    @Override
     public void add(Duration duration) {
 
         /*
@@ -2465,6 +2493,7 @@ class XMLGregorianCalendarImpl
      * 
      * @see #toGregorianCalendar(java.util.TimeZone, java.util.Locale, XMLGregorianCalendar)
      */
+    @Override
     public java.util.GregorianCalendar toGregorianCalendar() {
 
         GregorianCalendar result = null;
@@ -2575,6 +2604,7 @@ class XMLGregorianCalendarImpl
      *
      * @see #LEAP_YEAR_DEFAULT
      */
+    @Override
     public GregorianCalendar toGregorianCalendar(java.util.TimeZone timezone, 
             java.util.Locale aLocale,
             XMLGregorianCalendar defaults) {
@@ -2717,6 +2747,7 @@ class XMLGregorianCalendarImpl
      *
      * @return TimeZone for this.
      */
+    @Override
     public TimeZone getTimeZone(int defaultZoneoffset) {
         TimeZone result = null;
         int zoneoffset = getTimezone();
@@ -2761,6 +2792,7 @@ class XMLGregorianCalendarImpl
      * 
      * @return copy of this <code>Object</code>
      */
+    @Override
    public Object clone() {
         // Both this.eon and this.fractionalSecond are instances
         // of immutable classes, so they do not need to be cloned.
@@ -2777,6 +2809,7 @@ class XMLGregorianCalendarImpl
      * <p>Set all int fields to {@link DatatypeConstants#FIELD_UNDEFINED} and reference fields 
      * to null.</p>
      */
+    @Override
    public void clear() {
        eon = null;
        year = DatatypeConstants.FIELD_UNDEFINED;
@@ -2788,6 +2821,7 @@ class XMLGregorianCalendarImpl
        second = DatatypeConstants.FIELD_UNDEFINED;
        fractionalSecond = null;
    }
+    @Override
 
     public void setMillisecond(int millisecond) {
         if (millisecond == DatatypeConstants.FIELD_UNDEFINED) {
@@ -2798,6 +2832,7 @@ class XMLGregorianCalendarImpl
             fractionalSecond = BigDecimal.valueOf(millisecond, 3);
         } 
     }
+    @Override
 
     public void setFractionalSecond(BigDecimal fractional) {
         if (fractional != null) {
@@ -3154,6 +3189,7 @@ class XMLGregorianCalendarImpl
      * <code>XMLGregorianCalendar</code>s thus saving resources associated
      *  with the creation of new <code>XMLGregorianCalendar</code>s.</p>
      */
+    @Override
     public void reset() {
         eon = orig_eon;
         year = orig_year;

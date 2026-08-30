@@ -18,6 +18,7 @@
 package org.apache.xerces.jaxp.validation;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.xml.validation.Schema;
 import javax.xml.validation.Validator;
@@ -36,10 +37,10 @@ abstract class AbstractXMLSchema extends Schema implements
      * Map containing the initial values of features for 
      * validators created using this grammar pool container.
      */
-    private final HashMap fFeatures;
+    private final Map<String, Boolean> fFeatures;
     
     public AbstractXMLSchema() {
-        fFeatures = new HashMap();
+        fFeatures = new HashMap<>();
     }
     
     /*
@@ -49,6 +50,7 @@ abstract class AbstractXMLSchema extends Schema implements
     /* 
      * @see javax.xml.validation.Schema#newValidator()
      */
+    @Override
     public final Validator newValidator() {
         return new ValidatorImpl(this);
     }
@@ -56,6 +58,7 @@ abstract class AbstractXMLSchema extends Schema implements
     /* 
      * @see javax.xml.validation.Schema#newValidatorHandler()
      */
+    @Override
     public final ValidatorHandler newValidatorHandler() {
         return new ValidatorHandlerImpl(this);
     }
