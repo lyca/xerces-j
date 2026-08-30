@@ -104,7 +104,7 @@ public class ElementState
     /**
      * Association between namespace URIs (keys) and prefixes (values).
      */
-    public Hashtable prefixes;
+    public Hashtable<String, String> prefixes;
 
 
 }

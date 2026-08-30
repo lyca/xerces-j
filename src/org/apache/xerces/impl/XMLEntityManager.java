@@ -347,7 +347,7 @@ public class XMLEntityManager
     // entities
 
     /** Entities. */
-    protected final Hashtable fEntities = new Hashtable();
+    protected final Hashtable<String, Entity> fEntities = new Hashtable<>();
 
     /** Entity stack. */
     protected final Stack fEntityStack = new Stack();
@@ -358,7 +358,7 @@ public class XMLEntityManager
     // shared context
 
     /** Shared declared entities. */
-    protected Hashtable fDeclaredEntities;
+    protected Hashtable<String, Entity> fDeclaredEntities;
 
     // temp vars
 
@@ -1420,13 +1420,7 @@ public class XMLEntityManager
 
         // copy declared entities
         if (fDeclaredEntities != null) {
-            Iterator entries = fDeclaredEntities.entrySet().iterator();
-            while (entries.hasNext()) {
-                Map.Entry entry = (Map.Entry) entries.next();
-                Object key = entry.getKey();
-                Object value = entry.getValue();
-                fEntities.put(key, value);
-            }
+            fEntities.putAll(fDeclaredEntities);
         }
         fEntityHandler = null;
 
@@ -2351,7 +2345,7 @@ public class XMLEntityManager
      * enumerate the declared entities. For now, this method is needed
      * by the constructor that takes an XMLEntityManager parameter.
      */
-    Hashtable getDeclaredEntities() {
+    Hashtable<String, Entity> getDeclaredEntities() {
         return fEntities;
     } // getDeclaredEntities():Hashtable
 

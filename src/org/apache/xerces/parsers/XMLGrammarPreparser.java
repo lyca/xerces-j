@@ -105,7 +105,7 @@ public class XMLGrammarPreparser {
     protected Locale fLocale;
 
     // Hashtable holding our loaders
-    private final Hashtable fLoaders;
+    private final Hashtable<String, XMLGrammarLoaderContainer> fLoaders;
     
     // The number of times the configuration has been modified.
     private int fModCount = 1;
@@ -127,7 +127,7 @@ public class XMLGrammarPreparser {
     public XMLGrammarPreparser (SymbolTable symbolTable) {
         fSymbolTable = symbolTable;
 
-        fLoaders = new Hashtable();
+        fLoaders = new Hashtable<>();
         fErrorReporter = new XMLErrorReporter();
         setLocale(Locale.getDefault());
         fEntityResolver = new XMLEntityManager();

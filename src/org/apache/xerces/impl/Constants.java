@@ -566,7 +566,7 @@ public final class Constants {
     };
     
     /** Empty enumeration. */
-    private static final Enumeration fgEmptyEnumeration = new ArrayEnumeration(new Object[] {});
+    private static final Enumeration<String> fgEmptyEnumeration = new ArrayEnumeration<>(new String[] {});
     
     //
     // Constructors
@@ -582,29 +582,29 @@ public final class Constants {
     // sax
     
     /** Returns an enumeration of the SAX features. */
-    public static Enumeration getSAXFeatures() {
+    public static Enumeration<String> getSAXFeatures() {
         return fgSAXFeatures.length > 0
-        ? new ArrayEnumeration(fgSAXFeatures) : fgEmptyEnumeration;
+        ? new ArrayEnumeration<>(fgSAXFeatures) : fgEmptyEnumeration;
     } // getSAXFeatures():Enumeration
     
     /** Returns an enumeration of the SAX properties. */
-    public static Enumeration getSAXProperties() {
+    public static Enumeration<String> getSAXProperties() {
         return fgSAXProperties.length > 0
-        ? new ArrayEnumeration(fgSAXProperties) : fgEmptyEnumeration;
+        ? new ArrayEnumeration<>(fgSAXProperties) : fgEmptyEnumeration;
     } // getSAXProperties():Enumeration
     
     // xerces
     
     /** Returns an enumeration of the Xerces features. */
-    public static Enumeration getXercesFeatures() {
+    public static Enumeration<String> getXercesFeatures() {
         return fgXercesFeatures.length > 0
-        ? new ArrayEnumeration(fgXercesFeatures) : fgEmptyEnumeration;
+        ? new ArrayEnumeration<>(fgXercesFeatures) : fgEmptyEnumeration;
     } // getXercesFeatures():Enumeration
     
     /** Returns an enumeration of the Xerces properties. */
-    public static Enumeration getXercesProperties() {
+    public static Enumeration<String> getXercesProperties() {
         return fgXercesProperties.length > 0
-        ? new ArrayEnumeration(fgXercesProperties) : fgEmptyEnumeration;
+        ? new ArrayEnumeration<>(fgXercesProperties) : fgEmptyEnumeration;
     } // getXercesProperties():Enumeration
     
     //
@@ -616,15 +616,15 @@ public final class Constants {
      *
      * @author Andy Clark, IBM
      */
-    static class ArrayEnumeration
-    implements Enumeration {
+    static class ArrayEnumeration<E>
+    implements Enumeration<E> {
         
         //
         // Data
         //
         
         /** Array. */
-        private Object[] array;
+        private E[] array;
         
         /** Index. */
         private int index;
@@ -634,7 +634,7 @@ public final class Constants {
         //
         
         /** Constructs an array enumeration. */
-        public ArrayEnumeration(Object[] array) {
+        public ArrayEnumeration(E[] array) {
             this.array = array;
         } // <init>(Object[])
         
@@ -649,6 +649,7 @@ public final class Constants {
          *          <code>false</code> otherwise.
          * @since   JDK1.0
          */
+        @Override
         public boolean hasMoreElements() {
             return index < array.length;
         } // hasMoreElement():boolean
@@ -660,7 +661,8 @@ public final class Constants {
          * @exception  NoSuchElementException  if no more elements exist.
          * @since      JDK1.0
          */
-        public Object nextElement() {
+        @Override
+        public E nextElement() {
             if (index < array.length) {
                 return array[index++];
             }

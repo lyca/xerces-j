@@ -20,6 +20,7 @@ package org.apache.xerces.impl.xs;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
+import org.apache.xerces.xni.grammars.Grammar;
 
 /**
  * A class used to hold the internal schema grammar set for the current instance
@@ -91,15 +92,16 @@ public class XSGrammarBucket {
         // get all imported grammars, and make a copy of the Vector, so that
         // we can recursively process the grammars, and add distinct ones
         // to the same vector
-        Vector currGrammars = (Vector)grammar.getImportedGrammars();
+        Vector<Grammar> currGrammars = grammar.getImportedGrammars();
         if (currGrammars == null) {
             putGrammar(grammar);
             return true;
         }
         
-        Vector grammars = ((Vector)currGrammars.clone());
+        @SuppressWarnings("unchecked")
+        Vector<Grammar> grammars = (Vector<Grammar>) currGrammars.clone();
         SchemaGrammar sg1, sg2;
-        Vector gs;
+        Vector<Grammar> gs;
         // for all (recursively) imported grammars
         for (int i = 0; i < grammars.size(); i++) {
             // get the grammar
@@ -164,14 +166,15 @@ public class XSGrammarBucket {
         // get all imported grammars, and make a copy of the Vector, so that
         // we can recursively process the grammars, and add distinct ones
         // to the same vector
-        Vector currGrammars = (Vector)grammar.getImportedGrammars();
+        Vector<Grammar> currGrammars = grammar.getImportedGrammars();
         if (currGrammars == null) {
             return true;
         }
         
-        Vector grammars = ((Vector)currGrammars.clone());
+        @SuppressWarnings("unchecked")
+        Vector<Grammar> grammars = (Vector<Grammar>) currGrammars.clone();
         SchemaGrammar sg1, sg2;
-        Vector gs;
+        Vector<Grammar> gs;
         // for all (recursively) imported grammars
         for (int i = 0; i < grammars.size(); i++) {
             // get the grammar

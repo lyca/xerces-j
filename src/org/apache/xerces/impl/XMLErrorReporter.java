@@ -149,7 +149,7 @@ public class XMLErrorReporter
     protected Locale fLocale;
 
     /** Mapping of Message formatters for domains. */
-    protected Hashtable fMessageFormatters;
+    protected Hashtable<String, MessageFormatter> fMessageFormatters;
 
     /** Error handler. */
     protected XMLErrorHandler fErrorHandler;
@@ -193,7 +193,7 @@ public class XMLErrorReporter
         //       caller to specify the location of the error being
         //       reported. -Ac
 
-        fMessageFormatters = new Hashtable();
+        fMessageFormatters = new Hashtable<>();
 
     } // <init>()
 
@@ -251,7 +251,7 @@ public class XMLErrorReporter
      * @param domain The domain of the message formatter.
      */
     public MessageFormatter getMessageFormatter(String domain) {
-        return (MessageFormatter)fMessageFormatters.get(domain);
+        return fMessageFormatters.get(domain);
     } // getMessageFormatter(String):MessageFormatter
 
     /**

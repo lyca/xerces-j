@@ -23,6 +23,7 @@ import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
 import java.util.Vector;
+import org.apache.xerces.xni.grammars.Grammar;
 
 import org.apache.xerces.impl.Constants;
 import org.apache.xerces.impl.xs.util.StringListImpl;
@@ -137,7 +138,7 @@ public final class XSModelImpl extends AbstractList implements XSModel, XSNamesp
         }
 
         SchemaGrammar sg1, sg2;
-        Vector gs;
+        Vector<Grammar> gs;
         int i, j, k;
         // and recursively get all imported grammars, add them to our arrays
         for (i = 0; i < len; i++) {

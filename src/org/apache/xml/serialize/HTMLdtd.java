@@ -79,23 +79,23 @@ public final class HTMLdtd
      * Table of reverse character reference mapping. Character codes are held
      * as single-character strings, mapped to their reference name.
      */
-    private static Hashtable        _byChar;
+    private static Hashtable<Integer, String> _byChar;
 
 
     /**
      * Table of entity name to value mapping. Entities are held as strings,
      * character references as <code>Character</code> objects.
      */
-    private static Hashtable        _byName;
+    private static Hashtable<String, Integer> _byName;
 
 
-    private static Hashtable        _boolAttrs;
+    private static Hashtable<String, String[]> _boolAttrs;
 
 
     /**
      * Holds element definitions.
      */
-    private static Hashtable        _elemDefs;
+    private static Hashtable<String, Integer> _elemDefs;
 
 
     /**
@@ -303,7 +303,7 @@ public final class HTMLdtd
     {
         String[] attrNames;
 
-        attrNames = (String[]) _boolAttrs.get( tagName.toUpperCase(Locale.ENGLISH) );
+        attrNames = _boolAttrs.get( tagName.toUpperCase(Locale.ENGLISH) );
         if ( attrNames == null )
             return false;
         for ( int i = 0 ; i < attrNames.length ; ++i )
@@ -375,8 +375,8 @@ public final class HTMLdtd
         if ( _byName != null )
             return;
         try {
-            _byName = new Hashtable();
-            _byChar = new Hashtable();
+            _byName = new Hashtable<>();
+            _byChar = new Hashtable<>();
             is = HTMLdtd.class.getResourceAsStream( ENTITIES_RESOURCE );
             if ( is == null ) {
             	throw new RuntimeException( 
@@ -476,7 +476,7 @@ public final class HTMLdtd
 
     static
     {
-        _elemDefs = new Hashtable();
+        _elemDefs = new Hashtable<>();
         defineElement( "ADDRESS", CLOSE_P );
         defineElement( "AREA", EMPTY );
         defineElement( "BASE",  EMPTY | ALLOWED_HEAD );
@@ -530,7 +530,7 @@ public final class HTMLdtd
         defineElement( "TR", ELEM_CONTENT | OPT_CLOSING | CLOSE_TABLE );
         defineElement( "UL", ELEM_CONTENT | CLOSE_P );
 
-        _boolAttrs = new Hashtable();
+        _boolAttrs = new Hashtable<>();
         defineBoolean( "AREA", "href" );
         defineBoolean( "BUTTON", "disabled" );
         defineBoolean( "DIR", "compact" );

@@ -49,7 +49,7 @@ public abstract class SerializerFactory {
      */
     public static final String FactoriesProperty = "org.apache.xml.serialize.factories";
 
-    private static Hashtable  _factories = new Hashtable();
+    private static Hashtable<String, SerializerFactory> _factories = new Hashtable<>();
 
     static
     {
@@ -125,7 +125,7 @@ public abstract class SerializerFactory {
      */
     public static SerializerFactory getSerializerFactory( String method )
     {
-        return (SerializerFactory) _factories.get( method );
+        return _factories.get( method );
     }
 
 

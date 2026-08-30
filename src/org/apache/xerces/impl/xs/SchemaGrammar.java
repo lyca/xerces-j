@@ -817,7 +817,7 @@ public class SchemaGrammar implements XSGrammar, XSNamespaceItem {
      * @return the imported Grammar objects as a Vector
      * @see Grammar
      */
-    public Vector getImportedGrammars() {
+    public Vector<Grammar> getImportedGrammars() {
         return fImported;
     }
 

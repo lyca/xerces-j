@@ -60,7 +60,7 @@ public class DTDGrammarBucket {
 
     /** Default constructor. */
     public DTDGrammarBucket() {
-        fGrammars = new Hashtable();
+        fGrammars = new Hashtable<>();
     } // <init>()
 
     //
