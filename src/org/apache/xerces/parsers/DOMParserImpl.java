@@ -513,7 +513,7 @@ public class DOMParserImpl
                             // tokenize location string
                             StringTokenizer t = new StringTokenizer (fSchemaLocation, " \n\t\r");
                             if (t.hasMoreTokens()) {
-                                ArrayList locations = new ArrayList();
+                                ArrayList<String> locations = new ArrayList<>();
                                 locations.add (t.nextToken());
                                 while (t.hasMoreTokens()) {
                                     locations.add (t.nextToken());
@@ -867,7 +867,7 @@ public class DOMParserImpl
      */
     public DOMStringList getParameterNames () {
         if (fRecognizedParameters == null){
-            ArrayList parameters = new ArrayList();
+            ArrayList<String> parameters = new ArrayList<>();
             
             // REVISIT: add Xerces recognized properties/features
             parameters.add(Constants.DOM_NAMESPACES);

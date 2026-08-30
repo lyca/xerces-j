@@ -314,13 +314,13 @@ public class XML11Configuration extends ParserConfigurationSettings
      * XML 1.0 Components.
      * @see XMLComponent
      */
-	protected final ArrayList fComponents;
+	protected final ArrayList<XMLComponent> fComponents;
     
 	/**
      * XML 1.1. Components.
      * @see XMLComponent
      */
-	protected final ArrayList fXML11Components;
+	protected final ArrayList<XMLComponent> fXML11Components;
 	
 	/**
      * An array list of common XMLComponents: XMLEntityManager, XMLErrorReporter, XMLSchemaValidator.
@@ -329,7 +329,7 @@ public class XML11Configuration extends ParserConfigurationSettings
      * @see XMLErrorReporter
      * @see XMLSchemaValidator
      */
-	protected final ArrayList fCommonComponents;
+	protected final ArrayList<XMLComponent> fCommonComponents;
 
 	/** The document handler. */
 	protected XMLDocumentHandler fDocumentHandler;

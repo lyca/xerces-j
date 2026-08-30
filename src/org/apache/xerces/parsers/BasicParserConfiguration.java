@@ -153,7 +153,7 @@ public abstract class BasicParserConfiguration
      * Components.
      * @see XMLComponent
      */
-    protected ArrayList fComponents;
+    protected ArrayList<XMLComponent> fComponents;
 
     // handlers
 
@@ -199,15 +199,15 @@ public abstract class BasicParserConfiguration
         super(parentSettings);
 
         // create a vector to hold all the components in use
-        fComponents = new ArrayList();
+        fComponents = new ArrayList<>();
 
         // create storage for recognized features and properties
-        fRecognizedFeatures = new ArrayList();
-        fRecognizedProperties = new ArrayList();
+        fRecognizedFeatures = new ArrayList<>();
+        fRecognizedProperties = new ArrayList<>();
 
         // create table for features and properties
-        fFeatures = new HashMap();
-        fProperties = new HashMap();
+        fFeatures = new HashMap<>();
+        fProperties = new HashMap<>();
 
         // add default recognized features
         final String[] recognizedFeatures = {

@@ -69,7 +69,7 @@ public final class JAXPNamespaceContextWrapper implements NamespaceContext {
      *
      * @param prefixes a list of prefixes as strings
      */
-    public void setDeclaredPrefixes(List prefixes) {
+    public void setDeclaredPrefixes(List<String> prefixes) {
         fPrefixes = prefixes;
     }
 
@@ -78,7 +78,7 @@ public final class JAXPNamespaceContextWrapper implements NamespaceContext {
      *
      * @return a list of declared prefixes as strings
      */
-    public List getDeclaredPrefixes() {
+    public List<String> getDeclaredPrefixes() {
         return fPrefixes;
     }
     

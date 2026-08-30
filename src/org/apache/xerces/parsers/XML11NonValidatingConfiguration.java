@@ -175,13 +175,13 @@ public class XML11NonValidatingConfiguration extends ParserConfigurationSettings
      * XML 1.0 Components.
      * @see XMLComponent
      */
-    protected ArrayList fComponents;
+    protected ArrayList<XMLComponent> fComponents;
 
     /**
      * XML 1.1. Components.
      * @see XMLComponent
      */
-    protected ArrayList fXML11Components = null;
+    protected ArrayList<XMLComponent> fXML11Components = null;
 
     /**
      * An array list of common XMLComponents: XMLEntityManager, XMLErrorReporter.
@@ -189,7 +189,7 @@ public class XML11NonValidatingConfiguration extends ParserConfigurationSettings
      * @see XMLEntityManager
      * @see XMLErrorReporter
      */
-    protected ArrayList fCommonComponents = null;
+    protected ArrayList<XMLComponent> fCommonComponents = null;
     
     /** The document handler. */
     protected XMLDocumentHandler fDocumentHandler;

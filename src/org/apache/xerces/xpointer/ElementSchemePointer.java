@@ -18,6 +18,7 @@
 package org.apache.xerces.xpointer;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.xerces.impl.XMLErrorReporter;
 import org.apache.xerces.util.SymbolTable;
@@ -524,7 +525,8 @@ final class ElementSchemePointer implements XPointerPart {
 
         private SymbolTable fSymbolTable;
 
-        private HashMap fTokenNames = new HashMap();
+        private final Map<Integer, String> fTokenNames = new HashMap<>();
+        private final Map<String, Integer> fTokenIds = new HashMap<>();
 
         /**
          * Constructor 
@@ -538,6 +540,8 @@ final class ElementSchemePointer implements XPointerPart {
                     "XPTRTOKEN_ELEM_NCNAME");
             fTokenNames.put(Integer.valueOf(XPTRTOKEN_ELEM_CHILD),
                     "XPTRTOKEN_ELEM_CHILD");
+            fTokenIds.put("XPTRTOKEN_ELEM_NCNAME", Integer.valueOf(XPTRTOKEN_ELEM_NCNAME));
+            fTokenIds.put("XPTRTOKEN_ELEM_CHILD", Integer.valueOf(XPTRTOKEN_ELEM_CHILD));
         }
 
         /*
@@ -546,7 +550,7 @@ final class ElementSchemePointer implements XPointerPart {
          * @return String The token string
          */
         private String getTokenString(int token) {
-            return (String) fTokenNames.get(Integer.valueOf(token));
+            return fTokenNames.get(Integer.valueOf(token));
         }
 
         /**
@@ -555,7 +559,7 @@ final class ElementSchemePointer implements XPointerPart {
          * @return String The token string
          */
         private Integer getToken(int token) {
-            return (Integer) fTokenNames.get(Integer.valueOf(token));
+            return Integer.valueOf(token);
         }
 
         /**
@@ -564,10 +568,11 @@ final class ElementSchemePointer implements XPointerPart {
          * @param tokenStr The token string
          */
         private void addToken(String tokenStr) {
-            Integer tokenInt = (Integer) fTokenNames.get(tokenStr);
+            Integer tokenInt = fTokenIds.get(tokenStr);
             if (tokenInt == null) {
                 tokenInt = Integer.valueOf(fTokenNames.size());
                 fTokenNames.put(tokenInt, tokenStr);
+                fTokenIds.put(tokenStr, tokenInt);
             }
             addToken(tokenInt.intValue());
         }

@@ -48,7 +48,7 @@ public final class HTTPInputSource extends XMLInputSource {
     protected boolean fFollowRedirects = true;
     
     /** HTTP request properties. **/
-    protected Map fHTTPRequestProperties = new HashMap();
+    protected Map<String, String> fHTTPRequestProperties = new HashMap<>();
     
     //
     // Constructors
@@ -166,7 +166,7 @@ public final class HTTPInputSource extends XMLInputSource {
      * @return an iterator for the request properties this
      * input source contains
      */
-    public Iterator getHTTPRequestProperties() {
+    public Iterator<Map.Entry<String, String>> getHTTPRequestProperties() {
         return fHTTPRequestProperties.entrySet().iterator();
     } // getHTTPRequestProperties():Iterator
     

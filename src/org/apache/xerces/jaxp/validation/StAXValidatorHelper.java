@@ -122,7 +122,7 @@ final class StAXValidatorHelper implements ValidatorHelper, EntityState {
     private final XMLStreamReaderLocation fXMLStreamReaderLocation = new XMLStreamReaderLocation();
     
     /** Map for tracking entity declarations. */
-    private HashMap fEntities = null;
+    private HashMap<String, EntityDeclaration> fEntities = null;
     
     /** Flag used to track whether XML names and Namespace URIs have been internalized. */
     private boolean fStringsInternalized = false;
@@ -296,11 +296,11 @@ final class StAXValidatorHelper implements ValidatorHelper, EntityState {
     }
     
     /** Copies entity declarations into a hash map. */
-    final void processEntityDeclarations(List entityDecls) {
+    final void processEntityDeclarations(List<EntityDeclaration> entityDecls) {
         int size = (entityDecls != null) ? entityDecls.size() : 0;
         if (size > 0) {
             if (fEntities == null) {
-                fEntities = new HashMap();
+                fEntities = new HashMap<>();
             }
             for (int i = 0; i < size; ++i) {
                 EntityDeclaration decl = (EntityDeclaration) entityDecls.get(i);
@@ -415,7 +415,7 @@ final class StAXValidatorHelper implements ValidatorHelper, EntityState {
                             }
                             break;
                         case XMLStreamConstants.DTD:
-                            processEntityDeclarations((List) reader.getProperty("javax.xml.stream.entities"));
+                            processEntityDeclarations((List<EntityDeclaration>) reader.getProperty("javax.xml.stream.entities"));
                             break;
                     }
                     eventType = reader.next();
@@ -589,7 +589,7 @@ final class StAXValidatorHelper implements ValidatorHelper, EntityState {
         /** Fills in the XMLAttributes object. */
         private void fillXMLAttributes(StartElement event) {
             fAttributes.removeAllAttributes();
-            final Iterator attrs = event.getAttributes();
+            final Iterator<Attribute> attrs = event.getAttributes();
             while (attrs.hasNext()) {
                 Attribute attr = (Attribute) attrs.next();
                 fillQName(fAttributeQName, attr.getName());

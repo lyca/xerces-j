@@ -19,6 +19,7 @@ package org.apache.xerces.xpointer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.xerces.impl.Constants;
 import org.apache.xerces.impl.XMLErrorReporter;
@@ -65,7 +66,7 @@ public final class XPointerHandler extends XIncludeHandler implements
 
     // Fields
     // An ArrayList of XPointerParts  
-    protected ArrayList fXPointerParts = null;
+    protected ArrayList<XPointerPart> fXPointerParts = null;
 
     // The current XPointerPart  
     protected XPointerPart fXPointerPart = null;
@@ -102,7 +103,7 @@ public final class XPointerHandler extends XIncludeHandler implements
     public XPointerHandler() {
         super();
 
-        fXPointerParts = new ArrayList();
+        fXPointerParts = new ArrayList<>();
         fSymbolTable = new SymbolTable();
     }
 
@@ -110,7 +111,7 @@ public final class XPointerHandler extends XIncludeHandler implements
             XMLErrorHandler errorHandler, XMLErrorReporter errorReporter) {
         super();
 
-        fXPointerParts = new ArrayList();
+        fXPointerParts = new ArrayList<>();
         fSymbolTable = symbolTable;
         fErrorHandler = errorHandler;
         fXPointerErrorReporter = errorReporter;
@@ -438,7 +439,7 @@ public final class XPointerHandler extends XIncludeHandler implements
      * 
      * @return An ArrayList of XPointerPart objects.
      */
-    public ArrayList getPointerParts() {
+    public ArrayList<XPointerPart> getPointerParts() {
         return fXPointerParts;
     }
 
@@ -484,7 +485,8 @@ public final class XPointerHandler extends XIncludeHandler implements
 
         private SymbolTable fSymbolTable;
 
-        private HashMap fTokenNames = new HashMap();
+        private final Map<Integer, String> fTokenNames = new HashMap<>();
+        private final Map<String, Integer> fTokenIds = new HashMap<>();
 
         /**
          * Constructor 
@@ -504,6 +506,11 @@ public final class XPointerHandler extends XIncludeHandler implements
                     "XPTRTOKEN_SCHEMENAME");
             fTokenNames.put(Integer.valueOf(XPTRTOKEN_SCHEMEDATA),
                     "XPTRTOKEN_SCHEMEDATA");
+            fTokenIds.put("XPTRTOKEN_OPEN_PAREN", Integer.valueOf(XPTRTOKEN_OPEN_PAREN));
+            fTokenIds.put("XPTRTOKEN_CLOSE_PAREN", Integer.valueOf(XPTRTOKEN_CLOSE_PAREN));
+            fTokenIds.put("XPTRTOKEN_SHORTHAND", Integer.valueOf(XPTRTOKEN_SHORTHAND));
+            fTokenIds.put("XPTRTOKEN_SCHEMENAME", Integer.valueOf(XPTRTOKEN_SCHEMENAME));
+            fTokenIds.put("XPTRTOKEN_SCHEMEDATA", Integer.valueOf(XPTRTOKEN_SCHEMEDATA));
         }
 
         /**
@@ -512,7 +519,7 @@ public final class XPointerHandler extends XIncludeHandler implements
          * @return String The token string
          */
         private String getTokenString(int token) {
-            return (String) fTokenNames.get(Integer.valueOf(token));
+            return fTokenNames.get(Integer.valueOf(token));
         }
 
         /**
@@ -521,10 +528,11 @@ public final class XPointerHandler extends XIncludeHandler implements
          * @param token The token string
          */
         private void addToken(String tokenStr) {
-            Integer tokenInt = (Integer) fTokenNames.get(tokenStr);
+            Integer tokenInt = fTokenIds.get(tokenStr);
             if (tokenInt == null) {
                 tokenInt = Integer.valueOf(fTokenNames.size());
                 fTokenNames.put(tokenInt, tokenStr);
+                fTokenIds.put(tokenStr, tokenInt);
             }
             addToken(tokenInt.intValue());
         }
