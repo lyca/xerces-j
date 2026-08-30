@@ -44,7 +44,7 @@ public class XMLDTDDescription extends XMLResourceIdentifierImpl
 
     // if we don't know the root name, this stores all elements that
     // could serve; fPossibleRoots and fRootName cannot both be non-null
-    protected ArrayList fPossibleRoots = null;
+    protected ArrayList<String> fPossibleRoots = null;
 
     // Constructors:
     public XMLDTDDescription(XMLResourceIdentifier id, String rootName) {
@@ -92,7 +92,7 @@ public class XMLDTDDescription extends XMLResourceIdentifierImpl
      *
      * @param possibleRoots an ArrayList of string values
      */
-    public void setPossibleRoots(ArrayList possibleRoots) {
+    public void setPossibleRoots(ArrayList<String> possibleRoots) {
         fPossibleRoots = possibleRoots;
     }
 
@@ -101,8 +101,8 @@ public class XMLDTDDescription extends XMLResourceIdentifierImpl
      *
      * @param possibleRoots a Vector of string values
      */
-    public void setPossibleRoots(Vector possibleRoots) {
-        fPossibleRoots = (possibleRoots != null) ? new ArrayList(possibleRoots) : null;
+    public void setPossibleRoots(Vector<String> possibleRoots) {
+        fPossibleRoots = (possibleRoots != null) ? new ArrayList<>(possibleRoots) : null;
     }
 
     /**

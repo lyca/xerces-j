@@ -21,6 +21,8 @@ import java.math.BigInteger;
 import java.util.AbstractList;
 import java.util.Locale;
 import java.util.StringTokenizer;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 import org.apache.xerces.impl.Constants;
@@ -268,8 +270,8 @@ public class XSSimpleTypeDecl implements XSSimpleType, TypeInfo {
     private int fMaxLength = -1;
     private int fTotalDigits = -1;
     private int fFractionDigits = -1;
-    private Vector fPattern;
-    private Vector fPatternStr;
+    private List<RegularExpression> fPattern;
+    private List<String> fPatternStr;
     private ValidatedInfo[] fEnumeration;
     private int fEnumerationSize;
     private ShortList fEnumerationTypeList;
@@ -840,10 +842,10 @@ public class XSSimpleTypeDecl implements XSSimpleType, TypeInfo {
                     reportError("InvalidRegex", new Object[]{facets.pattern, e.getLocalizedMessage()});
                 }
                 if (regex != null) {
-                    fPattern = new Vector();
-                    fPattern.addElement(regex);
-                    fPatternStr = new Vector();
-                    fPatternStr.addElement(facets.pattern);
+                    fPattern = new ArrayList<>();
+                    fPattern.add(regex);
+                    fPatternStr = new ArrayList<>();
+                    fPatternStr.add(facets.pattern);
                     fFacetsDefined |= FACET_PATTERN;
                     if ((fixedFacet & FACET_PATTERN) != 0)
                         fFixedFacet |= FACET_PATTERN;
@@ -868,16 +870,16 @@ public class XSSimpleTypeDecl implements XSSimpleType, TypeInfo {
             if ((allowedFacet & FACET_ENUMERATION) == 0) {
                 reportError("cos-applicable-facets", new Object[]{"enumeration", fTypeName});
             } else {
-                Vector enumVals = facets.enumeration;
+                Vector<String> enumVals = facets.enumeration;
                 int size = enumVals.size();
                 fEnumeration = new ValidatedInfo[size];
-                Vector enumNSDecls = facets.enumNSDecls;
+                Vector<NamespaceContext> enumNSDecls = facets.enumNSDecls;
                 ValidationContextImpl ctx = new ValidationContextImpl(context);
                 enumerationAnnotations = facets.enumAnnotations;
                 fEnumerationSize = 0;
                 for (int i = 0; i < size; i++) {
                     if (enumNSDecls != null)
-                        ctx.setNSContext((NamespaceContext)enumNSDecls.elementAt(i));
+                        ctx.setNSContext(enumNSDecls.elementAt(i));
                     try {
                         ValidatedInfo info = getActualEnumValue((String)enumVals.elementAt(i), ctx, null);
                         // check 4.3.5.c0 must: enumeration values from the value space of base
@@ -1450,8 +1452,8 @@ public class XSSimpleTypeDecl implements XSSimpleType, TypeInfo {
             }
             else {
                 for (int i = fBase.fPattern.size()-1; i >= 0; --i) {
-                    fPattern.addElement(fBase.fPattern.elementAt(i));
-                    fPatternStr.addElement(fBase.fPatternStr.elementAt(i));
+                    fPattern.add(fBase.fPattern.get(i));
+                    fPatternStr.add(fBase.fPatternStr.get(i));
                 }
                 if (fBase.patternAnnotations != null) {
                     if (patternAnnotations != null) {
@@ -1830,11 +1832,11 @@ public class XSSimpleTypeDecl implements XSSimpleType, TypeInfo {
         if ( (fFacetsDefined & FACET_PATTERN ) != 0 ) {
             RegularExpression regex;
             for (int idx = fPattern.size()-1; idx >= 0; idx--) {
-                regex = (RegularExpression)fPattern.elementAt(idx);
+                regex = fPattern.get(idx);
                 if (!regex.matches(nvalue)){
                     throw new InvalidDatatypeValueException("cvc-pattern-valid",
                             new Object[]{content,
-                            fPatternStr.elementAt(idx),
+                            fPatternStr.get(idx),
 
                             fTypeName});
                 }
@@ -2359,7 +2361,7 @@ public class XSSimpleTypeDecl implements XSSimpleType, TypeInfo {
                 strs = new String[size];
             }
             for (int i = 0; i < size; i++)
-                strs[i] = (String)fPatternStr.elementAt(i);
+                strs[i] = fPatternStr.get(i);
             fLexicalPattern = new StringListImpl(strs, strs.length);
         }
         return fLexicalPattern;

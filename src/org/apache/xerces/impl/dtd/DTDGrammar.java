@@ -18,7 +18,8 @@
 package org.apache.xerces.impl.dtd;
 
 import java.util.ArrayList;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 import org.apache.xerces.impl.dtd.models.CMAny;
@@ -248,7 +249,7 @@ public class DTDGrammar
     private XMLContentSpec fContentSpec = new XMLContentSpec();
 
     /** table of XMLElementDecl   */
-    Hashtable   fElementDeclTab     = new Hashtable();
+    Map<String, XMLElementDecl> fElementDeclTab = new HashMap<>();
 
     /** Children content model operation stack. */
     private short[] fOpStack = null;
@@ -471,7 +472,7 @@ public class DTDGrammar
     public void elementDecl(String name, String contentModel, Augmentations augs)
         throws XNIException {
 
-        XMLElementDecl tmpElementDecl = (XMLElementDecl) fElementDeclTab.get(name) ;
+        XMLElementDecl tmpElementDecl = fElementDeclTab.get(name);
 
         // check if it is already defined
         if ( tmpElementDecl != null ) {
@@ -945,7 +946,7 @@ public class DTDGrammar
     public void startContentModel(String elementName, Augmentations augs)
         throws XNIException {
 
-        XMLElementDecl elementDecl = (XMLElementDecl) this.fElementDeclTab.get( elementName);
+        XMLElementDecl elementDecl = this.fElementDeclTab.get(elementName);
         if ( elementDecl != null ) {
             fElementDecl = elementDecl;
         }
