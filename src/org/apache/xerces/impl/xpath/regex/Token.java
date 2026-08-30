@@ -19,6 +19,7 @@ package org.apache.xerces.impl.xpath.regex;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -244,6 +245,7 @@ class Token implements java.io.Serializable {
         return -1;
     }
 
+    @Override
     public String toString() {
         return this.toString(0);
     }
@@ -582,8 +584,9 @@ class Token implements java.io.Serializable {
     }
 
     // ------------------------------------------------------
-    private final static Map<String, Token> categories = new HashMap<>();
-    private final static Map<String, Token> categories2 = new HashMap<>();
+    private final static Map<String, Token> categories = new ConcurrentHashMap<>();
+    private final static Map<String, Token> categories2 = new ConcurrentHashMap<>();
+    private static volatile boolean categoriesInitialized = false;
     private static final String[] categoryNames = {
         "Cn", "Lu", "Ll", "Lt", "Lm", "Lo", "Mn", "Me", "Mc", "Nd",
         "Nl", "No", "Zs", "Zl", "Zp", "Cc", "Cf", null, "Co", "Cs",
@@ -707,17 +710,17 @@ class Token implements java.io.Serializable {
     //100000..10FFFD; "Private Use"
     //FFF0..FFFD; "Specials", 
     static final String blockRanges = 
-       "\u0000\u007F\u0080\u00FF\u0100\u017F\u0180\u024F\u0250\u02AF\u02B0\u02FF\u0300\u036F"
-        +"\u0370\u03FF\u0400\u04FF\u0530\u058F\u0590\u05FF\u0600\u06FF\u0700\u074F\u0780\u07BF"
-        +"\u0900\u097F\u0980\u09FF\u0A00\u0A7F\u0A80\u0AFF\u0B00\u0B7F\u0B80\u0BFF\u0C00\u0C7F\u0C80\u0CFF"
-        +"\u0D00\u0D7F\u0D80\u0DFF\u0E00\u0E7F\u0E80\u0EFF\u0F00\u0FFF\u1000\u109F\u10A0\u10FF\u1100\u11FF"
-        +"\u1200\u137F\u13A0\u13FF\u1400\u167F\u1680\u169F\u16A0\u16FF\u1780\u17FF\u1800\u18AF\u1E00\u1EFF"
-        +"\u1F00\u1FFF\u2000\u206F\u2070\u209F\u20A0\u20CF\u20D0\u20FF\u2100\u214F\u2150\u218F\u2190\u21FF\u2200\u22FF"
-        +"\u2300\u23FF\u2400\u243F\u2440\u245F\u2460\u24FF\u2500\u257F\u2580\u259F\u25A0\u25FF\u2600\u26FF\u2700\u27BF"
-        +"\u2800\u28FF\u2E80\u2EFF\u2F00\u2FDF\u2FF0\u2FFF\u3000\u303F\u3040\u309F\u30A0\u30FF\u3100\u312F\u3130\u318F"
-        +"\u3190\u319F\u31A0\u31BF\u3200\u32FF\u3300\u33FF\u3400\u4DB5\u4E00\u9FFF\uA000\uA48F\uA490\uA4CF"
-        +"\uAC00\uD7A3\uE000\uF8FF\uF900\uFAFF\uFB00\uFB4F\uFB50\uFDFF"
-        +"\uFE20\uFE2F\uFE30\uFE4F\uFE50\uFE6F\uFE70\uFEFE\uFEFF\uFEFF\uFF00\uFFEF";
+       "\\u0000\\u007F\\u0080\\u00FF\\u0100\\u017F\\u0180\\u024F\\u0250\\u02AF\\u02B0\\u02FF\\u0300\\u036F"
+        +"\\u0370\\u03FF\\u0400\\u04FF\\u0530\\u058F\\u0590\\u05FF\\u0600\\u06FF\\u0700\\u074F\\u0780\\u07BF"
+        +"\\u0900\\u097F\\u0980\\u09FF\\u0A00\\u0A7F\\u0A80\\u0AFF\\u0B00\\u0B7F\\u0B80\\u0BFF\\u0C00\\u0C7F\\u0C80\\u0CFF"
+        +"\\u0D00\\u0D7F\\u0D80\\u0DFF\\u0E00\\u0E7F\\u0E80\\u0EFF\\u0F00\\u0FFF\\u1000\\u109F\\u10A0\\u10FF\\u1100\\u11FF"
+        +"\\u1200\\u137F\\u13A0\\u13FF\\u1400\\u167F\\u1680\\u169F\\u16A0\\u16FF\\u1780\\u17FF\\u1800\\u18AF\\u1E00\\u1EFF"
+        +"\\u1F00\\u1FFF\\u2000\\u206F\\u2070\\u209F\\u20A0\\u20CF\\u20D0\\u20FF\\u2100\\u214F\\u2150\\u218F\\u2190\\u21FF\\u2200\\u22FF"
+        +"\\u2300\\u23FF\\u2400\\u243F\\u2440\\u245F\\u2460\\u24FF\\u2500\\u257F\\u2580\\u259F\\u25A0\\u25FF\\u2600\\u26FF\\u2700\\u27BF"
+        +"\\u2800\\u28FF\\u2E80\\u2EFF\\u2F00\\u2FDF\\u2FF0\\u2FFF\\u3000\\u303F\\u3040\\u309F\\u30A0\\u30FF\\u3100\\u312F\\u3130\\u318F"
+        +"\\u3190\\u319F\\u31A0\\u31BF\\u3200\\u32FF\\u3300\\u33FF\\u3400\\u4DB5\\u4E00\\u9FFF\\uA000\\uA48F\\uA490\\uA4CF"
+        +"\\uAC00\\uD7A3\\uE000\\uF8FF\\uF900\\uFAFF\\uFB00\\uFB4F\\uFB50\\uFDFF"
+        +"\\uFE20\\uFE2F\\uFE30\\uFE4F\\uFE50\\uFE6F\\uFE70\\uFEFE\\uFEFF\\uFEFF\\uFF00\\uFFEF";
     static final int[] nonBMPBlockRanges = {
         0x10300, 0x1032F,       // 84
         0x10330, 0x1034F,
@@ -732,234 +735,238 @@ class Token implements java.io.Serializable {
     private static final int NONBMP_BLOCK_START = 84;
 
     static protected RangeToken getRange(String name, boolean positive) {
-        if (Token.categories.size() == 0) {
+        if (!categoriesInitialized) {
             synchronized (Token.categories) {
-                Token[] ranges = new Token[Token.categoryNames.length];
-                for (int i = 0;  i < ranges.length;  i ++) {
-                    ranges[i] = Token.createRange();
-                }
-                int type;
-                for (int i = 0;  i < 0x10000;  i ++) {
-                    type = Character.getType((char)i);
-                    if (type == Character.START_PUNCTUATION || 
-                        type == Character.END_PUNCTUATION) {
-                        //build table of Pi values
-                        if (i == 0x00AB || i == 0x2018 || i == 0x201B || i == 0x201C ||
-                            i == 0x201F || i == 0x2039) {
-                            type = CHAR_INIT_QUOTE;
+                if (!categoriesInitialized) {
+                    Token[] ranges = new Token[Token.categoryNames.length];
+                    for (int i = 0;  i < ranges.length;  i ++) {
+                        ranges[i] = Token.createRange();
+                    }
+                    int type;
+                    for (int i = 0;  i < 0x10000;  i ++) {
+                        type = Character.getType((char)i);
+                        if (type == Character.START_PUNCTUATION || 
+                            type == Character.END_PUNCTUATION) {
+                            //build table of Pi values
+                            if (i == 0x00AB || i == 0x2018 || i == 0x201B || i == 0x201C ||
+                                i == 0x201F || i == 0x2039) {
+                                type = CHAR_INIT_QUOTE;
+                            }
+                            //build table of Pf values
+                            if (i == 0x00BB || i == 0x2019 || i == 0x201D || i == 0x203A ) {
+                                type = CHAR_FINAL_QUOTE;
+                            }
                         }
-                        //build table of Pf values
-                        if (i == 0x00BB || i == 0x2019 || i == 0x201D || i == 0x203A ) {
-                            type = CHAR_FINAL_QUOTE;
+                        ranges[type].addRange(i, i);
+                        switch (type) {
+                          case Character.UPPERCASE_LETTER:
+                          case Character.LOWERCASE_LETTER:
+                          case Character.TITLECASE_LETTER:
+                          case Character.MODIFIER_LETTER:
+                          case Character.OTHER_LETTER:
+                            type = CHAR_LETTER;
+                            break;
+                          case Character.NON_SPACING_MARK:
+                          case Character.COMBINING_SPACING_MARK:
+                          case Character.ENCLOSING_MARK:
+                            type = CHAR_MARK;
+                            break;
+                          case Character.DECIMAL_DIGIT_NUMBER:
+                          case Character.LETTER_NUMBER:
+                          case Character.OTHER_NUMBER:
+                            type = CHAR_NUMBER;
+                            break;
+                          case Character.SPACE_SEPARATOR:
+                          case Character.LINE_SEPARATOR:
+                          case Character.PARAGRAPH_SEPARATOR:
+                            type = CHAR_SEPARATOR;
+                            break;
+                          case Character.CONTROL:
+                          case Character.FORMAT:
+                          case Character.SURROGATE:
+                          case Character.PRIVATE_USE:
+                          case Character.UNASSIGNED:
+                            type = CHAR_OTHER;
+                            break;
+                          case Character.CONNECTOR_PUNCTUATION:
+                          case Character.DASH_PUNCTUATION:
+                          case Character.START_PUNCTUATION:
+                          case Character.END_PUNCTUATION:
+                          case CHAR_INIT_QUOTE:
+                          case CHAR_FINAL_QUOTE:
+                          case Character.OTHER_PUNCTUATION:
+                            type = CHAR_PUNCTUATION;
+                            break;
+                          case Character.MATH_SYMBOL:
+                          case Character.CURRENCY_SYMBOL:
+                          case Character.MODIFIER_SYMBOL:
+                          case Character.OTHER_SYMBOL:
+                            type = CHAR_SYMBOL;
+                            break;
+                          default:
+                            throw new RuntimeException("org.apache.xerces.utils.regex.Token#getRange(): Unknown Unicode category: "+type);
+                        }
+                        ranges[type].addRange(i, i);
+                    } // for all characters
+                    ranges[Character.UNASSIGNED].addRange(0x10000, Token.UTF16_MAX);
+                    ranges[CHAR_OTHER].addRange(0x10000, Token.UTF16_MAX);
+
+                    for (int i = 0;  i < ranges.length;  i ++) {
+                        if (Token.categoryNames[i] != null) {
+                            if (i == Character.UNASSIGNED) { // Unassigned
+                                ranges[i].addRange(0x10000, Token.UTF16_MAX);
+                            }
+                            Token.categories.put(Token.categoryNames[i], ranges[i]);
+                            Token.categories2.put(Token.categoryNames[i],
+                                                  Token.complementRanges(ranges[i]));
                         }
                     }
-                    ranges[type].addRange(i, i);
-                    switch (type) {
-                      case Character.UPPERCASE_LETTER:
-                      case Character.LOWERCASE_LETTER:
-                      case Character.TITLECASE_LETTER:
-                      case Character.MODIFIER_LETTER:
-                      case Character.OTHER_LETTER:
-                        type = CHAR_LETTER;
-                        break;
-                      case Character.NON_SPACING_MARK:
-                      case Character.COMBINING_SPACING_MARK:
-                      case Character.ENCLOSING_MARK:
-                        type = CHAR_MARK;
-                        break;
-                      case Character.DECIMAL_DIGIT_NUMBER:
-                      case Character.LETTER_NUMBER:
-                      case Character.OTHER_NUMBER:
-                        type = CHAR_NUMBER;
-                        break;
-                      case Character.SPACE_SEPARATOR:
-                      case Character.LINE_SEPARATOR:
-                      case Character.PARAGRAPH_SEPARATOR:
-                        type = CHAR_SEPARATOR;
-                        break;
-                      case Character.CONTROL:
-                      case Character.FORMAT:
-                      case Character.SURROGATE:
-                      case Character.PRIVATE_USE:
-                      case Character.UNASSIGNED:
-                        type = CHAR_OTHER;
-                        break;
-                      case Character.CONNECTOR_PUNCTUATION:
-                      case Character.DASH_PUNCTUATION:
-                      case Character.START_PUNCTUATION:
-                      case Character.END_PUNCTUATION:
-                      case CHAR_INIT_QUOTE:
-                      case CHAR_FINAL_QUOTE:
-                      case Character.OTHER_PUNCTUATION:
-                        type = CHAR_PUNCTUATION;
-                        break;
-                      case Character.MATH_SYMBOL:
-                      case Character.CURRENCY_SYMBOL:
-                      case Character.MODIFIER_SYMBOL:
-                      case Character.OTHER_SYMBOL:
-                        type = CHAR_SYMBOL;
-                        break;
-                      default:
-                        throw new RuntimeException("org.apache.xerces.utils.regex.Token#getRange(): Unknown Unicode category: "+type);
-                    }
-                    ranges[type].addRange(i, i);
-                } // for all characters
-                ranges[Character.UNASSIGNED].addRange(0x10000, Token.UTF16_MAX);
-                ranges[CHAR_OTHER].addRange(0x10000, Token.UTF16_MAX);
-
-                for (int i = 0;  i < ranges.length;  i ++) {
-                    if (Token.categoryNames[i] != null) {
-                        if (i == Character.UNASSIGNED) { // Unassigned
-                            ranges[i].addRange(0x10000, Token.UTF16_MAX);
+                    //REVISIT: do we really need to support block names as in Unicode 3.1
+                    //         or we can just create all the names in IsBLOCKNAME format (XML Schema REC)?
+                    //
+                    StringBuffer buffer = new StringBuffer(50);
+                    for (int i = 0;  i < Token.blockNames.length;  i ++) {
+                        Token r1 = Token.createRange();
+                        int location;
+                        if (i < NONBMP_BLOCK_START) {
+                            location = i*2;
+                            int rstart = Token.blockRanges.charAt(location);
+                            int rend = Token.blockRanges.charAt(location+1);
+                            //DEBUGING
+                            //System.out.println(n+" " +Integer.toHexString(rstart)
+                            //                     +"-"+ Integer.toHexString(rend));
+                            r1.addRange(rstart, rend);
+                        } else {
+                            location = (i - NONBMP_BLOCK_START) * 2;
+                            r1.addRange(Token.nonBMPBlockRanges[location],
+                                        Token.nonBMPBlockRanges[location + 1]);
                         }
-                        Token.categories.put(Token.categoryNames[i], ranges[i]);
-                        Token.categories2.put(Token.categoryNames[i],
-                                              Token.complementRanges(ranges[i]));
+                        String n = Token.blockNames[i];
+                        if (n.equals("Specials"))
+                            r1.addRange(0xfff0, 0xfffd);
+                        if (n.equals("Private Use")) {
+                            r1.addRange(0xF0000,0xFFFFD);
+                            r1.addRange(0x100000,0x10FFFD);
+                        }
+                        Token.categories.put(n, r1);
+                        Token.categories2.put(n, Token.complementRanges(r1));
+                        buffer.setLength(0);
+                        buffer.append("Is");
+                        if (n.indexOf(' ') >= 0) {
+                            for (int ci = 0;  ci < n.length();  ci ++)
+                                if (n.charAt(ci) != ' ')  buffer.append((char)n.charAt(ci));
+                        }
+                        else {
+                            buffer.append(n);
+                        }
+                        Token.setAlias(buffer.toString(), n, true);
                     }
-                }
-                //REVISIT: do we really need to support block names as in Unicode 3.1
-                //         or we can just create all the names in IsBLOCKNAME format (XML Schema REC)?
-                //
-                StringBuffer buffer = new StringBuffer(50);
-                for (int i = 0;  i < Token.blockNames.length;  i ++) {
-                    Token r1 = Token.createRange();
-                    int location;
-                    if (i < NONBMP_BLOCK_START) {
-                        location = i*2;
-                        int rstart = Token.blockRanges.charAt(location);
-                        int rend = Token.blockRanges.charAt(location+1);
-                        //DEBUGING
-                        //System.out.println(n+" " +Integer.toHexString(rstart)
-                        //                     +"-"+ Integer.toHexString(rend));
-                        r1.addRange(rstart, rend);
-                    } else {
-                        location = (i - NONBMP_BLOCK_START) * 2;
-                        r1.addRange(Token.nonBMPBlockRanges[location],
-                                    Token.nonBMPBlockRanges[location + 1]);
-                    }
-                    String n = Token.blockNames[i];
-                    if (n.equals("Specials"))
-                        r1.addRange(0xfff0, 0xfffd);
-                    if (n.equals("Private Use")) {
-                        r1.addRange(0xF0000,0xFFFFD);
-                        r1.addRange(0x100000,0x10FFFD);
-                    }
-                    Token.categories.put(n, r1);
-                    Token.categories2.put(n, Token.complementRanges(r1));
-                    buffer.setLength(0);
-                    buffer.append("Is");
-                    if (n.indexOf(' ') >= 0) {
-                        for (int ci = 0;  ci < n.length();  ci ++)
-                            if (n.charAt(ci) != ' ')  buffer.append((char)n.charAt(ci));
-                    }
-                    else {
-                        buffer.append(n);
-                    }
-                    Token.setAlias(buffer.toString(), n, true);
-                }
 
-                // TR#18 1.2
-                Token.setAlias("ASSIGNED", "Cn", false);
-                Token.setAlias("UNASSIGNED", "Cn", true);
-                Token all = Token.createRange();
-                all.addRange(0, Token.UTF16_MAX);
-                Token.categories.put("ALL", all);
-                Token.categories2.put("ALL", Token.complementRanges(all));
-                Token.registerNonXS("ASSIGNED");
-                Token.registerNonXS("UNASSIGNED");
-                Token.registerNonXS("ALL");
+                    // TR#18 1.2
+                    Token.setAlias("ASSIGNED", "Cn", false);
+                    Token.setAlias("UNASSIGNED", "Cn", true);
+                    Token all = Token.createRange();
+                    all.addRange(0, Token.UTF16_MAX);
+                    Token.categories.put("ALL", all);
+                    Token.categories2.put("ALL", Token.complementRanges(all));
+                    Token.registerNonXS("ASSIGNED");
+                    Token.registerNonXS("UNASSIGNED");
+                    Token.registerNonXS("ALL");
 
-                Token isalpha = Token.createRange();
-                isalpha.mergeRanges(ranges[Character.UPPERCASE_LETTER]); // Lu
-                isalpha.mergeRanges(ranges[Character.LOWERCASE_LETTER]); // Ll
-                isalpha.mergeRanges(ranges[Character.OTHER_LETTER]); // Lo
-                Token.categories.put("IsAlpha", isalpha);
-                Token.categories2.put("IsAlpha", Token.complementRanges(isalpha));
-                Token.registerNonXS("IsAlpha");
+                    Token isalpha = Token.createRange();
+                    isalpha.mergeRanges(ranges[Character.UPPERCASE_LETTER]); // Lu
+                    isalpha.mergeRanges(ranges[Character.LOWERCASE_LETTER]); // Ll
+                    isalpha.mergeRanges(ranges[Character.OTHER_LETTER]); // Lo
+                    Token.categories.put("IsAlpha", isalpha);
+                    Token.categories2.put("IsAlpha", Token.complementRanges(isalpha));
+                    Token.registerNonXS("IsAlpha");
 
-                Token isalnum = Token.createRange();
-                isalnum.mergeRanges(isalpha);   // Lu Ll Lo
-                isalnum.mergeRanges(ranges[Character.DECIMAL_DIGIT_NUMBER]); // Nd
-                Token.categories.put("IsAlnum", isalnum);
-                Token.categories2.put("IsAlnum", Token.complementRanges(isalnum));
-                Token.registerNonXS("IsAlnum");
+                    Token isalnum = Token.createRange();
+                    isalnum.mergeRanges(isalpha);   // Lu Ll Lo
+                    isalnum.mergeRanges(ranges[Character.DECIMAL_DIGIT_NUMBER]); // Nd
+                    Token.categories.put("IsAlnum", isalnum);
+                    Token.categories2.put("IsAlnum", Token.complementRanges(isalnum));
+                    Token.registerNonXS("IsAlnum");
 
-                Token isspace = Token.createRange();
-                isspace.mergeRanges(Token.token_spaces);
-                isspace.mergeRanges(ranges[CHAR_SEPARATOR]); // Z
-                Token.categories.put("IsSpace", isspace);
-                Token.categories2.put("IsSpace", Token.complementRanges(isspace));
-                Token.registerNonXS("IsSpace");
+                    Token isspace = Token.createRange();
+                    isspace.mergeRanges(Token.token_spaces);
+                    isspace.mergeRanges(ranges[CHAR_SEPARATOR]); // Z
+                    Token.categories.put("IsSpace", isspace);
+                    Token.categories2.put("IsSpace", Token.complementRanges(isspace));
+                    Token.registerNonXS("IsSpace");
 
-                Token isword = Token.createRange();
-                isword.mergeRanges(isalnum);     // Lu Ll Lo Nd
-                isword.addRange('_', '_');
-                Token.categories.put("IsWord", isword);
-                Token.categories2.put("IsWord", Token.complementRanges(isword));
-                Token.registerNonXS("IsWord");
+                    Token isword = Token.createRange();
+                    isword.mergeRanges(isalnum);     // Lu Ll Lo Nd
+                    isword.addRange('_', '_');
+                    Token.categories.put("IsWord", isword);
+                    Token.categories2.put("IsWord", Token.complementRanges(isword));
+                    Token.registerNonXS("IsWord");
 
-                Token isascii = Token.createRange();
-                isascii.addRange(0, 127);
-                Token.categories.put("IsASCII", isascii);
-                Token.categories2.put("IsASCII", Token.complementRanges(isascii));
-                Token.registerNonXS("IsASCII");
+                    Token isascii = Token.createRange();
+                    isascii.addRange(0, 127);
+                    Token.categories.put("IsASCII", isascii);
+                    Token.categories2.put("IsASCII", Token.complementRanges(isascii));
+                    Token.registerNonXS("IsASCII");
 
-                Token isnotgraph = Token.createRange();
-                isnotgraph.mergeRanges(ranges[CHAR_OTHER]);
-                isnotgraph.addRange(' ', ' ');
-                Token.categories.put("IsGraph", Token.complementRanges(isnotgraph));
-                Token.categories2.put("IsGraph", isnotgraph);
-                Token.registerNonXS("IsGraph");
+                    Token isnotgraph = Token.createRange();
+                    isnotgraph.mergeRanges(ranges[CHAR_OTHER]);
+                    isnotgraph.addRange(' ', ' ');
+                    Token.categories.put("IsGraph", Token.complementRanges(isnotgraph));
+                    Token.categories2.put("IsGraph", isnotgraph);
+                    Token.registerNonXS("IsGraph");
 
-                Token isxdigit = Token.createRange();
-                isxdigit.addRange('0', '9');
-                isxdigit.addRange('A', 'F');
-                isxdigit.addRange('a', 'f');
-                Token.categories.put("IsXDigit", Token.complementRanges(isxdigit));
-                Token.categories2.put("IsXDigit", isxdigit);
-                Token.registerNonXS("IsXDigit");
+                    Token isxdigit = Token.createRange();
+                    isxdigit.addRange('0', '9');
+                    isxdigit.addRange('A', 'F');
+                    isxdigit.addRange('a', 'f');
+                    Token.categories.put("IsXDigit", Token.complementRanges(isxdigit));
+                    Token.categories2.put("IsXDigit", isxdigit);
+                    Token.registerNonXS("IsXDigit");
 
-                Token.setAlias("IsDigit", "Nd", true);
-                Token.setAlias("IsUpper", "Lu", true);
-                Token.setAlias("IsLower", "Ll", true);
-                Token.setAlias("IsCntrl", "C", true);
-                Token.setAlias("IsPrint", "C", false);
-                Token.setAlias("IsPunct", "P", true);
-                Token.registerNonXS("IsDigit");
-                Token.registerNonXS("IsUpper");
-                Token.registerNonXS("IsLower");
-                Token.registerNonXS("IsCntrl");
-                Token.registerNonXS("IsPrint");
-                Token.registerNonXS("IsPunct");
+                    Token.setAlias("IsDigit", "Nd", true);
+                    Token.setAlias("IsUpper", "Lu", true);
+                    Token.setAlias("IsLower", "Ll", true);
+                    Token.setAlias("IsCntrl", "C", true);
+                    Token.setAlias("IsPrint", "C", false);
+                    Token.setAlias("IsPunct", "P", true);
+                    Token.registerNonXS("IsDigit");
+                    Token.registerNonXS("IsUpper");
+                    Token.registerNonXS("IsLower");
+                    Token.registerNonXS("IsCntrl");
+                    Token.registerNonXS("IsPrint");
+                    Token.registerNonXS("IsPunct");
 
-                Token.setAlias("alpha", "IsAlpha", true);
-                Token.setAlias("alnum", "IsAlnum", true);
-                Token.setAlias("ascii", "IsASCII", true);
-                Token.setAlias("cntrl", "IsCntrl", true);
-                Token.setAlias("digit", "IsDigit", true);
-                Token.setAlias("graph", "IsGraph", true);
-                Token.setAlias("lower", "IsLower", true);
-                Token.setAlias("print", "IsPrint", true);
-                Token.setAlias("punct", "IsPunct", true);
-                Token.setAlias("space", "IsSpace", true);
-                Token.setAlias("upper", "IsUpper", true);
-                Token.setAlias("word", "IsWord", true); // Perl extension
-                Token.setAlias("xdigit", "IsXDigit", true);
-                Token.registerNonXS("alpha");
-                Token.registerNonXS("alnum");
-                Token.registerNonXS("ascii");
-                Token.registerNonXS("cntrl");
-                Token.registerNonXS("digit");
-                Token.registerNonXS("graph");
-                Token.registerNonXS("lower");
-                Token.registerNonXS("print");
-                Token.registerNonXS("punct");
-                Token.registerNonXS("space");
-                Token.registerNonXS("upper");
-                Token.registerNonXS("word");
-                Token.registerNonXS("xdigit");
-            } // synchronized
-        } // if null
+                    Token.setAlias("alpha", "IsAlpha", true);
+                    Token.setAlias("alnum", "IsAlnum", true);
+                    Token.setAlias("ascii", "IsASCII", true);
+                    Token.setAlias("cntrl", "IsCntrl", true);
+                    Token.setAlias("digit", "IsDigit", true);
+                    Token.setAlias("graph", "IsGraph", true);
+                    Token.setAlias("lower", "IsLower", true);
+                    Token.setAlias("print", "IsPrint", true);
+                    Token.setAlias("punct", "IsPunct", true);
+                    Token.setAlias("space", "IsSpace", true);
+                    Token.setAlias("upper", "IsUpper", true);
+                    Token.setAlias("word", "IsWord", true); // Perl extension
+                    Token.setAlias("xdigit", "IsXDigit", true);
+                    Token.registerNonXS("alpha");
+                    Token.registerNonXS("alnum");
+                    Token.registerNonXS("ascii");
+                    Token.registerNonXS("cntrl");
+                    Token.registerNonXS("digit");
+                    Token.registerNonXS("graph");
+                    Token.registerNonXS("lower");
+                    Token.registerNonXS("print");
+                    Token.registerNonXS("punct");
+                    Token.registerNonXS("space");
+                    Token.registerNonXS("upper");
+                    Token.registerNonXS("word");
+                    Token.registerNonXS("xdigit");
+
+                    categoriesInitialized = true;
+                } // synchronized
+            }
+        } // if not initialized
         RangeToken tok = positive ? (RangeToken)Token.categories.get(name)
             : (RangeToken)Token.categories2.get(name);
         //if (tok == null) System.out.println(name);
@@ -972,14 +979,13 @@ class Token implements java.io.Serializable {
         return range;
     }
 
-    static Map<String, String> nonxs = null;
+    static volatile Map<String, String> nonxs = null;
     /**
      * This method is called by only getRange().
-     * So this method need not MT-safe.
      */
     static protected void registerNonXS(String name) {
         if (Token.nonxs == null)
-            Token.nonxs = new HashMap<>();
+            Token.nonxs = new ConcurrentHashMap<>();
         Token.nonxs.put(name, name);
     }
     static protected boolean isRegisterNonXS(String name) {
@@ -1005,19 +1011,19 @@ class Token implements java.io.Serializable {
     // ------------------------------------------------------
 
     static final String viramaString =
-    "\u094D"// ;DEVANAGARI SIGN VIRAMA;Mn;9;ON;;;;;N;;;;;
-    +"\u09CD"//;BENGALI SIGN VIRAMA;Mn;9;ON;;;;;N;;;;;
-    +"\u0A4D"//;GURMUKHI SIGN VIRAMA;Mn;9;ON;;;;;N;;;;;
-    +"\u0ACD"//;GUJARATI SIGN VIRAMA;Mn;9;ON;;;;;N;;;;;
-    +"\u0B4D"//;ORIYA SIGN VIRAMA;Mn;9;ON;;;;;N;;;;;
-    +"\u0BCD"//;TAMIL SIGN VIRAMA;Mn;9;ON;;;;;N;;;;;
-    +"\u0C4D"//;TELUGU SIGN VIRAMA;Mn;9;ON;;;;;N;;;;;
-    +"\u0CCD"//;KANNADA SIGN VIRAMA;Mn;9;ON;;;;;N;;;;;
-    +"\u0D4D"//;MALAYALAM SIGN VIRAMA;Mn;9;ON;;;;;N;;;;;
-    +"\u0E3A"//;THAI CHARACTER PHINTHU;Mn;9;ON;;;;;N;THAI VOWEL SIGN PHINTHU;;;;
-    +"\u0F84";//;TIBETAN MARK HALANTA;Mn;9;ON;;;;;N;TIBETAN VIRAMA;;;;
+    "\\u094D"// ;DEVANAGARI SIGN VIRAMA;Mn;9;ON;;;;;N;;;;;
+    +"\\u09CD"//;BENGALI SIGN VIRAMA;Mn;9;ON;;;;;N;;;;;
+    +"\\u0A4D"//;GURMUKHI SIGN VIRAMA;Mn;9;ON;;;;;N;;;;;
+    +"\\u0ACD"//;GUJARATI SIGN VIRAMA;Mn;9;ON;;;;;N;;;;;
+    +"\\u0B4D"//;ORIYA SIGN VIRAMA;Mn;9;ON;;;;;N;;;;;
+    +"\\u0BCD"//;TAMIL SIGN VIRAMA;Mn;9;ON;;;;;N;;;;;
+    +"\\u0C4D"//;TELUGU SIGN VIRAMA;Mn;9;ON;;;;;N;;;;;
+    +"\\u0CCD"//;KANNADA SIGN VIRAMA;Mn;9;ON;;;;;N;;;;;
+    +"\\u0D4D"//;MALAYALAM SIGN VIRAMA;Mn;9;ON;;;;;N;;;;;
+    +"\\u0E3A"//;THAI CHARACTER PHINTHU;Mn;9;ON;;;;;N;THAI VOWEL SIGN PHINTHU;;;;
+    +"\\u0F84";//;TIBETAN MARK HALANTA;Mn;9;ON;;;;;N;TIBETAN VIRAMA;;;;
 
-    static private Token token_grapheme = null;
+    static private volatile Token token_grapheme = null;
     static synchronized Token getGraphemePattern() {
         if (Token.token_grapheme != null)
             return Token.token_grapheme;
@@ -1056,7 +1062,7 @@ class Token implements java.io.Serializable {
     /**
      * Combing Character Sequence in Perl 5.6.
      */
-    static private Token token_ccs = null;
+    static private volatile Token token_ccs = null;
     static synchronized Token getCombiningCharacterSequence() {
         if (Token.token_ccs != null)
             return Token.token_ccs;
@@ -1086,13 +1092,16 @@ class Token implements java.io.Serializable {
             this.refNumber = n;
         }
 
+        @Override
         int getReferenceNumber() {              // for STRING
             return this.refNumber;
         }
+        @Override
         String getString() {                    // for STRING
             return this.string;
         }
         
+        @Override
         public String toString(int options) {
             if (this.type == BACKREFERENCE)
                 return "\\"+this.refNumber;
@@ -1117,13 +1126,16 @@ class Token implements java.io.Serializable {
             this.child2 = t2;
         }
 
+        @Override
         int size() {
             return 2;
         }
+        @Override
         Token getChild(int index) {
             return index == 0 ? this.child : this.child2;
         }
 
+        @Override
         public String toString(int options) {
             String ret;
             if (this.child2.type == CLOSURE && this.child2.getChild(0) == this.child) {
@@ -1132,6 +1144,123 @@ class Token implements java.io.Serializable {
                 ret = this.child.toString(options)+"+?";
             } else
                 ret = this.child.toString(options)+this.child2.toString(options);
+            return ret;
+        }
+    }
+
+    /**
+     * This class represents a node in parse tree.
+     */
+    static class UnionToken extends Token implements java.io.Serializable {
+
+        private static final long serialVersionUID = -2568843945451532865L;
+        
+        List<Token> children;
+
+        UnionToken(int type) {
+            super(type);
+        }
+
+        @Override
+        void addChild(Token tok) {
+            if (tok == null)  return;
+            if (this.children == null)  this.children = new ArrayList<>(2);
+            if (this.type == UNION) {
+                this.children.add(tok);
+                return;
+            }
+                                                // In case of CONCAT
+            if (tok.type == CONCAT) {
+                for (int i = 0;  i < tok.size();  i ++)
+                    this.addChild(tok.getChild(i)); // Recursion: We assume that tok.size() < 2.
+                return;
+            }
+            int size = this.children.size();
+            if (size == 0) {
+                this.children.add(tok);
+                return;
+            }
+            Token previous = this.children.get(size - 1);
+            if (!((previous.type == CHAR || previous.type == STRING)
+                  && (tok.type == CHAR || tok.type == STRING))) {
+                this.children.add(tok);
+                return;
+            }
+            //System.err.println("Merge '"+previous+"' and '"+tok+"'.");
+            
+            StringBuffer buffer;
+            int nextMaxLength = (tok.type == CHAR ? 2 : tok.getString().length());
+            if (previous.type == CHAR) {
+                buffer = new StringBuffer(2 + nextMaxLength);
+                int ch = previous.getChar();
+                if (ch >= 0x10000)
+                    buffer.append(REUtil.decomposeToSurrogates(ch));
+                else
+                    buffer.append((char)ch);
+                previous = Token.createString(null);
+                this.children.set(size - 1, previous);
+            } else {
+                buffer = new StringBuffer(previous.getString().length() + nextMaxLength);
+                buffer.append(previous.getString());
+            }
+            if (tok.type == CHAR) {
+                int ch = tok.getChar();
+                if (ch >= 0x10000)
+                    buffer.append(REUtil.decomposeToSurrogates(ch));
+                else
+                    buffer.append((char)ch);
+            } else {
+                buffer.append(tok.getString());
+            }
+            ((StringToken)previous).string = buffer.toString();
+        }
+
+        @Override
+        int size() {
+            return this.children == null ? 0 : this.children.size();
+        }
+        @Override
+        Token getChild(int index) {
+            return this.children.get(index);
+        }
+
+        @Override
+        public String toString(int options) {
+            String ret;
+            if (this.type == UNION) {
+                if (this.children.size() == 2) {
+                    Token ch1 = this.getChild(0);
+                    Token ch2 = this.getChild(1);
+                    if (ch2.type == EMPTY && ch1.type == EMPTY) {
+                        ret = "()";
+                    } else if (ch2.type == EMPTY) {
+                        ret = ch1.toString(options)+"?";
+                    } else if (ch1.type == EMPTY) {
+                        ret = ch2.toString(options)+"?";
+                    } else {
+                        ret = ch1.toString(options)+"|"+ch2.toString(options);
+                    }
+                    // xxx
+                } else {
+                    StringBuffer sb = new StringBuffer();
+                    sb.append(this.children.get(0).toString(options));
+                    for (int i = 1;  i < this.children.size();  i ++) {
+                        sb.append((char)'|');
+                        sb.append(this.children.get(i).toString(options));
+                    }
+                    ret = new String(sb);
+                }
+            } else {
+                if (this.children.size() == 0) {
+                    ret = "";
+                } else {
+                    StringBuffer sb = new StringBuffer();
+                    for (int i = 0;  i < this.children.size();  i ++) {
+                        sb.append(this.children.get(i).toString(options));
+                    }
+                    ret = new String(sb);
+                }
+            }
             return ret;
         }
     }
@@ -1150,48 +1279,56 @@ class Token implements java.io.Serializable {
             this.chardata = ch;
         }
 
+        @Override
         int getChar() {
             return this.chardata;
         }
 
+        @Override
         public String toString(int options) {
-            String ret;
             switch (this.type) {
               case CHAR:
                 switch (this.chardata) {
-                  case '|':  case '*':  case '+':  case '?':
-                  case '(':  case ')':  case '.':  case '[':
-                  case '{':  case '\\':
-                    ret = "\\"+(char)this.chardata;
-                    break;
-                  case '\f':  ret = "\\f";  break;
-                  case '\n':  ret = "\\n";  break;
-                  case '\r':  ret = "\\r";  break;
-                  case '\t':  ret = "\\t";  break;
-                  case 0x1b:  ret = "\\e";  break;
-                    //case 0x0b:  ret = "\\v";  break;
+                  case '\\':  return "\\\\";
+                  case '{':  return "\\{";
+                  case '}':  return "\\}";
+                  case '(':  return "\\(";
+                  case ')':  return "\\)";
+                  case '[':  return "\\[";
+                  case ']':  return "\\]";
+                  case ',':  return "\\,";
+                  case '+':  return "\\+";
+                  case '*':  return "\\*";
+                  case '?':  return "\\?";
+                  case '|':  return "\\|";
+                  case '^':  return "\\^";
+                  case '$':  return "\\$";
+                  case '.':  return "\\.";
+                  case '\r':  return "\\r";
+                  case '\n':  return "\\n";
+                  case '\f':  return "\\f";
+                  case '\t':  return "\\t";
                   default:
                     if (this.chardata >= 0x10000) {
-                        String pre = "0"+Integer.toHexString(this.chardata);
-                        ret = "\\v"+pre.substring(pre.length()-6, pre.length());
-                    } else
-                        ret = ""+(char)this.chardata;
+                        String match = REUtil.decomposeToSurrogates(this.chardata);
+                        return "\\x{"+Integer.toHexString(this.chardata)+"}";
+                    } else {
+                        return ""+(char)this.chardata;
+                    }
                 }
-                break;
 
               case ANCHOR:
                 if (this == Token.token_linebeginning || this == Token.token_lineend)
-                    ret = ""+(char)this.chardata;
+                    return ""+(char)this.chardata;
                 else 
-                    ret = "\\"+(char)this.chardata;
-                break;
+                    return "\\"+(char)this.chardata;
 
               default:
-                ret = null;
+                return null;
             }
-            return ret;
         }
 
+        @Override
         boolean match(int ch) {
             if (this.type == CHAR) {
                 return ch == this.chardata;
@@ -1203,104 +1340,39 @@ class Token implements java.io.Serializable {
     /**
      * This class represents a node in parse tree.
      */
-    static class ClosureToken extends Token implements java.io.Serializable {
-
-        private static final long serialVersionUID = 1308971930673997452L;
-        
-        int min;
-        int max;
-        final Token child;
-
-        ClosureToken(int type, Token tok) {
-            super(type);
-            this.child = tok;
-            this.setMin(-1);
-            this.setMax(-1);
-        }
-
-        int size() {
-            return 1;
-        }
-        Token getChild(int index) {
-            return this.child;
-        }
-
-        final void setMin(int min) {
-            this.min = min;
-        }
-        final void setMax(int max) {
-            this.max = max;
-        }
-        final int getMin() {
-            return this.min;
-        }
-        final int getMax() {
-            return this.max;
-        }
-
-        public String toString(int options) {
-            String ret;
-            if (this.type == CLOSURE) {
-                if (this.getMin() < 0 && this.getMax() < 0) {
-                    ret = this.child.toString(options)+"*";
-                } else if (this.getMin() == this.getMax()) {
-                    ret = this.child.toString(options)+"{"+this.getMin()+"}";
-                } else if (this.getMin() >= 0 && this.getMax() >= 0) {
-                    ret = this.child.toString(options)+"{"+this.getMin()+","+this.getMax()+"}";
-                } else if (this.getMin() >= 0 && this.getMax() < 0) {
-                    ret = this.child.toString(options)+"{"+this.getMin()+",}";
-                } else
-                    throw new RuntimeException("Token#toString(): CLOSURE "
-                                               +this.getMin()+", "+this.getMax());
-            } else {
-                if (this.getMin() < 0 && this.getMax() < 0) {
-                    ret = this.child.toString(options)+"*?";
-                } else if (this.getMin() == this.getMax()) {
-                    ret = this.child.toString(options)+"{"+this.getMin()+"}?";
-                } else if (this.getMin() >= 0 && this.getMax() >= 0) {
-                    ret = this.child.toString(options)+"{"+this.getMin()+","+this.getMax()+"}?";
-                } else if (this.getMin() >= 0 && this.getMax() < 0) {
-                    ret = this.child.toString(options)+"{"+this.getMin()+",}?";
-                } else
-                    throw new RuntimeException("Token#toString(): NONGREEDYCLOSURE "
-                                               +this.getMin()+", "+this.getMax());
-            }
-            return ret;
-        }
-    }
-
-    /**
-     * This class represents a node in parse tree.
-     */
     static class ParenToken extends Token implements java.io.Serializable {
 
-        private static final long serialVersionUID = -5938014719827987704L;
+        private static final long serialVersionUID = -593801478032736007L;
         
         final Token child;
-        final int parennumber;
+        final int pnumber;
 
-        ParenToken(int type, Token tok, int paren) {
+        ParenToken(int type, Token tok, int pnumber) {
             super(type);
             this.child = tok;
-            this.parennumber = paren;
+            this.pnumber = pnumber;
         }
 
+        @Override
         int size() {
             return 1;
         }
+        @Override
         Token getChild(int index) {
             return this.child;
         }
 
+        @Override
         int getParenNumber() {
-            return this.parennumber;
+            return this.pnumber;
         }
 
+        @Override
         public String toString(int options) {
             String ret = null;
             switch (this.type) {
               case PAREN:
-                if (this.parennumber == 0) {
+                if (this.pnumber == 0) {
                     ret = "(?:"+this.child.toString(options)+")";
                 } else {
                     ret = "("+this.child.toString(options)+")";
@@ -1328,57 +1400,85 @@ class Token implements java.io.Serializable {
     }
 
     /**
-     * (?(condition)yes-pattern|no-pattern)
+     * This class represents a node in parse tree.
      */
-    static class ConditionToken extends Token implements java.io.Serializable {
+    static class ClosureToken extends Token implements java.io.Serializable {
 
-        private static final long serialVersionUID = 4353765277910594411L;
+        private static final long serialVersionUID = 1308971930673997452L;
         
-        final int refNumber;
-        final Token condition;
-        final Token yes;
-        final Token no;
-        ConditionToken(int refno, Token cond, Token yespat, Token nopat) {
-            super(Token.CONDITION);
-            this.refNumber = refno;
-            this.condition = cond;
-            this.yes = yespat;
-            this.no = nopat;
-        }
-        int size() {
-            return this.no == null ? 1 : 2;
-        }
-        Token getChild(int index) {
-            if (index == 0)  return this.yes;
-            if (index == 1)  return this.no;
-            throw new RuntimeException("Internal Error: "+index);
+        int min;
+        int max;
+        final Token child;
+
+        ClosureToken(int type, Token tok) {
+            super(type);
+            this.child = tok;
+            this.setMin(-1);
+            this.setMax(-1);
         }
 
+        @Override
+        int size() {
+            return 1;
+        }
+        @Override
+        Token getChild(int index) {
+            return this.child;
+        }
+
+        @Override
+        final void setMin(int min) {
+            this.min = min;
+        }
+        @Override
+        final void setMax(int max) {
+            this.max = max;
+        }
+        @Override
+        final int getMin() {
+            return this.min;
+        }
+        @Override
+        final int getMax() {
+            return this.max;
+        }
+
+        @Override
         public String toString(int options) {
             String ret;
-            if (refNumber > 0) {
-                ret = "(?("+refNumber+")";
-            } else if (this.condition.type == Token.ANCHOR) {
-                ret = "(?("+this.condition+")";
+            if (this.type == CLOSURE) {
+                if (this.getMin() < 0 && this.getMax() < 0) {
+                    ret = this.child.toString(options)+"*";
+                } else if (this.getMin() == this.getMax()) {
+                    ret = this.child.toString(options)+"{"+this.getMin()+"}";
+                } else if (this.getMin() >= 0 && this.getMax() >= 0) {
+                    ret = this.child.toString(options)+"{"+this.getMin()+","+this.getMax()+"}";
+                } else if (this.getMin() >= 0 && this.getMax() < 0) {
+                    ret = this.child.toString(options)+"{"+this.getMin()+",}";
+                } else
+                    throw new RuntimeException("Token#toString(): CLOSURE needs min > 0.");
             } else {
-                ret = "(?"+this.condition;
-            }
-
-            if (this.no == null) {
-                ret += this.yes+")";
-            } else {
-                ret += this.yes+"|"+this.no+")";
+                if (this.getMin() < 0 && this.getMax() < 0) {
+                    ret = this.child.toString(options)+"*?";
+                } else if (this.getMin() == this.getMax()) {
+                    ret = this.child.toString(options)+"{"+this.getMin()+"}?";
+                } else if (this.getMin() >= 0 && this.getMax() >= 0) {
+                    ret = this.child.toString(options)+"{"+this.getMin()+","+this.getMax()+"}?";
+                } else if (this.getMin() >= 0 && this.getMax() < 0) {
+                    ret = this.child.toString(options)+"{"+this.getMin()+",}?";
+                } else
+                    throw new RuntimeException("Token#toString(): CLOSURE needs min > 0.");
             }
             return ret;
         }
     }
 
     /**
-     * (ims-ims: .... )
+     * This class represents a node in parse tree.
      */
     static class ModifierToken extends Token implements java.io.Serializable {
 
-        private static final long serialVersionUID = -9114536559696480356L;
+        private static final long serialVersionUID = -9114534641696791372L;
         
         final Token child;
         final int add;
@@ -1391,9 +1491,11 @@ class Token implements java.io.Serializable {
             this.mask = mask;
         }
 
+        @Override
         int size() {
             return 1;
         }
+        @Override
         Token getChild(int index) {
             return this.child;
         }
@@ -1405,127 +1507,61 @@ class Token implements java.io.Serializable {
             return this.mask;
         }
 
+        @Override
         public String toString(int options) {
             return "(?"
                 +(this.add == 0 ? "" : REUtil.createOptionString(this.add))
                 +(this.mask == 0 ? "" : REUtil.createOptionString(this.mask))
-                +":"
-                +this.child.toString(options)
-                +")";
+                +":"+this.child.toString(options)+")";
         }
     }
 
     /**
      * This class represents a node in parse tree.
-     * for UNION or CONCAT.
      */
-    static class UnionToken extends Token implements java.io.Serializable {
+    static class ConditionToken extends Token implements java.io.Serializable {
 
-        private static final long serialVersionUID = -2568843945989489861L;
+        private static final long serialVersionUID = 4353765277910594411L;
         
-        List<Token> children;
+        final int refNumber;
+        final Token condition;
+        final Token yes;
+        final Token no;
 
-        UnionToken(int type) {
-            super(type);
+        ConditionToken(int refno, Token cond, Token yespat, Token nopat) {
+            super(Token.CONDITION);
+            this.refNumber = refno;
+            this.condition = cond;
+            this.yes = yespat;
+            this.no = nopat;
         }
 
-        void addChild(Token tok) {
-            if (tok == null)  return;
-            if (this.children == null)  this.children = new ArrayList<>();
-            if (this.type == UNION) {
-                this.children.add(tok);
-                return;
-            }
-                                                // This is CONCAT, and new child is CONCAT.
-            if (tok.type == CONCAT) {
-                for (int i = 0;  i < tok.size();  i ++)
-                    this.addChild(tok.getChild(i)); // Recursion
-                return;
-            }
-            int size = this.children.size();
-            if (size == 0) {
-                this.children.add(tok);
-                return;
-            }
-            Token previous = this.children.get(size-1);
-            if (!((previous.type == CHAR || previous.type == STRING)
-                  && (tok.type == CHAR || tok.type == STRING))) {
-                this.children.add(tok);
-                return;
-            }
-            
-            //System.err.println("Merge '"+previous+"' and '"+tok+"'.");
-
-            StringBuffer buffer;
-            int nextMaxLength = (tok.type == CHAR ? 2 : tok.getString().length());
-            if (previous.type == CHAR) {        // Replace previous token by STRING
-                buffer = new StringBuffer(2 + nextMaxLength);
-                int ch = previous.getChar();
-                if (ch >= 0x10000)
-                    buffer.append(REUtil.decomposeToSurrogates(ch));
-                else
-                    buffer.append((char)ch);
-                previous = Token.createString(null);
-                this.children.set(size-1, previous);
-            } else {                            // STRING
-                buffer = new StringBuffer(previous.getString().length() + nextMaxLength);
-                buffer.append(previous.getString());
-            }
-
-            if (tok.type == CHAR) {
-                int ch = tok.getChar();
-                if (ch >= 0x10000)
-                    buffer.append(REUtil.decomposeToSurrogates(ch));
-                else
-                    buffer.append((char)ch);
-            } else {
-                buffer.append(tok.getString());
-            }
-
-            ((StringToken)previous).string = new String(buffer);
-        }
-
+        @Override
         int size() {
-            return this.children == null ? 0 : this.children.size();
+            return this.no == null ? 1 : 2;
         }
+        @Override
         Token getChild(int index) {
-            return this.children.get(index);
+            if (index == 0)  return this.yes;
+            if (index == 1)  return this.no;
+            throw new RuntimeException("Internal Error: "+index);
         }
 
+        @Override
         public String toString(int options) {
             String ret;
-            if (this.type == CONCAT) {
-                if (this.children.size() == 2) {
-                    Token ch = this.getChild(0);
-                    Token ch2 = this.getChild(1);
-                    if (ch2.type == CLOSURE && ch2.getChild(0) == ch) {
-                        ret = ch.toString(options)+"+";
-                    } else if (ch2.type == NONGREEDYCLOSURE && ch2.getChild(0) == ch) {
-                        ret = ch.toString(options)+"+?";
-                    } else
-                        ret = ch.toString(options)+ch2.toString(options);
-                } else {
-                    StringBuffer sb = new StringBuffer();
-                    for (int i = 0;  i < this.children.size();  i ++) {
-                        sb.append(this.children.get(i).toString(options));
-                    }
-                    ret = new String(sb);
-                }
-                return ret;
-            }
-            if (this.children.size() == 2 && this.getChild(1).type == EMPTY) {
-                ret = this.getChild(0).toString(options)+"?";
-            } else if (this.children.size() == 2
-                       && this.getChild(0).type == EMPTY) {
-                ret = this.getChild(1).toString(options)+"??";
+            if (this.refNumber > 0) {
+                ret = "(?("+this.refNumber+")";
+            } else if (this.condition.type == ANCHOR) {
+                ret = "(?"+this.condition;
             } else {
-                StringBuffer sb = new StringBuffer();
-                sb.append(this.children.get(0).toString(options));
-                for (int i = 1;  i < this.children.size();  i ++) {
-                    sb.append((char)'|');
-                    sb.append(this.children.get(i).toString(options));
-                }
-                ret = new String(sb);
+                ret = "(?"+this.condition.toString(options);
+            }
+
+            if (this.no == null) {
+                ret += this.yes.toString(options)+")";
+            } else {
+                ret += this.yes.toString(options)+"|"+this.no.toString(options)+")";
             }
             return ret;
         }
