@@ -17,6 +17,8 @@
 
 package org.apache.xml.serialize;
 
+import java.nio.charset.StandardCharsets;
+
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
@@ -96,7 +98,7 @@ public class EncodingInfo {
         javaName = EncodingMap.getIANA2JavaMapping(ianaName);
         if(javaName == null) 
             // use UTF-8 as preferred encoding
-            return new OutputStreamWriter(output, "UTF8");
+            return new OutputStreamWriter(output, StandardCharsets.UTF_8);
         return new OutputStreamWriter(output, javaName);
     }
     

@@ -17,6 +17,8 @@
 
 package dom.treewalker;
 
+import java.nio.charset.StandardCharsets;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -74,12 +76,12 @@ public class TestFirstChild {
             doc, NodeFilter.SHOW_ALL, null, true);
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        PrintWriter pw = new PrintWriter(new OutputStreamWriter(baos, "UTF-8"));
+        PrintWriter pw = new PrintWriter(new OutputStreamWriter(baos, StandardCharsets.UTF_8));
         processTreeWalker(treewalker, pw);
         pw.flush();
 
         String expected = "<RootElement><Element1></Element1><Element2></Element2><Element3>Text in Element3</Element3></RootElement>";
-        assertEquals(expected, new String(baos.toByteArray(), "UTF-8"));
+        assertEquals(expected, new String(baos.toByteArray(), StandardCharsets.UTF_8));
     }
 
     @org.junit.Test

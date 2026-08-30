@@ -21,6 +21,8 @@
 
 package org.apache.xml.serialize;
 
+import java.nio.charset.StandardCharsets;
+
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -382,7 +384,7 @@ public final class HTMLdtd
 				    DOMMessageFormatter.SERIALIZER_DOMAIN,
                     "ResourceNotFound", new Object[] {ENTITIES_RESOURCE}));
             }    
-            reader = new BufferedReader( new InputStreamReader( is, "ASCII" ) );
+            reader = new BufferedReader( new InputStreamReader( is, StandardCharsets.US_ASCII ) );
             line = reader.readLine();
             while ( line != null ) {
                 if ( line.length() == 0 || line.charAt( 0 ) == '#' ) {

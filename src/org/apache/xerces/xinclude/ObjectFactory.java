@@ -17,6 +17,8 @@
 
 package org.apache.xerces.xinclude;
 
+import java.nio.charset.StandardCharsets;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -455,29 +457,12 @@ final class ObjectFactory {
         // enough to keep us on the air until we're ready to
         // officially decommit from VJ++. [Edited comment from
         // jkesselm]
-        BufferedReader rd;
-        try {
-            rd = new BufferedReader(new InputStreamReader(is, "UTF-8"), DEFAULT_LINE_LENGTH);
-        } catch (java.io.UnsupportedEncodingException e) {
-            rd = new BufferedReader(new InputStreamReader(is), DEFAULT_LINE_LENGTH);
-        }
-
         String factoryClassName = null;
-        try {
-            // XXX Does not handle all possible input as specified by the
-            // Jar Service Provider specification
+        try (BufferedReader rd = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8), DEFAULT_LINE_LENGTH)) {
             factoryClassName = rd.readLine();
         } catch (IOException x) {
             // No provider found
             return null;
-        }
-        finally {
-            try {
-                // try to close the reader.
-                rd.close();
-            }
-            // Ignore the exception.
-            catch (IOException exc) {}
         }
 
         if (factoryClassName != null &&

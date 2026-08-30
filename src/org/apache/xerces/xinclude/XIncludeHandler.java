@@ -17,6 +17,8 @@
 
 package org.apache.xerces.xinclude;
 
+import java.nio.charset.StandardCharsets;
+
 import java.io.CharConversionException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -3054,14 +3056,8 @@ public class XIncludeHandler
             }
             
             // get UTF-8 bytes for the remaining sub-string
-            byte[] bytes = null;
+            byte[] bytes = href.substring(i).getBytes(StandardCharsets.UTF_8);
             byte b;
-            try {
-                bytes = href.substring(i).getBytes("UTF-8");
-            } catch (java.io.UnsupportedEncodingException e) {
-                // should never happen
-                return href;
-            }
             len = bytes.length;
 
             // for each byte

@@ -17,6 +17,8 @@
 
 package org.apache.xerces.impl;
 
+import java.nio.charset.StandardCharsets;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -1674,14 +1676,8 @@ public class XMLEntityManager
         // we saw some non-ascii character
         if (i < len) {
             // get UTF-8 bytes for the remaining sub-string
-            byte[] bytes = null;
+            byte[] bytes = userDir.substring(i).getBytes(StandardCharsets.UTF_8);
             byte b;
-            try {
-                bytes = userDir.substring(i).getBytes("UTF-8");
-            } catch (java.io.UnsupportedEncodingException e) {
-                // should never happen
-                return new URI("file", "", userDir, null, null);
-            }
             len = bytes.length;
 
             // for each byte

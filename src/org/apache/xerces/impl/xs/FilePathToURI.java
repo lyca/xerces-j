@@ -17,6 +17,8 @@
 
 package org.apache.xerces.impl.xs;
 
+import java.nio.charset.StandardCharsets;
+
 /**
  * @xerces.internal
  * 
@@ -99,14 +101,8 @@ final class FilePathToURI {
         // we saw some non-ascii character
         if (i < len) {
             // get UTF-8 bytes for the remaining sub-string
-            byte[] bytes = null;
+            byte[] bytes = path.substring(i).getBytes(StandardCharsets.UTF_8);
             byte b;
-            try {
-                bytes = path.substring(i).getBytes("UTF-8");
-            } catch (java.io.UnsupportedEncodingException e) {
-                // should never happen
-                return path;
-            }
             len = bytes.length;
 
             // for each byte
