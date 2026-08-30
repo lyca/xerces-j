@@ -82,6 +82,10 @@ final class XMLSchemaValidatorComponentManager extends ParserConfigurationSettin
     /** Feature identifier: whether to ignore identity constraint errors */
     private static final String IDENTITY_CONSTRAINT_CHECKING =
         Constants.XERCES_FEATURE_PREFIX + Constants.IDC_CHECKING_FEATURE;
+
+    /** Feature identifier: whether to use code point count for string length facets */
+    private static final String USE_CODE_POINT_COUNT_FOR_STRING_LENGTH =
+        Constants.XERCES_FEATURE_PREFIX + Constants.USE_CODE_POINT_COUNT_FOR_STRING_LENGTH_FEATURE;
     
     /** Feature identifier: disallow DOCTYPE declaration */
     private static final String DISALLOW_DOCTYPE_DECL_FEATURE =
@@ -277,6 +281,7 @@ final class XMLSchemaValidatorComponentManager extends ParserConfigurationSettin
         fFeatures.put(ID_IDREF_CHECKING, Boolean.TRUE);
         fFeatures.put(IDENTITY_CONSTRAINT_CHECKING, Boolean.TRUE);
         fFeatures.put(UNPARSED_ENTITY_CHECKING, Boolean.TRUE);
+        fFeatures.put(USE_CODE_POINT_COUNT_FOR_STRING_LENGTH, Boolean.FALSE);
     }
 
     /**

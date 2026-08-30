@@ -228,6 +228,9 @@ public class XSSimpleTypeDecl implements XSSimpleType, TypeInfo {
         public Locale getLocale() {
             return Locale.getDefault();
         }
+        public boolean useCodePointCountForStringLength() {
+            return false;
+        }
     };
 
     protected static TypeValidator[] getGDVs() {
@@ -1620,7 +1623,7 @@ public class XSSimpleTypeDecl implements XSSimpleType, TypeInfo {
         // then validate the actual value against the facets
         if (context.needFacetChecking() &&
                 (fFacetsDefined != 0 && fFacetsDefined != FACET_WHITESPACE)) {
-            checkFacets(validatedInfo);
+            checkFacets(validatedInfo, context);
         }
 
         // now check extra rules: for ID/IDREF/ENTITY
@@ -1630,7 +1633,7 @@ public class XSSimpleTypeDecl implements XSSimpleType, TypeInfo {
 
     }
 
-    private void checkFacets(ValidatedInfo validatedInfo) throws InvalidDatatypeValueException {
+    private void checkFacets(ValidatedInfo validatedInfo, ValidationContext context) throws InvalidDatatypeValueException {
 
         Object ob = validatedInfo.actualValue;
         String content = validatedInfo.normalizedValue;
@@ -1639,7 +1642,7 @@ public class XSSimpleTypeDecl implements XSSimpleType, TypeInfo {
 
         // For QName and NOTATION types, we don't check length facets
         if (fValidationDV != DV_QNAME && fValidationDV != DV_NOTATION) {
-            int length = fDVs[fValidationDV].getDataLength(ob);
+            int length = fDVs[fValidationDV].getDataLength(ob, context);
 
             // maxLength
             if ( (fFacetsDefined & FACET_MAXLENGTH) != 0 ) {
@@ -1890,7 +1893,7 @@ public class XSSimpleTypeDecl implements XSSimpleType, TypeInfo {
                 avalue[i] = fItemType.getActualValue(parsedList.nextToken(), context, validatedInfo, false);
                 if (context.needFacetChecking() &&
                         (fItemType.fFacetsDefined != 0 && fItemType.fFacetsDefined != FACET_WHITESPACE)) {
-                    fItemType.checkFacets(validatedInfo);
+                    fItemType.checkFacets(validatedInfo, context);
                 }
                 memberTypes[i] = (XSSimpleTypeDecl)validatedInfo.memberType;
                 if (isUnion)
@@ -1922,7 +1925,7 @@ public class XSSimpleTypeDecl implements XSSimpleType, TypeInfo {
                     Object aValue = fMemberTypes[i].getActualValue(_content, context, validatedInfo, true);
                     if (context.needFacetChecking() &&
                             (fMemberTypes[i].fFacetsDefined != 0 && fMemberTypes[i].fFacetsDefined != FACET_WHITESPACE)) {
-                        fMemberTypes[i].checkFacets(validatedInfo);
+                        fMemberTypes[i].checkFacets(validatedInfo, context);
                     }
                     validatedInfo.memberType = fMemberTypes[i];
                     // Need to set it here or it will become the member type
@@ -2883,6 +2886,9 @@ public class XSSimpleTypeDecl implements XSSimpleType, TypeInfo {
         public Locale getLocale() {
             return Locale.getDefault();
         }
+        public boolean useCodePointCountForStringLength() {
+            return false;
+        }
     };
 
     private boolean fAnonymous = false;
@@ -2954,6 +2960,10 @@ public class XSSimpleTypeDecl implements XSSimpleType, TypeInfo {
         
         public Locale getLocale() {
             return fExternal.getLocale();
+        }
+
+        public boolean useCodePointCountForStringLength() {
+            return fExternal.useCodePointCountForStringLength();
         }
     }
 

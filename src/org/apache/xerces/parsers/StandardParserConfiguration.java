@@ -128,6 +128,10 @@ public class StandardParserConfiguration
     protected static final String IDENTITY_CONSTRAINT_CHECKING =
         Constants.XERCES_FEATURE_PREFIX + Constants.IDC_CHECKING_FEATURE;
 
+    /** Feature identifier: whether to use code point count for string length facets */
+    protected static final String USE_CODE_POINT_COUNT_FOR_STRING_LENGTH =
+        Constants.XERCES_FEATURE_PREFIX + Constants.USE_CODE_POINT_COUNT_FOR_STRING_LENGTH_FEATURE;
+
     // property identifiers
 
     /** Property identifier: XML Schema validator. */
@@ -234,6 +238,7 @@ public class StandardParserConfiguration
             ID_IDREF_CHECKING,
             IDENTITY_CONSTRAINT_CHECKING,
             UNPARSED_ENTITY_CHECKING,
+            USE_CODE_POINT_COUNT_FOR_STRING_LENGTH,
         };
         addRecognizedFeatures(recognizedFeatures);
 
@@ -251,6 +256,7 @@ public class StandardParserConfiguration
         setFeature(ID_IDREF_CHECKING, true);
         setFeature(IDENTITY_CONSTRAINT_CHECKING, true);
         setFeature(UNPARSED_ENTITY_CHECKING, true);
+        setFeature(USE_CODE_POINT_COUNT_FOR_STRING_LENGTH, false);
 
         // add default recognized properties
     

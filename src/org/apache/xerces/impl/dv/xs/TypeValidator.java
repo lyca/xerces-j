@@ -39,17 +39,15 @@ import org.apache.xerces.util.XMLChar;
  */
 public abstract class TypeValidator {
     
-    private static boolean useCodePointCountForStringLength() {
-        return AccessController.doPrivileged(new PrivilegedAction() {
-            @Override
-            public Object run() {
-                try {
-                    return Boolean.getBoolean("org.apache.xerces.impl.dv.xs.useCodePointCountForStringLength") ? Boolean.TRUE : Boolean.FALSE;
-                }
-                catch (SecurityException ex) {}
-                return Boolean.FALSE;
-            }}) == Boolean.TRUE;
-    }
+    private static final boolean USE_CODE_POINT_COUNT_FOR_STRING_LENGTH = AccessController.doPrivileged(new PrivilegedAction() {
+        @Override
+        public Object run() {
+            try {
+                return Boolean.getBoolean("org.apache.xerces.impl.dv.xs.useCodePointCountForStringLength") ? Boolean.TRUE : Boolean.FALSE;
+            }
+            catch (SecurityException ex) {}
+            return Boolean.FALSE;
+        }}) == Boolean.TRUE;
 
     /**
      * Which facets are allowed for this type.
@@ -140,12 +138,28 @@ public abstract class TypeValidator {
     public int getDataLength(Object value) {
         if (value instanceof String) {
             final String str = (String)value;
-            if (!useCodePointCountForStringLength()) {
+            if (!USE_CODE_POINT_COUNT_FOR_STRING_LENGTH) {
                 return str.length();
             }
             return getCodePointLength(str);
         }
         return -1;
+    }
+
+    /**
+     * Get the length of the value using the validation context.
+     *
+     * @param value the data to check
+     * @param context the validation context
+     * @return the length of the value
+     */
+    public int getDataLength(Object value, ValidationContext context) {
+        if (context != null && context.useCodePointCountForStringLength()) {
+            if (value instanceof String) {
+                return getCodePointLength((String)value);
+            }
+        }
+        return getDataLength(value);
     }
 
     /**

@@ -338,6 +338,11 @@ public final class Constants {
      */
     public static final String USE_GRAMMAR_POOL_ONLY_FEATURE = "internal/validation/schema/use-grammar-pool-only";
     
+    /**
+     * Feature: use code point count for string length ("validation/schema/use-code-point-count-for-string-length").
+     */
+    public static final String USE_CODE_POINT_COUNT_FOR_STRING_LENGTH_FEATURE = "validation/schema/use-code-point-count-for-string-length";
+    
     /** Internal performance related feature: 
      * false - the parser settings (features/properties) have not changed between 2 parses
      * true - the parser settings have changed between 2 parses  
@@ -532,6 +537,7 @@ public final class Constants {
             NAMESPACE_GROWTH_FEATURE,
             TOLERATE_DUPLICATES_FEATURE,
             STRINGS_INTERNED_FEATURE,
+            USE_CODE_POINT_COUNT_FOR_STRING_LENGTH_FEATURE,
     };
     
     /** Xerces properties. */

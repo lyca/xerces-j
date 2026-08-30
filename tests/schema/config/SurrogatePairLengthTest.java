@@ -27,11 +27,6 @@ import org.apache.xerces.xs.ItemPSVI;
  */
 public class SurrogatePairLengthTest extends BaseTest {
 
-    // Can only test when the property is set
-    static {
-        System.setProperty("org.apache.xerces.impl.dv.xs.useCodePointCountForStringLength", "true");
-    }
-    
     private static final String LENGTH_ERROR = "cvc-length-valid";
     
     protected String getXMLDocument() {
@@ -50,16 +45,59 @@ public class SurrogatePairLengthTest extends BaseTest {
         super(name);
     }
     
-    // Can only test when the property is set
-    public void testSetTrue() {
+    public void testDefault() {
         try {
             validateDocument();
         } catch (Exception e) {
-            e.printStackTrace();
+            Assert.fail("Validation failed: " + e.getMessage());
+        }
+        
+        checkInvalidResult();
+    }
+
+    public void testSetFalse() {
+        try {
+            fValidator.setFeature(USE_CODE_POINT_COUNT_FOR_STRING_LENGTH, false);
+            validateDocument();
+        } catch (Exception e) {
+            Assert.fail("Validation failed: " + e.getMessage());
+        }
+        
+        checkInvalidResult();
+    }
+
+    public void testSetTrue() {
+        try {
+            fValidator.setFeature(USE_CODE_POINT_COUNT_FOR_STRING_LENGTH, true);
+            validateDocument();
+        } catch (Exception e) {
             Assert.fail("Validation failed: " + e.getMessage());
         }
         
         checkValidResult();
+    }
+
+    private void checkInvalidResult() {
+        assertError(LENGTH_ERROR);
+        
+        assertValidity(ItemPSVI.VALIDITY_INVALID, fRootNode.getValidity());
+        assertValidationAttempted(ItemPSVI.VALIDATION_FULL, fRootNode
+                .getValidationAttempted());
+        assertElementName("root", fRootNode.getElementDeclaration().getName());
+        
+        ElementPSVI child = super.getChild(1);
+        assertValidity(ItemPSVI.VALIDITY_INVALID, child.getValidity());
+        assertValidationAttempted(ItemPSVI.VALIDATION_FULL, child
+                .getValidationAttempted());
+        assertElementName("e1", child.getElementDeclaration().getName());
+        assertTypeName("length", child.getTypeDefinition().getName());
+        
+        child = super.getChild(2);
+        assertValidity(ItemPSVI.VALIDITY_INVALID, child.getValidity());
+        assertValidationAttempted(ItemPSVI.VALIDATION_FULL, child
+                .getValidationAttempted());
+        assertElementName("e2", child.getElementDeclaration().getName());
+        assertTypeName("length", child.getTypeDefinition().getName());
     }
     
     private void checkValidResult() {
