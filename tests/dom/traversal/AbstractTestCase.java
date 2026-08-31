@@ -30,18 +30,18 @@ import org.w3c.dom.ElementTraversal;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import junit.framework.TestCase;
 
 /**
  * @author Michael Glavassevich, IBM
  * @version $Id$
  */
-public abstract class AbstractTestCase extends TestCase {
+public abstract class AbstractTestCase {
     
     private DocumentBuilder fDocumentBuilder;
     
-    protected void setUp() throws Exception {
-        super.setUp();
+    @org.junit.jupiter.api.BeforeEach
+    public void setUpAbstractTestCase() throws Exception {
+        
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(true);
         fDocumentBuilder = dbf.newDocumentBuilder();

@@ -46,7 +46,7 @@ public class Test {
     private static final String SCHEMA_FEATURE_ID = "http://apache.org/xml/features/validation/schema";
     private static final String DEFAULT_PARSER_NAME = "dom.wrappers.Xerces";
 
-    @org.junit.Test
+    @org.junit.jupiter.api.Test
     public void testInMemorySerialization() throws Exception {
         Document document = createSampleDocument();
         byte[] bytes = serializeToBytes(document);
@@ -64,7 +64,7 @@ public class Test {
         assertEquals("personnel", imported.getNodeName());
     }
 
-    @org.junit.Test
+    @org.junit.jupiter.api.Test
     public void testFileSerialization() throws Exception {
         Document document = createSampleDocument();
         File tempFile = File.createTempFile("xerces_dom_ser_", ".ser");
@@ -127,7 +127,58 @@ public class Test {
         }
     }
 
-    public static junit.framework.Test suite() {
-        return new junit.framework.JUnit4TestAdapter(Test.class);
+    
+
+    public static void assertTrue(boolean condition) {
+        org.junit.jupiter.api.Assertions.assertTrue(condition);
     }
+    public static void assertTrue(String message, boolean condition) {
+        org.junit.jupiter.api.Assertions.assertTrue(condition, message);
+    }
+    public static void assertFalse(boolean condition) {
+        org.junit.jupiter.api.Assertions.assertFalse(condition);
+    }
+    public static void assertFalse(String message, boolean condition) {
+        org.junit.jupiter.api.Assertions.assertFalse(condition, message);
+    }
+    public static void assertNull(Object object) {
+        org.junit.jupiter.api.Assertions.assertNull(object);
+    }
+    public static void assertNull(String message, Object object) {
+        org.junit.jupiter.api.Assertions.assertNull(object, message);
+    }
+    public static void assertNotNull(Object object) {
+        org.junit.jupiter.api.Assertions.assertNotNull(object);
+    }
+    public static void assertNotNull(String message, Object object) {
+        org.junit.jupiter.api.Assertions.assertNotNull(object, message);
+    }
+    public static void assertEquals(Object expected, Object actual) {
+        org.junit.jupiter.api.Assertions.assertEquals(expected, actual);
+    }
+    public static void assertEquals(String message, Object expected, Object actual) {
+        org.junit.jupiter.api.Assertions.assertEquals(expected, actual, message);
+    }
+    public static void assertEquals(long expected, long actual) {
+        org.junit.jupiter.api.Assertions.assertEquals(expected, actual);
+    }
+    public static void assertEquals(String message, long expected, long actual) {
+        org.junit.jupiter.api.Assertions.assertEquals(expected, actual, message);
+    }
+    public static void assertEquals(double expected, double actual) {
+        org.junit.jupiter.api.Assertions.assertEquals(expected, actual);
+    }
+    public static void assertEquals(String message, double expected, double actual) {
+        org.junit.jupiter.api.Assertions.assertEquals(expected, actual, message);
+    }
+    public static void assertSame(Object expected, Object actual) {
+        org.junit.jupiter.api.Assertions.assertSame(expected, actual);
+    }
+    public static void assertSame(String message, Object expected, Object actual) {
+        org.junit.jupiter.api.Assertions.assertSame(expected, actual, message);
+    }
+    public static void fail(String message) {
+        org.junit.jupiter.api.Assertions.fail(message);
+    }
+
 }

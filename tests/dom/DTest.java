@@ -21,7 +21,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Objects;
 
-import junit.framework.TestCase;
 import org.w3c.dom.Attr;
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.CharacterData;
@@ -47,7 +46,7 @@ import org.w3c.dom.Text;
  *
  * @author Philip W. Davis
  */
-public class DTest extends TestCase {
+public class DTest {
 
     private static Document createDocument() {
         return new org.apache.xerces.dom.DocumentImpl();
@@ -189,8 +188,9 @@ public class DTest extends TestCase {
 
     private Document document;
 
-    protected void setUp() throws Exception {
-        super.setUp();
+    @org.junit.jupiter.api.BeforeEach
+    public void setUp() throws Exception {
+        
 
         document = createDocument();
         DocumentType docDocType = createDocumentType(document, "testDocument1");
@@ -264,6 +264,7 @@ public class DTest extends TestCase {
     /**
      * This method tests Attr methods for the XML DOM implementation.
      */
+    @org.junit.jupiter.api.Test
     public void testAttr() {
         Attr testAttribute = document.createAttribute("testAttribute");
         testAttribute.setValue("testAttribute's value");
@@ -318,6 +319,7 @@ public class DTest extends TestCase {
     /**
      * This method tests CDATASection methods for the XML DOM implementation.
      */
+    @org.junit.jupiter.api.Test
     public void testCDATASection() {
         Node node = document.getDocumentElement().getElementsByTagName("dBodyLevel23").item(0).getFirstChild(); // node gets CDATASection node
         Node cloneNode = node.cloneNode(true);
@@ -329,6 +331,7 @@ public class DTest extends TestCase {
     /**
      * This method tests CharacterData methods for the XML DOM implementation.
      */
+    @org.junit.jupiter.api.Test
     public void testCharacterData() {
         CharacterData charData = (CharacterData) document.getDocumentElement().getElementsByTagName("dBodyLevel31").item(0).getFirstChild(); // charData gets textNode11
         String compareData = "dBodyLevel31'sChildTextNode11";
@@ -413,6 +416,7 @@ public class DTest extends TestCase {
     /**
      * This method tests ChildNodeList methods for the XML DOM implementation.
      */
+    @org.junit.jupiter.api.Test
     public void testChildNodeList() {
         Node node = document.getDocumentElement().getLastChild(); // node gets doc's testBody element
         assertEquals(4, node.getChildNodes().getLength());
@@ -424,6 +428,7 @@ public class DTest extends TestCase {
     /**
      * This method tests Comment methods for the XML DOM implementation.
      */
+     @org.junit.jupiter.api.Test
      public void testComment() {
          Node parent = document.getDocumentElement().getElementsByTagName("dBodyLevel23").item(0);
          Node node = null;
@@ -448,6 +453,7 @@ public class DTest extends TestCase {
     /**
      * This method tests DeepNodeList methods for the XML DOM implementation
      */
+    @org.junit.jupiter.api.Test
     public void testDeepNodeList() {  
         Node node = document.getLastChild().getLastChild(); // node gets docBody element
         assertEquals(8, ((Element) node).getElementsByTagName("*").getLength());
@@ -464,6 +470,7 @@ public class DTest extends TestCase {
      *
      * ALL Document create methods are run in buildDocument except createAttribute which is in testAttribute.
      */
+    @org.junit.jupiter.api.Test
     public void testDocument() {
         String[] elementNames =  {"dFirstElement", "dTestBody", "dBodyLevel21","dBodyLevel31","dBodyLevel32",
                        "dBodyLevel22", "dBodyLevel33", "dBodyLevel34", "dBodyLevel23", "dBodyLevel24"};
@@ -545,6 +552,7 @@ public class DTest extends TestCase {
      * This method tests DocumentFragment methods for the XML DOM implementation     *
      * FIXME exists to throw NO_MODIFICATION_ALLOWED_ERR ********
      */
+    @org.junit.jupiter.api.Test
     public void testDocumentFragment() {
         DocumentFragment testDocFragment = document.createDocumentFragment();
             
@@ -554,6 +562,7 @@ public class DTest extends TestCase {
     /**
      * This method tests DocumentType methods for the XML DOM implementation
      */
+    @org.junit.jupiter.api.Test
     public void testDocumentType() {
         Node node = document.getFirstChild(); // node gets doc's docType node
         Node node2 = node.cloneNode(true);
@@ -576,6 +585,7 @@ public class DTest extends TestCase {
         //** Other aspects of insertBefore are tested in buildDocument through appendChild*   
     }
 
+    @org.junit.jupiter.api.Test
     public void testDOMErrors() {
         try {
             Element element = document.createElement("AnotherElement");
@@ -619,6 +629,7 @@ public class DTest extends TestCase {
     /**
      * This method tests DOMImplementation methods for the XML DOM implementation.
      */
+    @org.junit.jupiter.api.Test
     public void testDOMImplementation() {
         DOMImplementation implementation = document.getImplementation(); 
     
@@ -629,6 +640,7 @@ public class DTest extends TestCase {
     /**
      * This method tests Element methods for the XML DOM implementation
      */
+    @org.junit.jupiter.api.Test
     public void testElement() {
         String[] attributeCompare = {"AnotherFirstElementAttribute", "dFirstElement", "testAttribute"};
         String[] elementNames =  {"dFirstElement", "dTestBody", "dBodyLevel21","dBodyLevel31","dBodyLevel32",
@@ -688,6 +700,7 @@ public class DTest extends TestCase {
     /**
      * This method tests Entity methods for the XML DOM implementation.
      */
+    @org.junit.jupiter.api.Test
     public void testEntity() {
         boolean OK = true;
         Entity entity = (Entity) document.getDoctype().getEntities().getNamedItem("ourEntityNode");
@@ -715,6 +728,7 @@ public class DTest extends TestCase {
     /**
      * This method tests EntityReference methods for the XML DOM implementation.
      */
+    @org.junit.jupiter.api.Test
     public void testEntityReference() {
         EntityReference entityReference = (EntityReference) document.getLastChild().getLastChild().getLastChild().getFirstChild();
         Node node = entityReference;
@@ -732,6 +746,7 @@ public class DTest extends TestCase {
      ********* This is only for a test of cloneNode "deep"*******
      ********* And for error tests*********
      */
+    @org.junit.jupiter.api.Test
     public void testNode() {
         Node node = document.getDocumentElement();
         Node cloneNode = node.cloneNode(true);
@@ -747,6 +762,7 @@ public class DTest extends TestCase {
     /**
      * This method tests Notation methods for the XML DOM implementation.
      */
+    @org.junit.jupiter.api.Test
     public void testNotation() {
         Notation notation = (Notation) document.getDoctype().getNotations().getNamedItem("ourNotationNode");
         Node cloneNode = notation.cloneNode(true);
@@ -766,6 +782,7 @@ public class DTest extends TestCase {
     /**
      * This method tests ProcessingInstruction methods for the XML DOM implementation.
      */
+    @org.junit.jupiter.api.Test
     public void testPI() {
         ProcessingInstruction pI = (ProcessingInstruction) document.getDocumentElement().getFirstChild();// Get doc's ProcessingInstruction
         ProcessingInstruction pI2 = (org.apache.xerces.dom.ProcessingInstructionImpl) pI.cloneNode(true);
@@ -788,6 +805,7 @@ public class DTest extends TestCase {
     /**
      * This method tests Text methods for the XML DOM implementation.
      */
+    @org.junit.jupiter.api.Test
     public void testText() {
         document.getDocumentElement().normalize();
         Node node = document.getDocumentElement().getElementsByTagName("dBodyLevel31").item(0).getFirstChild(); // charData gets textNode11
@@ -850,4 +868,58 @@ public class DTest extends TestCase {
 
         return true;
     }
+
+    public static void assertTrue(boolean condition) {
+        org.junit.jupiter.api.Assertions.assertTrue(condition);
+    }
+    public static void assertTrue(String message, boolean condition) {
+        org.junit.jupiter.api.Assertions.assertTrue(condition, message);
+    }
+    public static void assertFalse(boolean condition) {
+        org.junit.jupiter.api.Assertions.assertFalse(condition);
+    }
+    public static void assertFalse(String message, boolean condition) {
+        org.junit.jupiter.api.Assertions.assertFalse(condition, message);
+    }
+    public static void assertNull(Object object) {
+        org.junit.jupiter.api.Assertions.assertNull(object);
+    }
+    public static void assertNull(String message, Object object) {
+        org.junit.jupiter.api.Assertions.assertNull(object, message);
+    }
+    public static void assertNotNull(Object object) {
+        org.junit.jupiter.api.Assertions.assertNotNull(object);
+    }
+    public static void assertNotNull(String message, Object object) {
+        org.junit.jupiter.api.Assertions.assertNotNull(object, message);
+    }
+    public static void assertEquals(Object expected, Object actual) {
+        org.junit.jupiter.api.Assertions.assertEquals(expected, actual);
+    }
+    public static void assertEquals(String message, Object expected, Object actual) {
+        org.junit.jupiter.api.Assertions.assertEquals(expected, actual, message);
+    }
+    public static void assertEquals(long expected, long actual) {
+        org.junit.jupiter.api.Assertions.assertEquals(expected, actual);
+    }
+    public static void assertEquals(String message, long expected, long actual) {
+        org.junit.jupiter.api.Assertions.assertEquals(expected, actual, message);
+    }
+    public static void assertEquals(double expected, double actual) {
+        org.junit.jupiter.api.Assertions.assertEquals(expected, actual);
+    }
+    public static void assertEquals(String message, double expected, double actual) {
+        org.junit.jupiter.api.Assertions.assertEquals(expected, actual, message);
+    }
+    public static void assertSame(Object expected, Object actual) {
+        org.junit.jupiter.api.Assertions.assertSame(expected, actual);
+    }
+    public static void assertSame(String message, Object expected, Object actual) {
+        org.junit.jupiter.api.Assertions.assertSame(expected, actual, message);
+    }
+    public static void fail() { org.junit.jupiter.api.Assertions.fail(); }
+    public static void fail(String message) {
+        org.junit.jupiter.api.Assertions.fail(message);
+    }
+
 }

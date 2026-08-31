@@ -52,7 +52,7 @@ import org.w3c.dom.UserDataHandler;
  */
 public class Test {
 
-    @org.junit.Test
+    @org.junit.jupiter.api.Test
     public void testCreateDocumentAndNodes() {
         Document doc = new DocumentImpl();
         assertNotNull(doc);
@@ -91,7 +91,7 @@ public class Test {
         assertNotNull(nodeList);
     }
 
-    @org.junit.Test
+    @org.junit.jupiter.api.Test
     public void testDocTreeAndSiblings() {
         Document doc = new DocumentImpl();
         Element rootEl = doc.createElement("Doc03RootElement");
@@ -118,7 +118,7 @@ public class Test {
         assertSame(textNode2, rootEl.getLastChild());
     }
 
-    @org.junit.Test
+    @org.junit.jupiter.api.Test
     public void testAttributes() {
         Document doc = new DocumentImpl();
         Element rootEl = doc.createElement("RootElement");
@@ -137,7 +137,7 @@ public class Test {
         assertEquals("Attr03Value2", attr03.getValue());
     }
 
-    @org.junit.Test
+    @org.junit.jupiter.api.Test
     public void testTextSplitAndNormalize() {
         Document doc = new DocumentImpl();
         Element rootEl = doc.createElement("RootElement");
@@ -153,7 +153,7 @@ public class Test {
         assertEquals("Hello Goodbye", rootEl.getFirstChild().getNodeValue());
     }
 
-    @org.junit.Test
+    @org.junit.jupiter.api.Test
     public void testNamedNodeMap() {
         Document doc = new DocumentImpl();
         NamedNodeMap nnm = doc.getAttributes();
@@ -165,7 +165,7 @@ public class Test {
         assertEquals(0, nnm2.getLength());
     }
 
-    @org.junit.Test
+    @org.junit.jupiter.api.Test
     public void testImportNode() {
         Document doc1 = new DocumentImpl();
         Document doc2 = new DocumentImpl();
@@ -183,7 +183,7 @@ public class Test {
         assertNotSame(doc1, doc2);
     }
 
-    @org.junit.Test
+    @org.junit.jupiter.api.Test
     public void testGetLength() {
         Document doc = new DocumentImpl();
         Text tx = doc.createTextNode("Hello");
@@ -200,7 +200,7 @@ public class Test {
         assertEquals(1, nl.getLength());
     }
 
-    @org.junit.Test
+    @org.junit.jupiter.api.Test
     public void testNodeList() {
         Document doc = new DocumentImpl();
         NodeList nl = doc.getChildNodes();
@@ -212,7 +212,7 @@ public class Test {
         assertEquals(1, nl.getLength());
     }
 
-    @org.junit.Test
+    @org.junit.jupiter.api.Test
     public void testNameValidity() {
         Document doc = new DocumentImpl();
         try {
@@ -223,7 +223,7 @@ public class Test {
         }
     }
 
-    @org.junit.Test
+    @org.junit.jupiter.api.Test
     public void testCloningWithAttributes() {
         Document doc = new DocumentImpl();
         Element root = doc.createElement("CTestRoot");
@@ -237,7 +237,7 @@ public class Test {
         assertEquals("CTestAttrValue", a.getValue());
     }
 
-    @org.junit.Test
+    @org.junit.jupiter.api.Test
     public void testCloningDefaultAttributes() {
         Document doc = new DocumentImpl();
         Element root = doc.createElement("CTestRoot");
@@ -256,7 +256,7 @@ public class Test {
         assertTrue(a.getSpecified());
     }
 
-    @org.junit.Test
+    @org.junit.jupiter.api.Test
     public void testHasFeature() {
         DOMImplementation impl = DOMImplementationImpl.getDOMImplementation();
         assertTrue(impl.hasFeature("XML", "2.0"));
@@ -277,7 +277,7 @@ public class Test {
         assertFalse(impl.hasFeature("HTMLEvents", null));
     }
 
-    @org.junit.Test
+    @org.junit.jupiter.api.Test
     public void testCreateDocumentType() {
         DOMImplementation impl = DOMImplementationImpl.getDOMImplementation();
 
@@ -341,7 +341,7 @@ public class Test {
         }
     }
 
-    @org.junit.Test
+    @org.junit.jupiter.api.Test
     public void testCreateDocument() {
         DOMImplementation impl = DOMImplementationImpl.getDOMImplementation();
 
@@ -378,7 +378,7 @@ public class Test {
         }
     }
 
-    @org.junit.Test
+    @org.junit.jupiter.api.Test
     public void testCreateElementNS() {
         DOMImplementation impl = DOMImplementationImpl.getDOMImplementation();
         String qName = "foo:docName";
@@ -463,7 +463,7 @@ public class Test {
         assertDOMException(() -> doc.setPrefix("foo"), DOMException.NAMESPACE_ERR);
     }
 
-    @org.junit.Test
+    @org.junit.jupiter.api.Test
     public void testCreateAttributeNS() {
         DOMImplementation impl = DOMImplementationImpl.getDOMImplementation();
         DocumentType dt = impl.createDocumentType("foo:docName", "pubId", "http://sysId");
@@ -555,7 +555,7 @@ public class Test {
         assertDOMException(() -> attrNoNS.setPrefix("foo"), DOMException.NAMESPACE_ERR);
     }
 
-    @org.junit.Test
+    @org.junit.jupiter.api.Test
     public void testElementsByTagNameAndNS() {
         DOMImplementation impl = DOMImplementationImpl.getDOMImplementation();
         DocumentType dt = impl.createDocumentType("foo:docName", "pubId", "http://sysId");
@@ -637,7 +637,7 @@ public class Test {
         assertEquals(1, nla.getLength());
     }
 
-    @org.junit.Test
+    @org.junit.jupiter.api.Test
     public void testAttributesAndNamedNodeMaps() {
         DOMImplementation impl = DOMImplementationImpl.getDOMImplementation();
         DocumentType dt = impl.createDocumentType("foo:docName", "pubId", "http://sysId");
@@ -676,7 +676,7 @@ public class Test {
         assertNull(nnm.getNamedItemNS("http://nsa", "attrb"));
     }
 
-    @org.junit.Test
+    @org.junit.jupiter.api.Test
     public void testTextContentAndUserData() {
         DOMImplementation impl = DOMImplementationImpl.getDOMImplementation();
         DocumentType dt = impl.createDocumentType("foo", "PubId", "SysId");
@@ -766,7 +766,7 @@ public class Test {
         assertNull(t2.getNextSibling());
     }
 
-    @org.junit.Test
+    @org.junit.jupiter.api.Test
     public void testIsEqualNode() {
         DOMImplementation impl = DOMImplementationImpl.getDOMImplementation();
         Document doc = impl.createDocument(null, "root", null);
@@ -825,7 +825,58 @@ public class Test {
         }
     }
 
-    public static junit.framework.Test suite() {
-        return new junit.framework.JUnit4TestAdapter(Test.class);
+    
+
+    public static void assertTrue(boolean condition) {
+        org.junit.jupiter.api.Assertions.assertTrue(condition);
     }
+    public static void assertTrue(String message, boolean condition) {
+        org.junit.jupiter.api.Assertions.assertTrue(condition, message);
+    }
+    public static void assertFalse(boolean condition) {
+        org.junit.jupiter.api.Assertions.assertFalse(condition);
+    }
+    public static void assertFalse(String message, boolean condition) {
+        org.junit.jupiter.api.Assertions.assertFalse(condition, message);
+    }
+    public static void assertNull(Object object) {
+        org.junit.jupiter.api.Assertions.assertNull(object);
+    }
+    public static void assertNull(String message, Object object) {
+        org.junit.jupiter.api.Assertions.assertNull(object, message);
+    }
+    public static void assertNotNull(Object object) {
+        org.junit.jupiter.api.Assertions.assertNotNull(object);
+    }
+    public static void assertNotNull(String message, Object object) {
+        org.junit.jupiter.api.Assertions.assertNotNull(object, message);
+    }
+    public static void assertEquals(Object expected, Object actual) {
+        org.junit.jupiter.api.Assertions.assertEquals(expected, actual);
+    }
+    public static void assertEquals(String message, Object expected, Object actual) {
+        org.junit.jupiter.api.Assertions.assertEquals(expected, actual, message);
+    }
+    public static void assertEquals(long expected, long actual) {
+        org.junit.jupiter.api.Assertions.assertEquals(expected, actual);
+    }
+    public static void assertEquals(String message, long expected, long actual) {
+        org.junit.jupiter.api.Assertions.assertEquals(expected, actual, message);
+    }
+    public static void assertEquals(double expected, double actual) {
+        org.junit.jupiter.api.Assertions.assertEquals(expected, actual);
+    }
+    public static void assertEquals(String message, double expected, double actual) {
+        org.junit.jupiter.api.Assertions.assertEquals(expected, actual, message);
+    }
+    public static void assertSame(Object expected, Object actual) {
+        org.junit.jupiter.api.Assertions.assertSame(expected, actual);
+    }
+    public static void assertSame(String message, Object expected, Object actual) {
+        org.junit.jupiter.api.Assertions.assertSame(expected, actual, message);
+    }
+    public static void fail(String message) {
+        org.junit.jupiter.api.Assertions.fail(message);
+    }
+
 }
