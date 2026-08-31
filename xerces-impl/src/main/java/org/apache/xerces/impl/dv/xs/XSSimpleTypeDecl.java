@@ -1981,24 +1981,44 @@ public class XSSimpleTypeDecl implements XSSimpleType, TypeInfo {
         if (len == 0 || ws == WS_PRESERVE)
             return content;
 
-        StringBuffer sb = new StringBuffer();
         if (ws == WS_REPLACE) {
-            char ch;
-            // when it's replace, just replace #x9, #xa, #xd by #x20
+            int firstWs = -1;
             for (int i = 0; i < len; i++) {
-                ch = content.charAt(i);
-                if (ch != 0x9 && ch != 0xa && ch != 0xd)
-                    sb.append(ch);
-                else
-                    sb.append((char)0x20);
+                char ch = content.charAt(i);
+                if (ch == 0x9 || ch == 0xa || ch == 0xd) {
+                    firstWs = i;
+                    break;
+                }
             }
+            if (firstWs == -1) {
+                return content;
+            }
+            char[] chars = content.toCharArray();
+            for (int i = firstWs; i < len; i++) {
+                char ch = chars[i];
+                if (ch == 0x9 || ch == 0xa || ch == 0xd) {
+                    chars[i] = ' ';
+                }
+            }
+            return new String(chars);
         } else {
-            char ch;
-            int i;
-            boolean isLeading = true;
-            // when it's collapse
-            for (i = 0; i < len; i++) {
-                ch = content.charAt(i);
+            int firstWs = -1;
+            for (int i = 0; i < len; i++) {
+                char ch = content.charAt(i);
+                if (ch == 0x9 || ch == 0xa || ch == 0xd || (ch == ' ' && (i == 0 || i == len - 1 || content.charAt(i + 1) == ' '))) {
+                    firstWs = i;
+                    break;
+                }
+            }
+            if (firstWs == -1) {
+                return content;
+            }
+
+            StringBuilder sb = new StringBuilder(len);
+            sb.append(content, 0, firstWs);
+            boolean isLeading = firstWs == 0;
+            for (int i = firstWs; i < len; i++) {
+                char ch = content.charAt(i);
                 // append real characters, so we passed leading ws
                 if (ch != 0x9 && ch != 0xa && ch != 0xd && ch != 0x20) {
                     sb.append(ch);
@@ -2013,12 +2033,11 @@ public class XSSimpleTypeDecl implements XSSimpleType, TypeInfo {
                     }
                     // if it's not a leading or tailing ws, then append a space
                     if (i < len - 1 && !isLeading)
-                        sb.append((char)0x20);
+                        sb.append(' ');
                 }
             }
+            return sb.toString();
         }
-
-        return sb.toString();
     }
 
     // normalize the string according to the whiteSpace facet
