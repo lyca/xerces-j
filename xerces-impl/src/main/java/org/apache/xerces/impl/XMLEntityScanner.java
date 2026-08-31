@@ -1301,19 +1301,6 @@ public class XMLEntityScanner implements XMLLocator {
             if (XMLChar.isSpace((char) c)) {
                 boolean external = fCurrentEntity.isExternal();
                 do {
-                    // Fast-path: scan contiguous spaces and tabs
-                    while (c == ' ' || c == '\t') {
-                        fCurrentEntity.columnNumber++;
-                        fCurrentEntity.position++;
-                        if (fCurrentEntity.position == fCurrentEntity.count) {
-                            load(0, true);
-                            break;
-                        }
-                        c = fCurrentEntity.ch[fCurrentEntity.position];
-                    }
-                    if (fCurrentEntity.position == fCurrentEntity.count || !XMLChar.isSpace((char) c)) {
-                        break;
-                    }
                     boolean entityChanged = false;
                     // handle newlines
                     if (c == '\n' || (external && c == '\r')) {
@@ -1409,19 +1396,6 @@ public class XMLEntityScanner implements XMLLocator {
             if (XMLChar.isSpace((char) c)) {
                 boolean external = fCurrentEntity.isExternal();
                 do {
-                    // Fast-path: scan contiguous spaces and tabs
-                    while (c == ' ' || c == '\t') {
-                        fCurrentEntity.columnNumber++;
-                        fCurrentEntity.position++;
-                        if (fCurrentEntity.position == fCurrentEntity.count) {
-                            load(0, true);
-                            break;
-                        }
-                        c = fCurrentEntity.ch[fCurrentEntity.position];
-                    }
-                    if (fCurrentEntity.position == fCurrentEntity.count || !XMLChar.isSpace((char) c)) {
-                        break;
-                    }
                     boolean entityChanged = false;
                     // handle newlines
                     if (c == '\n' || (external && c == '\r')) {

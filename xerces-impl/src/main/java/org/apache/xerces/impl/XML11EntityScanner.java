@@ -1267,19 +1267,6 @@ public class XML11EntityScanner
             if (fCurrentEntity.isExternal()) {
                 if (XML11Char.isXML11Space((char) c)) {
                     do {
-                        // Fast-path: scan contiguous spaces and tabs
-                        while (c == ' ' || c == '\t') {
-                            fCurrentEntity.columnNumber++;
-                            fCurrentEntity.position++;
-                            if (fCurrentEntity.position == fCurrentEntity.count) {
-                                load(0, true);
-                                break;
-                            }
-                            c = fCurrentEntity.ch[fCurrentEntity.position];
-                        }
-                        if (fCurrentEntity.position == fCurrentEntity.count || !XML11Char.isXML11Space((char) c)) {
-                            break;
-                        }
                         boolean entityChanged = false;
                         // handle newlines
                         if (c == '\n' || c == '\r' || c == 0x85 || c == 0x2028) {
@@ -1316,19 +1303,6 @@ public class XML11EntityScanner
             // Internal -- Match: S (only)
             else if (XMLChar.isSpace((char) c)) {
                 do {
-                    // Fast-path: scan contiguous spaces and tabs
-                    while (c == ' ' || c == '\t') {
-                        fCurrentEntity.columnNumber++;
-                        fCurrentEntity.position++;
-                        if (fCurrentEntity.position == fCurrentEntity.count) {
-                            load(0, true);
-                            break;
-                        }
-                        c = fCurrentEntity.ch[fCurrentEntity.position];
-                    }
-                    if (fCurrentEntity.position == fCurrentEntity.count || !XMLChar.isSpace((char) c)) {
-                        break;
-                    }
                     boolean entityChanged = false;
                     // handle newlines
                     if (c == '\n') {
