@@ -939,13 +939,21 @@ public class XMLEntityScanner implements XMLLocator {
         int pos = fCurrentEntity.position;
         int count = fCurrentEntity.count;
         boolean lit = fCurrentEntity.literal;
-        while (pos < count) {
-            c = ch[pos++];
-            if ((c == quote &&
-                 (!lit || external))
-                || c == '%' || !(XMLChar.isContent(c) || c == '\r' && !external)) {
-                pos--;
-                break;
+        if (!lit || external) {
+            while (pos < count) {
+                char ch0 = ch[pos];
+                if (ch0 == quote || ch0 == '%' || !XMLChar.isContent(ch0)) {
+                    break;
+                }
+                pos++;
+            }
+        } else {
+            while (pos < count) {
+                char ch0 = ch[pos];
+                if (ch0 == '%' || !(XMLChar.isContent(ch0) || ch0 == '\r')) {
+                    break;
+                }
+                pos++;
             }
         }
         fCurrentEntity.position = pos;
@@ -1290,9 +1298,22 @@ public class XMLEntityScanner implements XMLLocator {
         // skip spaces
         if (fCurrentEntity.position < fCurrentEntity.count) {
             int c = fCurrentEntity.ch[fCurrentEntity.position];
-            if (XMLChar.isSpace(c)) {
+            if (XMLChar.isSpace((char) c)) {
                 boolean external = fCurrentEntity.isExternal();
                 do {
+                    // Fast-path: scan contiguous spaces and tabs
+                    while (c == ' ' || c == '\t') {
+                        fCurrentEntity.columnNumber++;
+                        fCurrentEntity.position++;
+                        if (fCurrentEntity.position == fCurrentEntity.count) {
+                            load(0, true);
+                            break;
+                        }
+                        c = fCurrentEntity.ch[fCurrentEntity.position];
+                    }
+                    if (fCurrentEntity.position == fCurrentEntity.count || !XMLChar.isSpace((char) c)) {
+                        break;
+                    }
                     boolean entityChanged = false;
                     // handle newlines
                     if (c == '\n' || (external && c == '\r')) {
@@ -1385,9 +1406,22 @@ public class XMLEntityScanner implements XMLLocator {
         // skip spaces
         if (fCurrentEntity.position < fCurrentEntity.count) {
             int c = fCurrentEntity.ch[fCurrentEntity.position];
-            if (XMLChar.isSpace(c)) {
+            if (XMLChar.isSpace((char) c)) {
                 boolean external = fCurrentEntity.isExternal();
                 do {
+                    // Fast-path: scan contiguous spaces and tabs
+                    while (c == ' ' || c == '\t') {
+                        fCurrentEntity.columnNumber++;
+                        fCurrentEntity.position++;
+                        if (fCurrentEntity.position == fCurrentEntity.count) {
+                            load(0, true);
+                            break;
+                        }
+                        c = fCurrentEntity.ch[fCurrentEntity.position];
+                    }
+                    if (fCurrentEntity.position == fCurrentEntity.count || !XMLChar.isSpace((char) c)) {
+                        break;
+                    }
                     boolean entityChanged = false;
                     // handle newlines
                     if (c == '\n' || (external && c == '\r')) {

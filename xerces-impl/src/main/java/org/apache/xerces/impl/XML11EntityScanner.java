@@ -820,21 +820,20 @@ public class XML11EntityScanner
         int count = fCurrentEntity.count;
         if (external) {
             while (pos < count) {
-                c = ch[pos++];
-                if (!XML11Char.isXML11Content(c) || c == 0x85 || c == 0x2028) {
-                    pos--;
+                char ch0 = ch[pos];
+                if (!XML11Char.isXML11Content(ch0) || ch0 == 0x85 || ch0 == 0x2028) {
                     break;
                 }
+                pos++;
             }
         }
         else {
             while (pos < count) {
-                c = ch[pos++];
-                // In internal entities control characters are allowed to appear unescaped.
-                if (!XML11Char.isXML11InternalEntityContent(c)) {
-                    pos--;
+                char ch0 = ch[pos];
+                if (!XML11Char.isXML11InternalEntityContent(ch0)) {
                     break;
                 }
+                pos++;
             }
         }
         fCurrentEntity.position = pos;
@@ -967,22 +966,30 @@ public class XML11EntityScanner
         boolean lit = fCurrentEntity.literal;
         if (external) {
             while (pos < count) {
-                c = ch[pos++];
-                if (c == quote || c == '%' || !XML11Char.isXML11Content(c)
-                    || c == 0x85 || c == 0x2028) {
-                    pos--;
+                char ch0 = ch[pos];
+                if (ch0 == quote || ch0 == '%' || !XML11Char.isXML11Content(ch0)
+                    || ch0 == 0x85 || ch0 == 0x2028) {
                     break;
                 }
+                pos++;
+            }
+        }
+        else if (lit) {
+            while (pos < count) {
+                char ch0 = ch[pos];
+                if (ch0 == '%' || !XML11Char.isXML11InternalEntityContent(ch0)) {
+                    break;
+                }
+                pos++;
             }
         }
         else {
             while (pos < count) {
-                c = ch[pos++];
-                if ((c == quote && !lit)
-                    || c == '%' || !XML11Char.isXML11InternalEntityContent(c)) {
-                    pos--;
+                char ch0 = ch[pos];
+                if (ch0 == quote || ch0 == '%' || !XML11Char.isXML11InternalEntityContent(ch0)) {
                     break;
                 }
+                pos++;
             }
         }
         fCurrentEntity.position = pos;
@@ -1258,8 +1265,21 @@ public class XML11EntityScanner
             
             // External --  Match: S + 0x85 + 0x2028, and perform end of line normalization
             if (fCurrentEntity.isExternal()) {
-                if (XML11Char.isXML11Space(c)) {
+                if (XML11Char.isXML11Space((char) c)) {
                     do {
+                        // Fast-path: scan contiguous spaces and tabs
+                        while (c == ' ' || c == '\t') {
+                            fCurrentEntity.columnNumber++;
+                            fCurrentEntity.position++;
+                            if (fCurrentEntity.position == fCurrentEntity.count) {
+                                load(0, true);
+                                break;
+                            }
+                            c = fCurrentEntity.ch[fCurrentEntity.position];
+                        }
+                        if (fCurrentEntity.position == fCurrentEntity.count || !XML11Char.isXML11Space((char) c)) {
+                            break;
+                        }
                         boolean entityChanged = false;
                         // handle newlines
                         if (c == '\n' || c == '\r' || c == 0x85 || c == 0x2028) {
@@ -1269,15 +1289,11 @@ public class XML11EntityScanner
                                 fCurrentEntity.ch[0] = (char)c;
                                 entityChanged = load(1, true);
                                 if (!entityChanged) {
-                                    // the load change the position to be 1,
-                                    // need to restore it when entity not changed
                                     fCurrentEntity.startPosition = 0;
                                     fCurrentEntity.position = 0;
                                 }
                             }
                             if (c == '\r') {
-                                // REVISIT: Does this need to be updated to fix the
-                                //          #x0D ^#x0A newline normalization problem? -Ac
                                 int cc = fCurrentEntity.ch[++fCurrentEntity.position];
                                 if (cc != '\n' && cc != 0x85 ) {
                                     fCurrentEntity.position--;
@@ -1293,13 +1309,26 @@ public class XML11EntityScanner
                         if (fCurrentEntity.position == fCurrentEntity.count) {
                             load(0, true);
                         }
-                    } while (fCurrentEntity.position < fCurrentEntity.count && XML11Char.isXML11Space(c = fCurrentEntity.ch[fCurrentEntity.position]));
+                    } while (fCurrentEntity.position < fCurrentEntity.count && XML11Char.isXML11Space((char) (c = fCurrentEntity.ch[fCurrentEntity.position])));
                     return true;
                 }
             }
             // Internal -- Match: S (only)
-            else if (XMLChar.isSpace(c)) {
+            else if (XMLChar.isSpace((char) c)) {
                 do {
+                    // Fast-path: scan contiguous spaces and tabs
+                    while (c == ' ' || c == '\t') {
+                        fCurrentEntity.columnNumber++;
+                        fCurrentEntity.position++;
+                        if (fCurrentEntity.position == fCurrentEntity.count) {
+                            load(0, true);
+                            break;
+                        }
+                        c = fCurrentEntity.ch[fCurrentEntity.position];
+                    }
+                    if (fCurrentEntity.position == fCurrentEntity.count || !XMLChar.isSpace((char) c)) {
+                        break;
+                    }
                     boolean entityChanged = false;
                     // handle newlines
                     if (c == '\n') {
@@ -1309,8 +1338,6 @@ public class XML11EntityScanner
                             fCurrentEntity.ch[0] = (char)c;
                             entityChanged = load(1, true);
                             if (!entityChanged) {
-                                // the load change the position to be 1,
-                                // need to restore it when entity not changed
                                 fCurrentEntity.startPosition = 0;
                                 fCurrentEntity.position = 0;
                             }
@@ -1325,7 +1352,7 @@ public class XML11EntityScanner
                     if (fCurrentEntity.position == fCurrentEntity.count) {
                         load(0, true);
                     }
-                } while (fCurrentEntity.position < fCurrentEntity.count && XMLChar.isSpace(c = fCurrentEntity.ch[fCurrentEntity.position]));
+                } while (fCurrentEntity.position < fCurrentEntity.count && XMLChar.isSpace((char) (c = fCurrentEntity.ch[fCurrentEntity.position])));
                 return true;
             }
         }

@@ -790,6 +790,10 @@ public class XMLChar {
                (0x10000 <= c && c <= 0x10FFFF);
     } // isValid(int):boolean
 
+    public static boolean isValid(char c) {
+        return (CHARS[c] & MASK_VALID) != 0;
+    }
+
     /**
      * Returns true if the specified character is invalid.
      *
@@ -798,6 +802,10 @@ public class XMLChar {
     public static boolean isInvalid(int c) {
         return !isValid(c);
     } // isInvalid(int):boolean
+
+    public static boolean isInvalid(char c) {
+        return (CHARS[c] & MASK_VALID) == 0;
+    }
 
     /**
      * Returns true if the specified character can be considered content.
@@ -808,6 +816,10 @@ public class XMLChar {
         return (c < 0x10000 && (CHARS[c] & MASK_CONTENT) != 0) ||
                (0x10000 <= c && c <= 0x10FFFF);
     } // isContent(int):boolean
+
+    public static boolean isContent(char c) {
+        return (CHARS[c] & MASK_CONTENT) != 0;
+    }
 
     /**
      * Returns true if the specified character can be considered markup.
@@ -829,6 +841,10 @@ public class XMLChar {
         return c <= 0x20 && (CHARS[c] & MASK_SPACE) != 0;
     } // isSpace(int):boolean
 
+    public static boolean isSpace(char c) {
+        return c <= 0x20 && (CHARS[c] & MASK_SPACE) != 0;
+    }
+
     /**
      * Returns true if the specified character is a valid name start
      * character as defined by production [5] in the XML 1.0
@@ -839,6 +855,10 @@ public class XMLChar {
     public static boolean isNameStart(int c) {
         return c < 0x10000 && (CHARS[c] & MASK_NAME_START) != 0;
     } // isNameStart(int):boolean
+
+    public static boolean isNameStart(char c) {
+        return (CHARS[c] & MASK_NAME_START) != 0;
+    }
 
     /**
      * Returns true if the specified character is a valid name
@@ -851,6 +871,10 @@ public class XMLChar {
         return c < 0x10000 && (CHARS[c] & MASK_NAME) != 0;
     } // isName(int):boolean
 
+    public static boolean isName(char c) {
+        return (CHARS[c] & MASK_NAME) != 0;
+    }
+
     /**
      * Returns true if the specified character is a valid NCName start
      * character as defined by production [4] in Namespaces in XML
@@ -861,6 +885,10 @@ public class XMLChar {
     public static boolean isNCNameStart(int c) {
         return c < 0x10000 && (CHARS[c] & MASK_NCNAME_START) != 0;
     } // isNCNameStart(int):boolean
+
+    public static boolean isNCNameStart(char c) {
+        return (CHARS[c] & MASK_NCNAME_START) != 0;
+    }
 
     /**
      * Returns true if the specified character is a valid NCName
@@ -873,6 +901,10 @@ public class XMLChar {
         return c < 0x10000 && (CHARS[c] & MASK_NCNAME) != 0;
     } // isNCName(int):boolean
 
+    public static boolean isNCName(char c) {
+        return (CHARS[c] & MASK_NCNAME) != 0;
+    }
+
     /**
      * Returns true if the specified character is a valid Pubid
      * character as defined by production [13] in the XML 1.0
@@ -883,6 +915,10 @@ public class XMLChar {
     public static boolean isPubid(int c) {
         return c < 0x10000 && (CHARS[c] & MASK_PUBID) != 0;
     } // isPubid(int):boolean
+
+    public static boolean isPubid(char c) {
+        return (CHARS[c] & MASK_PUBID) != 0;
+    }
 
     /*
      * [5] Name ::= (Letter | '_' | ':') (NameChar)*
