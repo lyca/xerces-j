@@ -35,6 +35,7 @@ import org.apache.xerces.parsers.NonValidatingConfiguration;
 import org.apache.xerces.util.XMLAttributesImpl;
 import org.apache.xerces.util.XMLChar;
 import org.apache.xerces.util.XMLStringBuffer;
+import org.apache.xerces.util.XMLSymbols;
 import org.apache.xerces.xni.Augmentations;
 import org.apache.xerces.xni.XMLAttributes;
 import org.apache.xerces.xni.XMLDTDContentModelHandler;
@@ -73,6 +74,7 @@ public class XMLStreamReaderImpl implements XMLStreamReader, XMLDocumentHandler,
     // Current element
     private final org.apache.xerces.xni.QName fCurrentElement = new org.apache.xerces.xni.QName();
     private final XMLAttributesImpl fAttributes = new XMLAttributesImpl();
+    private final org.apache.xerces.xni.QName fTempQName = new org.apache.xerces.xni.QName();
 
     // Text buffer
     private final XMLStringBuffer fTextBuffer = new XMLStringBuffer();
@@ -630,13 +632,14 @@ public class XMLStreamReaderImpl implements XMLStreamReader, XMLDocumentHandler,
             String prefix = attributes.getPrefix(i);
             String rawname = attributes.getQName(i);
             // In StAX, namespace declarations are not exposed as attributes
-            if ("xmlns".equals(prefix) || "xmlns".equals(rawname) || XMLConstants.XMLNS_ATTRIBUTE_NS_URI.equals(attributes.getURI(i))) {
+            if (prefix == XMLSymbols.PREFIX_XMLNS || rawname == XMLSymbols.PREFIX_XMLNS ||
+                "xmlns".equals(prefix) || "xmlns".equals(rawname) ||
+                XMLConstants.XMLNS_ATTRIBUTE_NS_URI.equals(attributes.getURI(i))) {
                 continue;
             }
-            org.apache.xerces.xni.QName attrName = new org.apache.xerces.xni.QName();
-            attributes.getName(i, attrName);
+            attributes.getName(i, fTempQName);
             fAttributes.addAttribute(
-                attrName,
+                fTempQName,
                 attributes.getType(i),
                 attributes.getValue(i)
             );
