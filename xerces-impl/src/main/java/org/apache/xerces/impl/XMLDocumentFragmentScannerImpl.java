@@ -955,10 +955,40 @@ public class XMLDocumentFragmentScannerImpl
         boolean isSameNormalizedAttr =  scanAttributeValue(fTempString, fTempString2,
                 fAttributeQName.rawname, fIsEntityDeclaredVC, fCurrentElement.rawname);
         
-        attributes.setValue(attrIndex, fTempString.toString());
+                String value = null;
+        if (fTempString.length == 1) {
+            char c0 = fTempString.ch[fTempString.offset];
+            if (c0 == '0') value = "0";
+            else if (c0 == '1') value = "1";
+        } else if (fTempString.length == 4) {
+            if (fTempString.ch[fTempString.offset] == 't' && fTempString.ch[fTempString.offset+1] == 'r' && fTempString.ch[fTempString.offset+2] == 'u' && fTempString.ch[fTempString.offset+3] == 'e') {
+                value = "true";
+            }
+        } else if (fTempString.length == 5) {
+            if (fTempString.ch[fTempString.offset] == 'f' && fTempString.ch[fTempString.offset+1] == 'a' && fTempString.ch[fTempString.offset+2] == 'l' && fTempString.ch[fTempString.offset+3] == 's' && fTempString.ch[fTempString.offset+4] == 'e') {
+                value = "false";
+            }
+        }
+        if (value == null) {
+            value = fTempString.toString();
+        }
+        attributes.setValue(attrIndex, value);
         // If the non-normalized and normalized value are the same, avoid creating a new string.
         if (!isSameNormalizedAttr) {
-            attributes.setNonNormalizedValue(attrIndex, fTempString2.toString());
+            String nonNormValue = null;
+            if (fTempString2.length == 1) {
+                char c0 = fTempString2.ch[fTempString2.offset];
+                if (c0 == '0') nonNormValue = "0";
+                else if (c0 == '1') nonNormValue = "1";
+            } else if (fTempString2.length == 4) {
+                if (fTempString2.ch[fTempString2.offset] == 't' && fTempString2.ch[fTempString2.offset+1] == 'r' && fTempString2.ch[fTempString2.offset+2] == 'u' && fTempString2.ch[fTempString2.offset+3] == 'e') nonNormValue = "true";
+            } else if (fTempString2.length == 5) {
+                if (fTempString2.ch[fTempString2.offset] == 'f' && fTempString2.ch[fTempString2.offset+1] == 'a' && fTempString2.ch[fTempString2.offset+2] == 'l' && fTempString2.ch[fTempString2.offset+3] == 's' && fTempString2.ch[fTempString2.offset+4] == 'e') nonNormValue = "false";
+            }
+            if (nonNormValue == null) {
+                nonNormValue = fTempString2.toString();
+            }
+            attributes.setNonNormalizedValue(attrIndex, nonNormValue);
         }
         attributes.setSpecified(attrIndex, true);
 
