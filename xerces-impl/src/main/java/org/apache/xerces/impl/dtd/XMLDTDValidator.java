@@ -818,8 +818,10 @@ public class XMLDTDValidator
         //          Perhaps if the scanner told us so we don't have to
         //          look at the characters again. -Ac
         boolean allWhiteSpace = true;
-        for (int i=text.offset; i< text.offset+text.length; i++) {
-            if (!isSpace(text.ch[i])) {
+        final char[] ch = text.ch;
+        final int end = text.offset + text.length;
+        for (int i = text.offset; i < end; i++) {
+            if (!XMLChar.isSpace(ch[i])) {
                 allWhiteSpace = false;
                 break;
             }
@@ -1184,13 +1186,7 @@ public class XMLDTDValidator
             boolean cdata = attType == XMLSymbols.fCDATASymbol;
 
             if (!cdata || required || attValue != null) {
-                int attrCount = attributes.getLength();
-                for (int i = 0; i < attrCount; i++) {
-                    if (attributes.getQName(i) == attRawName) {
-                        specified = true;
-                        break;
-                    }
-                }
+                specified = attributes.getIndex(attRawName) != -1;
             }
 
             if (!specified) {
@@ -1264,9 +1260,9 @@ public class XMLDTDValidator
             int position =
             fDTDGrammar.getFirstAttributeDeclIndex(elementIndex);
             while (position != -1) {
-                fDTDGrammar.getAttributeDecl(position, fTempAttDecl);
-                if (fTempAttDecl.name.rawname == attrRawName) {
-                    // found the match att decl, 
+                String declRawName = fDTDGrammar.getAttributeDeclRawName(position);
+                if (declRawName == attrRawName) {
+                    fDTDGrammar.getAttributeDecl(position, fTempAttDecl);
                     attDefIndex = position;
                     declared = true;
                     break;

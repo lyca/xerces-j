@@ -1287,6 +1287,19 @@ public class DTDGrammar
     } // getNextAttributeDeclIndex
 
     /**
+     * Returns the raw name of the attribute declaration at the specified index,
+     * or null if the index is invalid.
+     */
+    public String getAttributeDeclRawName(int attributeDeclIndex) {
+        if (attributeDeclIndex < 0 || attributeDeclIndex >= fAttributeDeclCount) {
+            return null;
+        }
+        int chunk = attributeDeclIndex >> CHUNK_SHIFT;
+        int index = attributeDeclIndex & CHUNK_MASK;
+        return fAttributeDeclName[chunk][index].rawname;
+    }
+
+    /**
      * getAttributeDecl
      * 
      * @param attributeDeclIndex 
