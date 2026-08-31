@@ -1292,110 +1292,81 @@ extends BaseMarkupSerializer {
 
     protected void printText( String text, boolean preserveSpace, boolean unescaped )
     throws IOException {
-        int index;
-        char ch;
         int length = text.length();
-        if ( preserveSpace ) {
-            // Preserving spaces: the text must print exactly as it is,
-            // without breaking when spaces appear in the text and without
-            // consolidating spaces. If a line terminator is used, a line
-            // break will occur.
-            for ( index = 0 ; index < length ; ++index ) {
-                ch = text.charAt( index );
-                if (!XMLChar.isValid(ch)) {
-                    // check if it is surrogate
-                    if (++index <length) {
-                        surrogates(ch, text.charAt(index), true);
-                    } else {
-                        fatalError("The character '"+ch+"' is an invalid XML character"); 
-                    }
-                    continue;
+        if ( length == 0 ) {
+            return;
+        }
+        if ( unescaped ) {
+            _printer.printText( text );
+            return;
+        }
+        int batchStart = 0;
+        for ( int index = 0; index < length; ++index ) {
+            char ch = text.charAt( index );
+            if (!XMLChar.isValid(ch)) {
+                if ( index > batchStart ) {
+                    _printer.printText( text.substring( batchStart, index ) );
                 }
-                if ( unescaped ) {
-                    _printer.printText( ch );
-                } else
-                    printXMLChar( ch );
-            }
-        } else {
-            // Not preserving spaces: print one part at a time, and
-            // use spaces between parts to break them into different
-            // lines. Spaces at beginning of line will be stripped
-            // by printing mechanism. Line terminator is treated
-            // no different than other text part.
-            for ( index = 0 ; index < length ; ++index ) {
-                ch = text.charAt( index );
-                if (!XMLChar.isValid(ch)) {
-                    // check if it is surrogate
-                    if (++index <length) {
-                        surrogates(ch, text.charAt(index), true);
-                    } else {
-                        fatalError("The character '"+ch+"' is an invalid XML character"); 
-                    }
-                    continue;
+                if ( ++index < length ) {
+                    surrogates(ch, text.charAt(index), true);
+                } else {
+                    fatalError("The character '"+ch+"' is an invalid XML character");
                 }
-
-				if ( unescaped )
-                    _printer.printText( ch );
-                else
-                    printXMLChar( ch);
+                batchStart = index + 1;
+                continue;
             }
+            if ( ch == '<' || ch == '&' || ch == '>' || ch == '\r' ||
+                 ( ch < ' ' && ch != '\n' && ch != '\t' ) ||
+                 !_encodingInfo.isPrintable(ch) ) {
+                if ( index > batchStart ) {
+                    _printer.printText( text.substring( batchStart, index ) );
+                }
+                printXMLChar( ch );
+                batchStart = index + 1;
+            }
+        }
+        if ( length > batchStart ) {
+            _printer.printText( text.substring( batchStart, length ) );
         }
     }
 
-
-
     protected void printText( char[] chars, int start, int length,
                               boolean preserveSpace, boolean unescaped ) throws IOException {
-
-        if ( preserveSpace ) {
-            // Preserving spaces: the text must print exactly as it is,
-            // without breaking when spaces appear in the text and without
-            // consolidating spaces. If a line terminator is used, a line
-            // break will occur.
-            while ( length-- > 0 ) {
-                char ch = chars[start++];
-                if (!XMLChar.isValid(ch)) {
-                    // check if it is surrogate
-                    if ( length-- > 0 ) {
-                        surrogates(ch, chars[start++], true);
-                    } 
-                    else {
-                        fatalError("The character '"+ch+"' is an invalid XML character"); 
-                    }
-                    continue;
+        if ( length <= 0 ) {
+            return;
+        }
+        if ( unescaped ) {
+            _printer.printText( chars, start, length );
+            return;
+        }
+        int end = start + length;
+        int batchStart = start;
+        for ( int index = start; index < end; ++index ) {
+            char ch = chars[index];
+            if (!XMLChar.isValid(ch)) {
+                if ( index > batchStart ) {
+                    _printer.printText( chars, batchStart, index - batchStart );
                 }
-                if ( unescaped ) {
-                    _printer.printText( ch );
-                } 
-                else {
-                    printXMLChar( ch );
+                if ( ++index < end ) {
+                    surrogates(ch, chars[index], true);
+                } else {
+                    fatalError("The character '"+ch+"' is an invalid XML character");
                 }
+                batchStart = index + 1;
+                continue;
             }
-        } else {
-            // Not preserving spaces: print one part at a time, and
-            // use spaces between parts to break them into different
-            // lines. Spaces at beginning of line will be stripped
-            // by printing mechanism. Line terminator is treated
-            // no different than other text part.
-            while ( length-- > 0 ) {
-                char ch = chars[start++];
-                if (!XMLChar.isValid(ch)) {
-                    // check if it is surrogate
-                    if ( length-- > 0 ) {
-                        surrogates(ch, chars[start++], true);
-                    } 
-                    else {
-                        fatalError("The character '"+ch+"' is an invalid XML character"); 
-                    }
-                    continue;
+            if ( ch == '<' || ch == '&' || ch == '>' || ch == '\r' ||
+                 ( ch < ' ' && ch != '\n' && ch != '\t' ) ||
+                 !_encodingInfo.isPrintable(ch) ) {
+                if ( index > batchStart ) {
+                    _printer.printText( chars, batchStart, index - batchStart );
                 }
-                if ( unescaped ) {
-                    _printer.printText( ch );
-                } 
-                else {
-                    printXMLChar( ch );
-                }
+                printXMLChar( ch );
+                batchStart = index + 1;
             }
+        }
+        if ( end > batchStart ) {
+            _printer.printText( chars, batchStart, end - batchStart );
         }
     }
 
