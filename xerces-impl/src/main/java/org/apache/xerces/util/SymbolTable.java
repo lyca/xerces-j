@@ -89,7 +89,7 @@ public class SymbolTable {
     //
 
     /** Default table size. */
-    protected static final int TABLE_SIZE = 101;
+    protected static final int TABLE_SIZE = 2039;
     
     /** Maximum hash collisions per bucket for a table with load factor == 1. */
     protected static final int MAX_HASH_COLLISIONS = 40;
