@@ -17,28 +17,38 @@
 
 package org.apache.xerces.benchmarks;
 
-import java.nio.charset.StandardCharsets;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
- * Standard synthetic XML data generator for microbenchmarks.
+ * Standard synthetic XML data generator and sample resource loader for microbenchmarks.
  */
 public final class SampleXmlData {
 
     private SampleXmlData() {}
 
     public static byte[] generateXml(int itemCount) {
-        StringBuilder sb = new StringBuilder(itemCount * 300 + 500);
-        sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-        sb.append("<catalog xmlns:ns=\"http://example.com/ns\" id=\"cat-01\">\n");
-        for (int i = 0; i < itemCount; i++) {
-            sb.append("  <ns:item id=\"item-").append(i).append("\" status=\"active\" category=\"electronic\">\n");
-            sb.append("    <ns:name>Item Number ").append(i).append("</ns:name>\n");
-            sb.append("    <ns:price currency=\"EUR\">").append(10.0 + (i % 100)).append("</ns:price>\n");
-            sb.append("    <ns:description>High performance XML parsing benchmark payload item with description index ").append(i).append(".</ns:description>\n");
-            sb.append("    <ns:specs weight=\"1.2\" height=\"10\" width=\"20\" depth=\"5\"/>\n");
-            sb.append("  </ns:item>\n");
+        return XmlWorkloadGenerator.generate(WorkloadProfile.STANDARD, itemCount);
+    }
+
+    public static byte[] generate(WorkloadProfile profile, int sizeParam) {
+        return XmlWorkloadGenerator.generate(profile, sizeParam);
+    }
+
+    public static byte[] loadSample(String resourceName) throws IOException {
+        String path = resourceName.startsWith("/") ? resourceName : "/samples/" + resourceName;
+        try (InputStream in = SampleXmlData.class.getResourceAsStream(path)) {
+            if (in == null) {
+                throw new IllegalArgumentException("Sample resource not found: " + path);
+            }
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            byte[] buf = new byte[4096];
+            int read;
+            while ((read = in.read(buf)) != -1) {
+                baos.write(buf, 0, read);
+            }
+            return baos.toByteArray();
         }
-        sb.append("</catalog>\n");
-        return sb.toString().getBytes(StandardCharsets.UTF_8);
     }
 }

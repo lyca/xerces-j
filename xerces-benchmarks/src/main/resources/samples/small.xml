@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog xmlns="http://example.com/catalog" id="cat-small">
+  <item id="item-001" status="in-stock">
+    <name>Wireless Mouse</name>
+    <price currency="USD">29.99</price>
+    <description>Ergonomic optical wireless mouse with 2.4GHz receiver.</description>
+  </item>
+  <item id="item-002" status="in-stock">
+    <name>Mechanical Keyboard</name>
+    <price currency="USD">89.99</price>
+    <description>Tactile mechanical switches with RGB backlight.</description>
+  </item>
+</catalog>

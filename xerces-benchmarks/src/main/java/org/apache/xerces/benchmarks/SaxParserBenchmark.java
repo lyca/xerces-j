@@ -19,13 +19,10 @@ package org.apache.xerces.benchmarks;
 
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
-import org.xml.sax.SAXException;
 
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 @BenchmarkMode(Mode.Throughput)
@@ -36,8 +33,11 @@ import java.util.concurrent.TimeUnit;
 @State(Scope.Benchmark)
 public class SaxParserBenchmark {
 
+    @Param({"STANDARD"})
+    public WorkloadProfile profile = WorkloadProfile.STANDARD;
+
     @Param({"100", "1000"})
-    public int itemCount;
+    public int itemCount = 100;
 
     private byte[] xmlBytes;
 
@@ -48,7 +48,7 @@ public class SaxParserBenchmark {
 
     @Setup(Level.Trial)
     public void setup() throws Exception {
-        xmlBytes = SampleXmlData.generateXml(itemCount);
+        xmlBytes = SampleXmlData.generate(profile, itemCount);
 
         xercesFactory = (SAXParserFactory) Class.forName("org.apache.xerces.jaxp.SAXParserFactoryImpl").getDeclaredConstructor().newInstance();
         xercesFactory.setNamespaceAware(true);

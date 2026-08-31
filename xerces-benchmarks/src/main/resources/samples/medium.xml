@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inventory xmlns="http://example.com/inventory" generated="2026-09-01T00:00:00Z">
+  <warehouse id="wh-central" location="Frankfurt">
+    <section code="A1" climate="ambient">
+      <product sku="SKU-1001" category="Hardware">
+        <name>Server Rack 42U</name>
+        <stock quantity="15" reorderLevel="5"/>
+        <dimensions unit="cm" width="60" depth="100" height="200"/>
+        <tags>
+          <tag>datacenter</tag>
+          <tag>rack</tag>
+          <tag>heavy</tag>
+        </tags>
+      </product>
+      <product sku="SKU-1002" category="Networking">
+        <name>Managed Switch 48-Port</name>
+        <stock quantity="42" reorderLevel="10"/>
+        <dimensions unit="cm" width="44" depth="25" height="4.4"/>
+        <tags>
+          <tag>network</tag>
+          <tag>switch</tag>
+          <tag>10gbe</tag>
+        </tags>
+      </product>
+    </section>
+  </warehouse>
+</inventory>

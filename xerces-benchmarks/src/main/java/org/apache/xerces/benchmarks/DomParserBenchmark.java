@@ -36,8 +36,11 @@ public class DomParserBenchmark {
 
     private static final String FEATURE_DEFER_EXPANSION = "http://apache.org/xml/features/dom/defer-node-expansion";
 
+    @Param({"STANDARD"})
+    public WorkloadProfile profile = WorkloadProfile.STANDARD;
+
     @Param({"100", "1000"})
-    public int itemCount;
+    public int itemCount = 100;
 
     private byte[] xmlBytes;
 
@@ -48,7 +51,7 @@ public class DomParserBenchmark {
 
     @Setup(Level.Trial)
     public void setup() throws Exception {
-        xmlBytes = SampleXmlData.generateXml(itemCount);
+        xmlBytes = SampleXmlData.generate(profile, itemCount);
 
         xercesDeferredFactory = (DocumentBuilderFactory) Class.forName("org.apache.xerces.jaxp.DocumentBuilderFactoryImpl").getDeclaredConstructor().newInstance();
         xercesDeferredFactory.setNamespaceAware(true);

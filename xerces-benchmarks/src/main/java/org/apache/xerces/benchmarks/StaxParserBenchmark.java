@@ -34,8 +34,11 @@ import java.util.concurrent.TimeUnit;
 @State(Scope.Benchmark)
 public class StaxParserBenchmark {
 
+    @Param({"STANDARD"})
+    public WorkloadProfile profile = WorkloadProfile.STANDARD;
+
     @Param({"100", "1000"})
-    public int itemCount;
+    public int itemCount = 100;
 
     private byte[] xmlBytes;
 
@@ -46,7 +49,7 @@ public class StaxParserBenchmark {
 
     @Setup(Level.Trial)
     public void setup() throws Exception {
-        xmlBytes = SampleXmlData.generateXml(itemCount);
+        xmlBytes = SampleXmlData.generate(profile, itemCount);
 
         xercesFactory = (XMLInputFactory) Class.forName("org.apache.xerces.stax.XMLInputFactoryImpl").getDeclaredConstructor().newInstance();
         xercesFactory.setProperty(XMLInputFactory.IS_NAMESPACE_AWARE, Boolean.TRUE);
