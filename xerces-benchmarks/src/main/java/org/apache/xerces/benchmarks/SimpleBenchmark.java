@@ -15,9 +15,22 @@
  * limitations under the License.
  */
 
-rootProject.name = 'xerces-j'
+package org.apache.xerces.benchmarks;
 
-include 'xerces-impl'
-include 'xerces-samples'
-include 'xerces-tools'
-include 'xerces-benchmarks'
+import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.BenchmarkMode;
+import org.openjdk.jmh.annotations.Mode;
+import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.infra.Blackhole;
+
+import java.util.concurrent.TimeUnit;
+
+@BenchmarkMode(Mode.Throughput)
+@OutputTimeUnit(TimeUnit.MILLISECONDS)
+public class SimpleBenchmark {
+
+    @Benchmark
+    public void testInit(Blackhole bh) {
+        bh.consume(System.currentTimeMillis());
+    }
+}
