@@ -39,12 +39,23 @@ jar {
 
 tasks.register('jmh', JavaExec) {
     group = 'benchmark'
-    description = 'Executes JMH benchmarks'
+    description = 'Executes JMH microbenchmarks'
     dependsOn classes
     mainClass = 'org.openjdk.jmh.Main'
     classpath = sourceSets.main.runtimeClasspath
 
+    def jmhArgsList = []
     if (project.hasProperty('jmhArgs')) {
-        args project.property('jmhArgs').toString().split('\\s+')
+        jmhArgsList.addAll(project.property('jmhArgs').toString().split('\\s+'))
     }
+    if (project.hasProperty('jmhResultFormat')) {
+        jmhArgsList.add('-rf')
+        jmhArgsList.add(project.property('jmhResultFormat').toString())
+    }
+    if (project.hasProperty('jmhResultFile')) {
+        jmhArgsList.add('-rff')
+        jmhArgsList.add(project.property('jmhResultFile').toString())
+    }
+
+    args jmhArgsList
 }
