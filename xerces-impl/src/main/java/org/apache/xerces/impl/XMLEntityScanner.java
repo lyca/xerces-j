@@ -306,21 +306,28 @@ public class XMLEntityScanner implements XMLLocator {
 
         // scan nmtoken
         int offset = fCurrentEntity.position;
-        while (XMLChar.isName(fCurrentEntity.ch[fCurrentEntity.position])) {
-            if (++fCurrentEntity.position == fCurrentEntity.count) {
-                int length = fCurrentEntity.position - offset;
-                if (length == fCurrentEntity.ch.length) {
-                    // bad luck we have to resize our buffer
-                    resizeBuffer(offset, length);
-                }
-                else {
-                    System.arraycopy(fCurrentEntity.ch, offset,
-                                     fCurrentEntity.ch, 0, length);
-                }
-                offset = 0;
-                if (load(length, false)) {
-                    break;
-                }
+        while (true) {
+            char[] ch = fCurrentEntity.ch;
+            int pos = fCurrentEntity.position;
+            int count = fCurrentEntity.count;
+            while (pos < count && XMLChar.isName(ch[pos])) {
+                pos++;
+            }
+            fCurrentEntity.position = pos;
+            if (pos < count) {
+                break;
+            }
+            int length = pos - offset;
+            if (length == fCurrentEntity.ch.length) {
+                resizeBuffer(offset, length);
+            }
+            else {
+                System.arraycopy(fCurrentEntity.ch, offset,
+                                 fCurrentEntity.ch, 0, length);
+            }
+            offset = 0;
+            if (load(length, false)) {
+                break;
             }
         }
         int length = fCurrentEntity.position - offset;
@@ -370,7 +377,7 @@ public class XMLEntityScanner implements XMLLocator {
 
         // scan name
         int offset = fCurrentEntity.position;
-        if (XMLChar.isNameStart(fCurrentEntity.ch[offset])) {
+        if (offset < fCurrentEntity.count && XMLChar.isNameStart(fCurrentEntity.ch[offset])) {
             if (++fCurrentEntity.position == fCurrentEntity.count) {
                 fCurrentEntity.ch[0] = fCurrentEntity.ch[offset];
                 offset = 0;
@@ -385,21 +392,28 @@ public class XMLEntityScanner implements XMLLocator {
                     return symbol;
                 }
             }
-            while (XMLChar.isName(fCurrentEntity.ch[fCurrentEntity.position])) {
-                if (++fCurrentEntity.position == fCurrentEntity.count) {
-                    int length = fCurrentEntity.position - offset;
-                    if (length == fCurrentEntity.ch.length) {
-                        // bad luck we have to resize our buffer
-                        resizeBuffer(offset, length);
-                    }
-                    else {
-                        System.arraycopy(fCurrentEntity.ch, offset,
-                                         fCurrentEntity.ch, 0, length);
-                    }
-                    offset = 0;
-                    if (load(length, false)) {
-                        break;
-                    }
+            while (true) {
+                char[] ch = fCurrentEntity.ch;
+                int pos = fCurrentEntity.position;
+                int count = fCurrentEntity.count;
+                while (pos < count && XMLChar.isName(ch[pos])) {
+                    pos++;
+                }
+                fCurrentEntity.position = pos;
+                if (pos < count) {
+                    break;
+                }
+                int length = pos - offset;
+                if (length == fCurrentEntity.ch.length) {
+                    resizeBuffer(offset, length);
+                }
+                else {
+                    System.arraycopy(fCurrentEntity.ch, offset,
+                                     fCurrentEntity.ch, 0, length);
+                }
+                offset = 0;
+                if (load(length, false)) {
+                    break;
                 }
             }
         }
@@ -450,7 +464,7 @@ public class XMLEntityScanner implements XMLLocator {
 
         // scan name
         int offset = fCurrentEntity.position;
-        if (XMLChar.isNCNameStart(fCurrentEntity.ch[offset])) {
+        if (offset < fCurrentEntity.count && XMLChar.isNCNameStart(fCurrentEntity.ch[offset])) {
             if (++fCurrentEntity.position == fCurrentEntity.count) {
                 fCurrentEntity.ch[0] = fCurrentEntity.ch[offset];
                 offset = 0;
@@ -465,21 +479,28 @@ public class XMLEntityScanner implements XMLLocator {
                     return symbol;
                 }
             }
-            while (XMLChar.isNCName(fCurrentEntity.ch[fCurrentEntity.position])) {
-                if (++fCurrentEntity.position == fCurrentEntity.count) {
-                    int length = fCurrentEntity.position - offset;
-                    if (length == fCurrentEntity.ch.length) {
-                        // bad luck we have to resize our buffer
-                        resizeBuffer(offset, length);
-                    }
-                    else {
-                        System.arraycopy(fCurrentEntity.ch, offset,
-                                         fCurrentEntity.ch, 0, length);
-                    }
-                    offset = 0;
-                    if (load(length, false)) {
-                        break;
-                    }
+            while (true) {
+                char[] ch = fCurrentEntity.ch;
+                int pos = fCurrentEntity.position;
+                int count = fCurrentEntity.count;
+                while (pos < count && XMLChar.isNCName(ch[pos])) {
+                    pos++;
+                }
+                fCurrentEntity.position = pos;
+                if (pos < count) {
+                    break;
+                }
+                int length = pos - offset;
+                if (length == fCurrentEntity.ch.length) {
+                    resizeBuffer(offset, length);
+                }
+                else {
+                    System.arraycopy(fCurrentEntity.ch, offset,
+                                     fCurrentEntity.ch, 0, length);
+                }
+                offset = 0;
+                if (load(length, false)) {
+                    break;
                 }
             }
         }
@@ -538,7 +559,7 @@ public class XMLEntityScanner implements XMLLocator {
 
         // scan qualified name
         int offset = fCurrentEntity.position;
-        if (XMLChar.isNCNameStart(fCurrentEntity.ch[offset])) {
+        if (offset < fCurrentEntity.count && XMLChar.isNCNameStart(fCurrentEntity.ch[offset])) {
             if (++fCurrentEntity.position == fCurrentEntity.count) {
                 fCurrentEntity.ch[0] = fCurrentEntity.ch[offset];
                 offset = 0;
@@ -556,32 +577,41 @@ public class XMLEntityScanner implements XMLLocator {
                 }
             }
             int index = -1;
-            while (XMLChar.isName(fCurrentEntity.ch[fCurrentEntity.position])) {
-                char c = fCurrentEntity.ch[fCurrentEntity.position];
-
-                if (c == ':') {
-                    if (index != -1) {
+            while (true) {
+                char[] ch = fCurrentEntity.ch;
+                int pos = fCurrentEntity.position;
+                int count = fCurrentEntity.count;
+                while (pos < count) {
+                    char c = ch[pos];
+                    if (c == ':') {
+                        if (index != -1) {
+                            break;
+                        }
+                        index = pos;
+                    }
+                    else if (!XMLChar.isName(c)) {
                         break;
                     }
-                    index = fCurrentEntity.position;
+                    pos++;
                 }
-                if (++fCurrentEntity.position == fCurrentEntity.count) {
-                    int length = fCurrentEntity.position - offset;
-                    if (length == fCurrentEntity.ch.length) {
-                        // bad luck we have to resize our buffer
-                        resizeBuffer(offset, length);
-                    }
-                    else {
-                        System.arraycopy(fCurrentEntity.ch, offset,
-                                         fCurrentEntity.ch, 0, length);
-                    }
-                    if (index != -1) {
-                        index = index - offset;
-                    }
-                    offset = 0;
-                    if (load(length, false)) {
-                        break;
-                    }
+                fCurrentEntity.position = pos;
+                if (pos < count) {
+                    break;
+                }
+                int length = pos - offset;
+                if (length == fCurrentEntity.ch.length) {
+                    resizeBuffer(offset, length);
+                }
+                else {
+                    System.arraycopy(fCurrentEntity.ch, offset,
+                                     fCurrentEntity.ch, 0, length);
+                }
+                if (index != -1) {
+                    index = index - offset;
+                }
+                offset = 0;
+                if (load(length, false)) {
+                    break;
                 }
             }
             int length = fCurrentEntity.position - offset;
@@ -596,7 +626,7 @@ public class XMLEntityScanner implements XMLLocator {
                     prefix = fSymbolTable.addSymbol(fCurrentEntity.ch,
                                                     offset, prefixLength);
                     int len = length - prefixLength - 1;
-                    int startLocal = index +1;
+                    int startLocal = index + 1;
                     if (!XMLChar.isNCNameStart(fCurrentEntity.ch[startLocal])){
                         fErrorReporter.reportError(XMLMessageFormatter.XML_DOMAIN,
                                                  "IllegalQName",
@@ -638,8 +668,8 @@ public class XMLEntityScanner implements XMLLocator {
      * <p>
      * <strong>Note:</strong> This method does not guarantee to return
      * the longest run of parsed character data. This method may return
-     * before markup due to reaching the end of the input buffer or any
-     * other reason.
+     * before the '&lt;' character due to reaching the end of the input
+     * buffer or any other reason.
      * <p>
      * <strong>Note:</strong> The fields contained in the XMLString
      * structure are not guaranteed to remain valid upon subsequent calls
@@ -749,13 +779,14 @@ public class XMLEntityScanner implements XMLLocator {
         }
 
         // inner loop, scanning for content
-        while (fCurrentEntity.position < fCurrentEntity.count) {
-            c = fCurrentEntity.ch[fCurrentEntity.position++];
-            if (!XMLChar.isContent(c)) {
-                fCurrentEntity.position--;
-                break;
-            }
+        char[] ch = fCurrentEntity.ch;
+        int pos = fCurrentEntity.position;
+        int count = fCurrentEntity.count;
+        while (pos < count && XMLChar.isContent(ch[pos])) {
+            pos++;
         }
+        fCurrentEntity.position = pos;
+
         int length = fCurrentEntity.position - offset;
         fCurrentEntity.columnNumber += length - newlines;
         content.setValues(fCurrentEntity.ch, offset, length);
@@ -904,15 +935,21 @@ public class XMLEntityScanner implements XMLLocator {
         }
 
         // scan literal value
-        while (fCurrentEntity.position < fCurrentEntity.count) {
-            c = fCurrentEntity.ch[fCurrentEntity.position++];
+        char[] ch = fCurrentEntity.ch;
+        int pos = fCurrentEntity.position;
+        int count = fCurrentEntity.count;
+        boolean lit = fCurrentEntity.literal;
+        while (pos < count) {
+            c = ch[pos++];
             if ((c == quote &&
-                 (!fCurrentEntity.literal || external))
+                 (!lit || external))
                 || c == '%' || !(XMLChar.isContent(c) || c == '\r' && !external)) {
-                fCurrentEntity.position--;
+                pos--;
                 break;
             }
         }
+        fCurrentEntity.position = pos;
+
         int length = fCurrentEntity.position - offset;
         fCurrentEntity.columnNumber += length - newlines;
         content.setValues(fCurrentEntity.ch, offset, length);
@@ -1251,57 +1288,59 @@ public class XMLEntityScanner implements XMLLocator {
         }
 
         // skip spaces
-        int c = fCurrentEntity.ch[fCurrentEntity.position];
-        if (XMLChar.isSpace(c)) {
-            boolean external = fCurrentEntity.isExternal();
-            do {
-                boolean entityChanged = false;
-                // handle newlines
-                if (c == '\n' || (external && c == '\r')) {
-                    fCurrentEntity.lineNumber++;
-                    fCurrentEntity.columnNumber = 1;
-                    if (fCurrentEntity.position == fCurrentEntity.count - 1) {
-                        fCurrentEntity.ch[0] = (char)c;
-                        entityChanged = load(1, true);
-                        if (!entityChanged) {
-                            // the load change the position to be 1,
-                            // need to restore it when entity not changed
-                            fCurrentEntity.position = 0;
-                            fCurrentEntity.startPosition = 0;
+        if (fCurrentEntity.position < fCurrentEntity.count) {
+            int c = fCurrentEntity.ch[fCurrentEntity.position];
+            if (XMLChar.isSpace(c)) {
+                boolean external = fCurrentEntity.isExternal();
+                do {
+                    boolean entityChanged = false;
+                    // handle newlines
+                    if (c == '\n' || (external && c == '\r')) {
+                        fCurrentEntity.lineNumber++;
+                        fCurrentEntity.columnNumber = 1;
+                        if (fCurrentEntity.position == fCurrentEntity.count - 1) {
+                            fCurrentEntity.ch[0] = (char)c;
+                            entityChanged = load(1, true);
+                            if (!entityChanged) {
+                                // the load change the position to be 1,
+                                // need to restore it when entity not changed
+                                fCurrentEntity.position = 0;
+                                fCurrentEntity.startPosition = 0;
+                            }
                         }
-                    }
-                    if (c == '\r' && external) {
-                        // REVISIT: Does this need to be updated to fix the
-                        //          #x0D ^#x0A newline normalization problem? -Ac
-                        if (fCurrentEntity.ch[++fCurrentEntity.position] != '\n') {
-                            fCurrentEntity.position--;
+                        if (c == '\r' && external) {
+                            // REVISIT: Does this need to be updated to fix the
+                            //          #x0D ^#x0A newline normalization problem? -Ac
+                            if (fCurrentEntity.ch[++fCurrentEntity.position] != '\n') {
+                                fCurrentEntity.position--;
+                            }
                         }
+                        /*** NEWLINE NORMALIZATION ***
+                        else {
+                            if (fCurrentEntity.ch[fCurrentEntity.position + 1] == '\r'
+                                && external) {
+                                fCurrentEntity.position++;
+                            }
+                        }
+                        /***/
                     }
-                    /*** NEWLINE NORMALIZATION ***
                     else {
-                        if (fCurrentEntity.ch[fCurrentEntity.position + 1] == '\r'
-                            && external) {
-                            fCurrentEntity.position++;
-                        }
+                        fCurrentEntity.columnNumber++;
                     }
-                    /***/
+                    // load more characters, if needed
+                    if (!entityChanged)
+                        fCurrentEntity.position++;
+                    if (fCurrentEntity.position == fCurrentEntity.count) {
+                        load(0, true);
+                    }
+                } while (fCurrentEntity.position < fCurrentEntity.count && XMLChar.isSpace(c = fCurrentEntity.ch[fCurrentEntity.position]));
+                if (DEBUG_BUFFER) {
+                    System.out.print(")skipSpaces: ");
+                    XMLEntityManager.print(fCurrentEntity);
+                    System.out.println(" -> true");
                 }
-                else {
-                    fCurrentEntity.columnNumber++;
-                }
-                // load more characters, if needed
-                if (!entityChanged)
-                    fCurrentEntity.position++;
-                if (fCurrentEntity.position == fCurrentEntity.count) {
-                    load(0, true);
-                }
-            } while (XMLChar.isSpace(c = fCurrentEntity.ch[fCurrentEntity.position]));
-            if (DEBUG_BUFFER) {
-                System.out.print(")skipSpaces: ");
-                XMLEntityManager.print(fCurrentEntity);
-                System.out.println(" -> true");
+                return true;
             }
-            return true;
         }
 
         // no spaces were found
@@ -1344,57 +1383,59 @@ public class XMLEntityScanner implements XMLLocator {
         }
 
         // skip spaces
-        int c = fCurrentEntity.ch[fCurrentEntity.position];
-        if (XMLChar.isSpace(c)) {
-            boolean external = fCurrentEntity.isExternal();
-            do {
-                boolean entityChanged = false;
-                // handle newlines
-                if (c == '\n' || (external && c == '\r')) {
-                    fCurrentEntity.lineNumber++;
-                    fCurrentEntity.columnNumber = 1;
-                    if (fCurrentEntity.position == fCurrentEntity.count - 1) {
-                        fCurrentEntity.ch[0] = (char)c;
-                        entityChanged = load(1, true);
-                        if (!entityChanged) {
-                            // the load change the position to be 1,
-                            // need to restore it when entity not changed
-                            fCurrentEntity.position = 0;
-                            fCurrentEntity.startPosition = 0;
+        if (fCurrentEntity.position < fCurrentEntity.count) {
+            int c = fCurrentEntity.ch[fCurrentEntity.position];
+            if (XMLChar.isSpace(c)) {
+                boolean external = fCurrentEntity.isExternal();
+                do {
+                    boolean entityChanged = false;
+                    // handle newlines
+                    if (c == '\n' || (external && c == '\r')) {
+                        fCurrentEntity.lineNumber++;
+                        fCurrentEntity.columnNumber = 1;
+                        if (fCurrentEntity.position == fCurrentEntity.count - 1) {
+                            fCurrentEntity.ch[0] = (char)c;
+                            entityChanged = load(1, true);
+                            if (!entityChanged) {
+                                // the load change the position to be 1,
+                                // need to restore it when entity not changed
+                                fCurrentEntity.position = 0;
+                                fCurrentEntity.startPosition = 0;
+                            }
                         }
-                    }
-                    if (c == '\r' && external) {
-                        // REVISIT: Does this need to be updated to fix the
-                        //          #x0D ^#x0A newline normalization problem? -Ac
-                        if (fCurrentEntity.ch[++fCurrentEntity.position] != '\n') {
-                            fCurrentEntity.position--;
+                        if (c == '\r' && external) {
+                            // REVISIT: Does this need to be updated to fix the
+                            //          #x0D ^#x0A newline normalization problem? -Ac
+                            if (fCurrentEntity.ch[++fCurrentEntity.position] != '\n') {
+                                fCurrentEntity.position--;
+                            }
                         }
+                        /*** NEWLINE NORMALIZATION ***
+                        else {
+                            if (fCurrentEntity.ch[fCurrentEntity.position + 1] == '\r'
+                                && external) {
+                                fCurrentEntity.position++;
+                            }
+                        }
+                        /***/
                     }
-                    /*** NEWLINE NORMALIZATION ***
                     else {
-                        if (fCurrentEntity.ch[fCurrentEntity.position + 1] == '\r'
-                            && external) {
-                            fCurrentEntity.position++;
-                        }
+                        fCurrentEntity.columnNumber++;
                     }
-                    /***/
+                    // load more characters, if needed
+                    if (!entityChanged)
+                        fCurrentEntity.position++;
+                    if (fCurrentEntity.position == fCurrentEntity.count) {
+                        load(0, true);
+                    }
+                } while (fCurrentEntity.position < fCurrentEntity.count && XMLChar.isSpace(c = fCurrentEntity.ch[fCurrentEntity.position]));
+                if (DEBUG_BUFFER) {
+                    System.out.print(")skipDeclSpaces: ");
+                    XMLEntityManager.print(fCurrentEntity);
+                    System.out.println(" -> true");
                 }
-                else {
-                    fCurrentEntity.columnNumber++;
-                }
-                // load more characters, if needed
-                if (!entityChanged)
-                    fCurrentEntity.position++;
-                if (fCurrentEntity.position == fCurrentEntity.count) {
-                    load(0, true);
-                }
-            } while (XMLChar.isSpace(c = fCurrentEntity.ch[fCurrentEntity.position]));
-            if (DEBUG_BUFFER) {
-                System.out.print(")skipDeclSpaces: ");
-                XMLEntityManager.print(fCurrentEntity);
-                System.out.println(" -> true");
+                return true;
             }
-            return true;
         }
 
         // no spaces were found
@@ -1432,8 +1473,32 @@ public class XMLEntityScanner implements XMLLocator {
             load(0, true);
         }
 
-        // skip string
+        // Fast-path: check if whole string fits in buffer
         final int length = s.length();
+        final int pos = fCurrentEntity.position;
+        if (pos + length <= fCurrentEntity.count) {
+            final char[] ch = fCurrentEntity.ch;
+            for (int i = 0; i < length; i++) {
+                if (ch[pos + i] != s.charAt(i)) {
+                    if (DEBUG_BUFFER) {
+                        System.out.print(")skipString, \""+s+"\": ");
+                        XMLEntityManager.print(fCurrentEntity);
+                        System.out.println(" -> false");
+                    }
+                    return false;
+                }
+            }
+            fCurrentEntity.position = pos + length;
+            fCurrentEntity.columnNumber += length;
+            if (DEBUG_BUFFER) {
+                System.out.print(")skipString, \""+s+"\": ");
+                XMLEntityManager.print(fCurrentEntity);
+                System.out.println(" -> true");
+            }
+            return true;
+        }
+
+        // Fallback: cross-buffer boundary
         for (int i = 0; i < length; i++) {
             char c = fCurrentEntity.ch[fCurrentEntity.position++];
             if (c != s.charAt(i)) {
@@ -1795,4 +1860,3 @@ public class XMLEntityScanner implements XMLLocator {
     } // resizeBuffer(int, int)
 
 } // class XMLEntityScanner
-

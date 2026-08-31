@@ -32,7 +32,7 @@ import org.apache.xerces.xni.XMLString;
  * the context of XML 1.1.
  *
  * @xerces.internal
- *
+ * 
  * @author Michael Glavassevich, IBM
  * @author Neil Graham, IBM
  * @version $Id$
@@ -114,8 +114,11 @@ public class XML11EntityScanner
                         fCurrentEntity.position--;
                     }
                 }
+                c = '\n';
             }
-            c = '\n';
+            else if (c == 0x85 || c == 0x2028) {
+                c = '\n';
+            }
         }
 
         // return character that was scanned
@@ -267,8 +270,8 @@ public class XML11EntityScanner
                 fCurrentEntity.ch[0] = ch;
                 offset = 0;
                 if (load(1, false)) {
-                    --fCurrentEntity.position;
                     --fCurrentEntity.startPosition;
+                    --fCurrentEntity.position;
                     return null;
                 }
             }
@@ -325,8 +328,8 @@ public class XML11EntityScanner
                     }
                     offset = 0;
                     if (load(length, false)) {
-                        --fCurrentEntity.position;
                         --fCurrentEntity.startPosition;
+                        --fCurrentEntity.position;
                         break;
                     }
                 }
@@ -357,7 +360,7 @@ public class XML11EntityScanner
             }
         }
         while (true);
-
+        
         int length = fCurrentEntity.position - offset;
         fCurrentEntity.columnNumber += length;
 
@@ -387,7 +390,6 @@ public class XML11EntityScanner
      * @see org.apache.xerces.util.XML11Char#isXML11NCNameStart
      */
     public String scanNCName() throws IOException {
-
         // load more characters, if needed
         if (fCurrentEntity.position == fCurrentEntity.count) {
             load(0, true);
@@ -413,8 +415,8 @@ public class XML11EntityScanner
                 fCurrentEntity.ch[0] = ch;
                 offset = 0;
                 if (load(1, false)) {
-                    --fCurrentEntity.position;
                     --fCurrentEntity.startPosition;
+                    --fCurrentEntity.position;
                     return null;
                 }
             }
@@ -521,16 +523,14 @@ public class XML11EntityScanner
      * QName structure appropriately.
      * <p>
      * <strong>Note:</strong> The qualified name characters are consumed.
-     * </p>
      * <p>
      * <strong>Note:</strong> The strings used to set the values of the
      * QName structure must be symbols. The SymbolTable can be used for
      * this purpose.
-     * </p>
      *
      * @param qname the qualified name structure to fill
      *
-     * @return Returns true if a qualified name appeared immediately on
+     * @return true if a qualified name appeared immediately on
      *         the input and was scanned, false otherwise
      *
      * @throws IOException  Thrown if i/o error occurs
@@ -538,7 +538,7 @@ public class XML11EntityScanner
      *
      * @see org.apache.xerces.util.SymbolTable
      * @see org.apache.xerces.util.XML11Char#isXML11Name
-     * @see org.apache.xerces.util.XML11Char#isXML11NameStart
+     * @see org.apache.xerces.util.XML11Char#isXML11NCNameStart
      */
     public boolean scanQName(QName qname) throws IOException {
 
@@ -815,25 +815,29 @@ public class XML11EntityScanner
         }
 
         // inner loop, scanning for content
+        char[] ch = fCurrentEntity.ch;
+        int pos = fCurrentEntity.position;
+        int count = fCurrentEntity.count;
         if (external) {
-            while (fCurrentEntity.position < fCurrentEntity.count) {
-                c = fCurrentEntity.ch[fCurrentEntity.position++];
+            while (pos < count) {
+                c = ch[pos++];
                 if (!XML11Char.isXML11Content(c) || c == 0x85 || c == 0x2028) {
-                    fCurrentEntity.position--;
+                    pos--;
                     break;
                 }
             }
         }
         else {
-            while (fCurrentEntity.position < fCurrentEntity.count) {
-                c = fCurrentEntity.ch[fCurrentEntity.position++];
+            while (pos < count) {
+                c = ch[pos++];
                 // In internal entities control characters are allowed to appear unescaped.
                 if (!XML11Char.isXML11InternalEntityContent(c)) {
-                    fCurrentEntity.position--;
+                    pos--;
                     break;
                 }
             }
         }
+        fCurrentEntity.position = pos;
         int length = fCurrentEntity.position - offset;
         fCurrentEntity.columnNumber += length - newlines;
         content.setValues(fCurrentEntity.ch, offset, length);
@@ -957,27 +961,31 @@ public class XML11EntityScanner
         }
 
         // scan literal value
+        char[] ch = fCurrentEntity.ch;
+        int pos = fCurrentEntity.position;
+        int count = fCurrentEntity.count;
+        boolean lit = fCurrentEntity.literal;
         if (external) {
-            while (fCurrentEntity.position < fCurrentEntity.count) {
-                c = fCurrentEntity.ch[fCurrentEntity.position++];
-                if (c == quote || c == '%' || !XML11Char.isXML11Content(c) 
+            while (pos < count) {
+                c = ch[pos++];
+                if (c == quote || c == '%' || !XML11Char.isXML11Content(c)
                     || c == 0x85 || c == 0x2028) {
-                    fCurrentEntity.position--;
+                    pos--;
                     break;
                 }
             }
         }
         else {
-            while (fCurrentEntity.position < fCurrentEntity.count) {
-                c = fCurrentEntity.ch[fCurrentEntity.position++];
-                // In internal entities control characters are allowed to appear unescaped.
-                if ((c == quote && !fCurrentEntity.literal)
-                    || c == '%' || !(XML11Char.isXML11InternalEntityContent(c) || c == '\r' )) {
-                    fCurrentEntity.position--;
+            while (pos < count) {
+                c = ch[pos++];
+                if ((c == quote && !lit)
+                    || c == '%' || !XML11Char.isXML11InternalEntityContent(c)) {
+                    pos--;
                     break;
                 }
             }
         }
+        fCurrentEntity.position = pos;
         int length = fCurrentEntity.position - offset;
         fCurrentEntity.columnNumber += length - newlines;
         content.setValues(fCurrentEntity.ch, offset, length);
@@ -990,6 +998,9 @@ public class XML11EntityScanner
             //       entity appearing in the literal. -Ac
             if (c == quote && fCurrentEntity.literal) {
                 c = -1;
+            }
+            if ((c == '\r' || c == 0x85 || c == 0x2028) && external) {
+                c = '\n';
             }
         }
         else {
@@ -1109,7 +1120,6 @@ public class XML11EntityScanner
                             fCurrentEntity.baseCharOffset += (fCurrentEntity.position - fCurrentEntity.startPosition);
                             fCurrentEntity.position = newlines;
                             fCurrentEntity.startPosition = newlines;
-                            fCurrentEntity.count = newlines;
                             if (load(newlines, false)) {
                                 break;
                             }
@@ -1147,18 +1157,18 @@ public class XML11EntityScanner
                                 fCurrentEntity.position--;
                                 break;
                             }
-                         }
-                         if (fCurrentEntity.position == delimOffset + delimLen) {
+                        }
+                        if (fCurrentEntity.position == delimOffset + delimLen) {
                             done = true;
                             break;
-                         }
+                        }
                     }
                     else if (c == '\n' || c == '\r' || c == 0x85 || c == 0x2028) {
                         fCurrentEntity.position--;
                         break;
                     }
-                    // In external entities control characters cannot appear 
-                    // as literals so do not skip over them.
+                    // In external entities XML 1.1 alpha [127-159] which are not
+                    // whitespace are considered invalid.
                     else if (!XML11Char.isXML11ValidLiteral(c)) {
                         fCurrentEntity.position--;
                         int length = fCurrentEntity.position - offset;
@@ -1194,9 +1204,9 @@ public class XML11EntityScanner
                         fCurrentEntity.position--;
                         break;
                     }
-                    // Control characters are allowed to appear as literals
-                    // in internal entities.
-                    else if (!XML11Char.isXML11Valid(c)) {
+                    // In external entities XML 1.1 alpha [127-159] which are not
+                    // whitespace are considered invalid.
+                    else if (!XML11Char.isXML11ValidLiteral(c)) {
                         fCurrentEntity.position--;
                         int length = fCurrentEntity.position - offset;
                         fCurrentEntity.columnNumber += length - newlines;
@@ -1210,72 +1220,16 @@ public class XML11EntityScanner
             if (done) {
                 length -= delimLen;
             }
-            buffer.append(fCurrentEntity.ch, offset, length);
+            buffer.append (fCurrentEntity.ch, offset, length);
 
-            // return true if string was skipped
+            // fill in return value
+
+            // do we have any more to scan?
         } while (!done);
+
         return !done;
 
-    } // scanData(String,XMLString)
-
-    /**
-     * Skips a character appearing immediately on the input.
-     * <p>
-     * <strong>Note:</strong> The character is consumed only if it matches
-     * the specified character.
-     *
-     * @param c The character to skip.
-     *
-     * @return Returns true if the character was skipped.
-     *
-     * @throws IOException  Thrown if i/o error occurs.
-     * @throws EOFException Thrown on end of file.
-     */
-    public boolean skipChar(int c) throws IOException {
-
-        // load more characters, if needed
-        if (fCurrentEntity.position == fCurrentEntity.count) {
-            load(0, true);
-        }
-
-        // skip character
-        int cc = fCurrentEntity.ch[fCurrentEntity.position];
-        if (cc == c) {
-            fCurrentEntity.position++;
-            if (c == '\n') {
-                fCurrentEntity.lineNumber++;
-                fCurrentEntity.columnNumber = 1;
-            }
-            else {
-                fCurrentEntity.columnNumber++;
-            }
-            return true;
-        }
-        else if (c == '\n' && ((cc == 0x2028 || cc == 0x85) && fCurrentEntity.isExternal())) {
-            fCurrentEntity.position++;
-            fCurrentEntity.lineNumber++;
-            fCurrentEntity.columnNumber = 1;
-            return true;
-        }
-        else if (c == '\n' && (cc == '\r' ) && fCurrentEntity.isExternal()) {
-            // handle newlines
-            if (fCurrentEntity.position == fCurrentEntity.count) {
-                fCurrentEntity.ch[0] = (char)cc;
-                load(1, false);
-            }
-            int ccc = fCurrentEntity.ch[++fCurrentEntity.position];
-            if (ccc == '\n' || ccc == 0x85) {
-                fCurrentEntity.position++;
-            }
-            fCurrentEntity.lineNumber++;
-            fCurrentEntity.columnNumber = 1;
-            return true;
-        }
-
-        // character was not skipped
-        return false;
-
-    } // skipChar(int):boolean
+    } // scanData(String,XMLString):boolean
 
     /**
      * Skips space characters appearing immediately on the input.
@@ -1299,15 +1253,56 @@ public class XML11EntityScanner
         }
 
         // skip spaces
-        int c = fCurrentEntity.ch[fCurrentEntity.position];
-        
-        // External --  Match: S + 0x85 + 0x2028, and perform end of line normalization
-        if (fCurrentEntity.isExternal()) {
-            if (XML11Char.isXML11Space(c)) {
+        if (fCurrentEntity.position < fCurrentEntity.count) {
+            int c = fCurrentEntity.ch[fCurrentEntity.position];
+            
+            // External --  Match: S + 0x85 + 0x2028, and perform end of line normalization
+            if (fCurrentEntity.isExternal()) {
+                if (XML11Char.isXML11Space(c)) {
+                    do {
+                        boolean entityChanged = false;
+                        // handle newlines
+                        if (c == '\n' || c == '\r' || c == 0x85 || c == 0x2028) {
+                            fCurrentEntity.lineNumber++;
+                            fCurrentEntity.columnNumber = 1;
+                            if (fCurrentEntity.position == fCurrentEntity.count - 1) {
+                                fCurrentEntity.ch[0] = (char)c;
+                                entityChanged = load(1, true);
+                                if (!entityChanged) {
+                                    // the load change the position to be 1,
+                                    // need to restore it when entity not changed
+                                    fCurrentEntity.startPosition = 0;
+                                    fCurrentEntity.position = 0;
+                                }
+                            }
+                            if (c == '\r') {
+                                // REVISIT: Does this need to be updated to fix the
+                                //          #x0D ^#x0A newline normalization problem? -Ac
+                                int cc = fCurrentEntity.ch[++fCurrentEntity.position];
+                                if (cc != '\n' && cc != 0x85 ) {
+                                    fCurrentEntity.position--;
+                                }
+                            }
+                        }
+                        else {
+                            fCurrentEntity.columnNumber++;
+                        }
+                        // load more characters, if needed
+                        if (!entityChanged)
+                            fCurrentEntity.position++;
+                        if (fCurrentEntity.position == fCurrentEntity.count) {
+                            load(0, true);
+                        }
+                    } while (fCurrentEntity.position < fCurrentEntity.count && XML11Char.isXML11Space(c = fCurrentEntity.ch[fCurrentEntity.position]));
+                    return true;
+                }
+            }
+            // Internal -- Match: S (only)
+            else if (XMLChar.isSpace(c)) {
                 do {
                     boolean entityChanged = false;
                     // handle newlines
-                    if (c == '\n' || c == '\r' || c == 0x85 || c == 0x2028) {
+                    if (c == '\n') {
                         fCurrentEntity.lineNumber++;
                         fCurrentEntity.columnNumber = 1;
                         if (fCurrentEntity.position == fCurrentEntity.count - 1) {
@@ -1320,14 +1315,6 @@ public class XML11EntityScanner
                                 fCurrentEntity.position = 0;
                             }
                         }
-                        if (c == '\r') {
-                            // REVISIT: Does this need to be updated to fix the
-                            //          #x0D ^#x0A newline normalization problem? -Ac
-                            int cc = fCurrentEntity.ch[++fCurrentEntity.position];
-                            if (cc != '\n' && cc != 0x85 ) {
-                                fCurrentEntity.position--;
-                            }
-                        }
                     }
                     else {
                         fCurrentEntity.columnNumber++;
@@ -1338,40 +1325,9 @@ public class XML11EntityScanner
                     if (fCurrentEntity.position == fCurrentEntity.count) {
                         load(0, true);
                     }
-                } while (XML11Char.isXML11Space(c = fCurrentEntity.ch[fCurrentEntity.position]));
+                } while (fCurrentEntity.position < fCurrentEntity.count && XMLChar.isSpace(c = fCurrentEntity.ch[fCurrentEntity.position]));
                 return true;
             }
-        }
-        // Internal -- Match: S (only)
-        else if (XMLChar.isSpace(c)) {
-            do {
-                boolean entityChanged = false;
-                // handle newlines
-                if (c == '\n') {
-                    fCurrentEntity.lineNumber++;
-                    fCurrentEntity.columnNumber = 1;
-                    if (fCurrentEntity.position == fCurrentEntity.count - 1) {
-                        fCurrentEntity.ch[0] = (char)c;
-                        entityChanged = load(1, true);
-                        if (!entityChanged) {
-                            // the load change the position to be 1,
-                            // need to restore it when entity not changed
-                            fCurrentEntity.startPosition = 0;
-                            fCurrentEntity.position = 0;
-                        }
-                    }
-                }
-                else {
-                    fCurrentEntity.columnNumber++;
-                }
-                // load more characters, if needed
-                if (!entityChanged)
-                    fCurrentEntity.position++;
-                if (fCurrentEntity.position == fCurrentEntity.count) {
-                    load(0, true);
-                }
-            } while (XMLChar.isSpace(c = fCurrentEntity.ch[fCurrentEntity.position]));
-            return true;
         }
 
         // no spaces were found
@@ -1399,8 +1355,22 @@ public class XML11EntityScanner
             load(0, true);
         }
 
-        // skip string
+        // Fast-path: check if whole string fits in buffer
         final int length = s.length();
+        final int pos = fCurrentEntity.position;
+        if (pos + length <= fCurrentEntity.count) {
+            final char[] ch = fCurrentEntity.ch;
+            for (int i = 0; i < length; i++) {
+                if (ch[pos + i] != s.charAt(i)) {
+                    return false;
+                }
+            }
+            fCurrentEntity.position = pos + length;
+            fCurrentEntity.columnNumber += length;
+            return true;
+        }
+
+        // Fallback: cross-buffer boundary
         for (int i = 0; i < length; i++) {
             char c = fCurrentEntity.ch[fCurrentEntity.position++];
             if (c != s.charAt(i)) {
@@ -1424,4 +1394,3 @@ public class XML11EntityScanner
     } // skipString(String):boolean
 
 } // class XML11EntityScanner
-
