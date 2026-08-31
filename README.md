@@ -1,56 +1,77 @@
+# Apache Xerces-J (Xerces2 Java XML Parser)
 
-# Xerces Java Build Instructions
+Apache Xerces-J is a high-performance, fully compliant XML parser written in Java, supporting XML 1.0 (4th & 5th Edition), Namespaces 1.0/1.1, DOM Level 2 & Level 3, SAX 2.0.2, JAXP 1.4, and W3C XML Schema 1.0.
 
-This document contains instructions to build Xerces-J.
+---
 
-Before building Xerces-J, users need the source package and tools package 
-available from the [Apache Xerces-J project's distribution web page](https://xerces.apache.org/xerces2-j/).
+## Build Prerequisites
 
-To build a particular released version, download both 
-the Xerces-J-src.X.Y.Z.zip and Xerces-J-tools.X.Y.Z.zip 
-files for that Xerces-J release (where "X.Y.Z" is the version
-number) and extract them in the same directory. If you're using a Unix 
-variant like Linux, download the equivalent .tar.gz files instead of 
-the .zip files.
+* **Java Development Kit (JDK)**: Version 8 or higher (Xerces-J targets Java 8 bytecode compatibility).
+* **Build System**: [Gradle Wrapper](https://gradle.org/) is included (`./gradlew` on Unix/macOS, `gradlew.bat` on Windows). No separate Ant or Gradle installation is required.
 
-To build from head, clone this GitHub repository. 
+---
 
-You also need to have the Java Development Kit (JDK) version 1.8 or
-higher installed on your system. The latest Xerces-J codebase on this GitHub 
-repo has Java language maximum source/target level requirement of 1.8.
- 
-Before initiating any part of the build, set the JAVA_HOME environment 
-variable to the installation directory of your JDK.
+## Building and Testing
 
-[Ant](https://ant.apache.org/) 1.10.2 or later is needed to build everything in Xerces-J, including
-the documentation. This tool, and the others needed (besides the
-pre-requisite JDK) are contained within the tools package. To
-make building Xerces-J packages easier, a Windows batch file and a Linux 
-shell script are included.
+### 1. Build and Run All Tests
+To compile all modules, run unit tests, and assemble the JARs:
 
-If you only want to compile the source code and make the JAR files,
-run the following command on Windows:
-
-```
-build.bat jars
+```bash
+./gradlew build
 ```
 
-or from Linux (make sure that build.sh is executable):
+### 2. Run Tests Only
+To run the full JUnit 5 test suite:
 
+```bash
+./gradlew test
 ```
-./build.sh jars
+
+### 3. Run W3C XML Conformance Test Suite
+To download and execute the official W3C XML Conformance Test Suite:
+
+```bash
+./gradlew :xerces-impl:conformanceTest
 ```
 
-This compiles all the source code and generates the JAR
-files that are available as part of the binary package. After
-these Xerces-J builds, the build results are located in the "build" directory.
+### 4. Generate Documentation & Javadocs
+To generate the static HTML documentation and API Javadocs under `build/docs/`:
 
-If all results of Xerces-J build are needed, including the documentation,
-run the build batch file or shell script specifying an Ant build "all"
-target instead of "jars".
+```bash
+./gradlew docs
+```
 
-We use the [JProfiler](https://www.ej-technologies.com/jprofiler) tool for Java software run-time 
-analysis and optimization of Xerces-J software. 
+### 5. Build Release Distributions
+To package ASF-compliant source and binary distribution archives (`.zip`, `.tar.gz`) along with their cryptographic **SHA-512** checksums into `build/distributions/`:
+
+```bash
+./gradlew dist
+```
+
+---
+
+## Project Structure
+
+This repository uses a standard Gradle multi-module architecture:
+
+* **`xerces-impl/`**: The core parser implementation (`xercesImpl.jar`, `xerces-dtd.jar`).
+* **`xerces-samples/`**: Sample applications and CLI utilities (`xercesSamples.jar`).
+* **`xerces-tools/`**: Build utilities and helpers.
+* **`docs/`**: Source XML files and XSLT stylesheets for generating the official documentation.
+* **`data/`**: Sample XML and schema files.
+
+---
+
+## Licensing
+
+Apache Xerces-J is open-source software licensed under the [Apache License, Version 2.0](LICENSE).  
+W3C DOM specifications and documentation are subject to the [W3C Software Notice](LICENSE.DOM-software.html) and [W3C Document Notice](LICENSE.DOM-documentation.html).
+
+---
+
+## Acknowledgments
+
+We use the [JProfiler](https://www.ej-technologies.com/jprofiler) tool for Java software run-time analysis and optimization of Xerces-J.
 
 Sincerely,<br>
-Apache Xerces Team
+**The Apache Xerces Team**
