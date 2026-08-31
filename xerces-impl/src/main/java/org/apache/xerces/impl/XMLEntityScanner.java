@@ -310,7 +310,7 @@ public class XMLEntityScanner implements XMLLocator {
             char[] ch = fCurrentEntity.ch;
             int pos = fCurrentEntity.position;
             int count = fCurrentEntity.count;
-            while (pos < count && XMLChar.isName(ch[pos])) {
+            while (pos < count && (ch[pos] < 128 ? ((ch[pos] >= 'a' && ch[pos] <= 'z') || (ch[pos] >= 'A' && ch[pos] <= 'Z') || (ch[pos] >= '0' && ch[pos] <= '9') || ch[pos] == ':' || ch[pos] == '.' || ch[pos] == '-' || ch[pos] == '_') : XMLChar.isName(ch[pos]))) {
                 pos++;
             }
             fCurrentEntity.position = pos;
@@ -396,7 +396,7 @@ public class XMLEntityScanner implements XMLLocator {
                 char[] ch = fCurrentEntity.ch;
                 int pos = fCurrentEntity.position;
                 int count = fCurrentEntity.count;
-                while (pos < count && XMLChar.isName(ch[pos])) {
+                while (pos < count && (ch[pos] < 128 ? ((ch[pos] >= 'a' && ch[pos] <= 'z') || (ch[pos] >= 'A' && ch[pos] <= 'Z') || (ch[pos] >= '0' && ch[pos] <= '9') || ch[pos] == ':' || ch[pos] == '.' || ch[pos] == '-' || ch[pos] == '_') : XMLChar.isName(ch[pos]))) {
                     pos++;
                 }
                 fCurrentEntity.position = pos;
@@ -589,7 +589,7 @@ public class XMLEntityScanner implements XMLLocator {
                         }
                         index = pos;
                     }
-                    else if (!XMLChar.isName(c)) {
+                    else if (c < 128 ? !((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == ':' || c == '.' || c == '-' || c == '_') : !XMLChar.isName(c)) {
                         break;
                     }
                     pos++;
