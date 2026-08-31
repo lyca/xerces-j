@@ -225,3 +225,168 @@ tasks.register('docs') {
         logger.lifecycle("HTML Documentation successfully generated into ${docsOut}")
     }
 }
+
+def distVersionStr = project.version.toString().replace('.', '_')
+def distBaseName = "xerces-${distVersionStr}"
+
+tasks.register('distSrcZip', Zip) {
+    group = 'distribution'
+    description = 'Builds the ASF source distribution ZIP archive'
+    archiveBaseName.set('Xerces-J-src')
+    archiveVersion.set(project.version.toString())
+    destinationDirectory.set(layout.buildDirectory.dir('distributions'))
+
+    from(rootDir) {
+        into distBaseName
+        include 'xerces-impl/**'
+        include 'xerces-samples/**'
+        include 'xerces-tools/**'
+        include 'docs/**'
+        include 'data/**'
+        include 'gradle/**'
+        include 'gradlew'
+        include 'gradlew.bat'
+        include 'build.gradle'
+        include 'settings.gradle'
+        include 'build.xml'
+        include 'README.md'
+        include 'LICENSE*'
+        include 'NOTICE*'
+        exclude '**/build/**'
+        exclude '**/.gradle/**'
+        exclude '**/.git/**'
+        exclude '**/.idea/**'
+        exclude '**/*.iml'
+        exclude '**/*.class'
+    }
+}
+
+tasks.register('distSrcTar', Tar) {
+    group = 'distribution'
+    description = 'Builds the ASF source distribution TAR.GZ archive'
+    archiveBaseName.set('Xerces-J-src')
+    archiveVersion.set(project.version.toString())
+    archiveExtension.set('tar.gz')
+    compression = Compression.GZIP
+    destinationDirectory.set(layout.buildDirectory.dir('distributions'))
+
+    from(rootDir) {
+        into distBaseName
+        include 'xerces-impl/**'
+        include 'xerces-samples/**'
+        include 'xerces-tools/**'
+        include 'docs/**'
+        include 'data/**'
+        include 'gradle/**'
+        include 'gradlew'
+        include 'gradlew.bat'
+        include 'build.gradle'
+        include 'settings.gradle'
+        include 'build.xml'
+        include 'README.md'
+        include 'LICENSE*'
+        include 'NOTICE*'
+        exclude '**/build/**'
+        exclude '**/.gradle/**'
+        exclude '**/.git/**'
+        exclude '**/.idea/**'
+        exclude '**/*.iml'
+        exclude '**/*.class'
+    }
+}
+
+tasks.register('distBinZip', Zip) {
+    group = 'distribution'
+    description = 'Builds the ASF binary distribution ZIP archive'
+    dependsOn ':xerces-impl:jar', ':xerces-impl:dtdJar', ':xerces-samples:jar', 'docs'
+    archiveBaseName.set('Xerces-J-bin')
+    archiveVersion.set(project.version.toString())
+    destinationDirectory.set(layout.buildDirectory.dir('distributions'))
+
+    into(distBaseName) {
+        from(project(':xerces-impl').tasks.named('jar'))
+        from(project(':xerces-impl').tasks.named('dtdJar'))
+        from(project(':xerces-samples').tasks.named('jar'))
+
+        from(project(':xerces-impl').configurations.runtimeClasspath) {
+            include 'xml-apis*.jar', 'xml-resolver*.jar'
+        }
+
+        from(layout.buildDirectory.dir('docs')) {
+            into 'docs'
+        }
+
+        from('data') {
+            into 'data'
+        }
+
+        from('xerces-samples/src/main/java') {
+            into 'samples'
+        }
+
+        from(rootDir) {
+            include 'LICENSE*', 'NOTICE*', 'README.md'
+        }
+    }
+}
+
+tasks.register('distBinTar', Tar) {
+    group = 'distribution'
+    description = 'Builds the ASF binary distribution TAR.GZ archive'
+    dependsOn ':xerces-impl:jar', ':xerces-impl:dtdJar', ':xerces-samples:jar', 'docs'
+    archiveBaseName.set('Xerces-J-bin')
+    archiveVersion.set(project.version.toString())
+    archiveExtension.set('tar.gz')
+    compression = Compression.GZIP
+    destinationDirectory.set(layout.buildDirectory.dir('distributions'))
+
+    into(distBaseName) {
+        from(project(':xerces-impl').tasks.named('jar'))
+        from(project(':xerces-impl').tasks.named('dtdJar'))
+        from(project(':xerces-samples').tasks.named('jar'))
+
+        from(project(':xerces-impl').configurations.runtimeClasspath) {
+            include 'xml-apis*.jar', 'xml-resolver*.jar'
+        }
+
+        from(layout.buildDirectory.dir('docs')) {
+            into 'docs'
+        }
+
+        from('data') {
+            into 'data'
+        }
+
+        from('xerces-samples/src/main/java') {
+            into 'samples'
+        }
+
+        from(rootDir) {
+            include 'LICENSE*', 'NOTICE*', 'README.md'
+        }
+    }
+}
+
+tasks.register('generateChecksums') {
+    group = 'distribution'
+    description = 'Generates SHA-512 checksums for distribution archives'
+    dependsOn 'distSrcZip', 'distSrcTar', 'distBinZip', 'distBinTar'
+
+    doLast {
+        def distDir = layout.buildDirectory.dir('distributions').get().asFile
+        distDir.listFiles({ File f -> f.isFile() && !f.name.endsWith('.sha512') } as FileFilter)?.each { file ->
+            def digest = java.security.MessageDigest.getInstance('SHA-512')
+            file.eachByte(4096) { bytes, count ->
+                digest.update(bytes, 0, count)
+            }
+            def sha512 = digest.digest().collect { String.format('%02x', it) }.join('')
+            new File(file.parentFile, "${file.name}.sha512").text = "${sha512}  ${file.name}\n"
+        }
+    }
+}
+
+tasks.register('dist') {
+    group = 'distribution'
+    description = 'Builds all ASF source and binary distributions with SHA-512 checksums'
+    dependsOn 'distSrcZip', 'distSrcTar', 'distBinZip', 'distBinTar', 'generateChecksums'
+}
