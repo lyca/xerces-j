@@ -175,10 +175,14 @@ public class XMLGrammarPoolImpl implements XMLGrammarPool {
                 int hash = hashCode(desc);
                 int index = (hash & 0x7FFFFFFF) % fGrammars.length;
                 for (Entry entry = fGrammars[index]; entry != null; entry = entry.next) {
-                    if (entry.hash == hash && equals(entry.desc, desc)) {
+                    if (entry.hash == hash && (entry.desc == desc || equals(entry.desc, desc))) {
                         entry.grammar = grammar;
                         return;
                     }
+                }
+                if (fGrammarCount >= fGrammars.length * 3 / 4) {
+                    rehash();
+                    index = (hash & 0x7FFFFFFF) % fGrammars.length;
                 }
                 // create a new entry
                 Entry entry = new Entry(hash, desc, grammar, fGrammars[index]);
@@ -187,6 +191,23 @@ public class XMLGrammarPoolImpl implements XMLGrammarPool {
             }
         }
     } // putGrammar(Grammar)
+
+    protected void rehash() {
+        int oldLength = fGrammars.length;
+        Entry[] oldTable = fGrammars;
+        int newLength = oldLength * 2 + 1;
+        Entry[] newTable = new Entry[newLength];
+        for (int i = oldLength; i-- > 0;) {
+            for (Entry old = oldTable[i]; old != null;) {
+                Entry e = old;
+                old = old.next;
+                int index = (e.hash & 0x7FFFFFFF) % newLength;
+                e.next = newTable[index];
+                newTable[index] = e;
+            }
+        }
+        fGrammars = newTable;
+    }
 
     /**
      * Returns the grammar associated to the specified grammar description.
@@ -200,7 +221,7 @@ public class XMLGrammarPoolImpl implements XMLGrammarPool {
             int hash = hashCode(desc);
             int index = (hash & 0x7FFFFFFF) % fGrammars.length;
             for (Entry entry = fGrammars[index] ; entry != null ; entry = entry.next) {
-                if ((entry.hash == hash) && equals(entry.desc, desc)) {
+                if ((entry.hash == hash) && (entry.desc == desc || equals(entry.desc, desc))) {
                     return entry.grammar;
                 }
             }
@@ -222,7 +243,7 @@ public class XMLGrammarPoolImpl implements XMLGrammarPool {
             int hash = hashCode(desc);
             int index = (hash & 0x7FFFFFFF) % fGrammars.length;
             for (Entry entry = fGrammars[index], prev = null ; entry != null ; prev = entry, entry = entry.next) {
-                if ((entry.hash == hash) && equals(entry.desc, desc)) {
+                if ((entry.hash == hash) && (entry.desc == desc || equals(entry.desc, desc))) {
                     if (prev != null) {
                         prev.next = entry.next;
                     }
@@ -252,7 +273,7 @@ public class XMLGrammarPoolImpl implements XMLGrammarPool {
             int hash = hashCode(desc);
             int index = (hash & 0x7FFFFFFF) % fGrammars.length;
             for (Entry entry = fGrammars[index] ; entry != null ; entry = entry.next) {
-                if ((entry.hash == hash) && equals(entry.desc, desc)) {
+                if ((entry.hash == hash) && (entry.desc == desc || equals(entry.desc, desc))) {
                     return true;
                 }
             }
