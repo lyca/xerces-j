@@ -157,24 +157,26 @@ public class NamespaceSupport implements NamespaceContext {
             return false;
         }
 
+        final int currentContext = fContext[fCurrentContext];
+        final String[] namespace = fNamespace;
         // see if prefix already exists in current context
-        for (int i = fNamespaceSize; i > fContext[fCurrentContext]; i -= 2) {
-            if (fNamespace[i - 2] == prefix) {
+        for (int i = fNamespaceSize; i > currentContext; i -= 2) {
+            if (namespace[i - 2] == prefix) {
                 // REVISIT: [Q] Should the new binding override the
                 //          previously declared binding or should it
                 //          it be ignored? -Ac
                 // NOTE:    The SAX2 "NamespaceSupport" helper allows
                 //          re-bindings with the new binding overwriting
                 //          the previous binding. -Ac
-                fNamespace[i - 1] = uri;
+                namespace[i - 1] = uri;
                 return true;
             }
         }
 
         // resize array, if needed
-        if (fNamespaceSize == fNamespace.length) {
+        if (fNamespaceSize == namespace.length) {
             String[] namespacearray = new String[fNamespaceSize * 2];
-            System.arraycopy(fNamespace, 0, namespacearray, 0, fNamespaceSize);
+            System.arraycopy(namespace, 0, namespacearray, 0, fNamespaceSize);
             fNamespace = namespacearray;
         }
 
@@ -191,11 +193,22 @@ public class NamespaceSupport implements NamespaceContext {
 	 */
     @Override
     public String getURI(String prefix) {
-        
+        final int size = fNamespaceSize;
+        if (size == 4) {
+            if (prefix == XMLSymbols.PREFIX_XML) {
+                return NamespaceContext.XML_URI;
+            }
+            if (prefix == XMLSymbols.PREFIX_XMLNS) {
+                return NamespaceContext.XMLNS_URI;
+            }
+            return null;
+        }
+
+        final String[] namespace = fNamespace;
         // find prefix in current context
-        for (int i = fNamespaceSize; i > 0; i -= 2) {
-            if (fNamespace[i - 2] == prefix) {
-                return fNamespace[i - 1];
+        for (int i = size; i > 0; i -= 2) {
+            if (namespace[i - 2] == prefix) {
+                return namespace[i - 1];
             }
         }
 
@@ -210,12 +223,13 @@ public class NamespaceSupport implements NamespaceContext {
 	 */
     @Override
     public String getPrefix(String uri) {
-
+        final int size = fNamespaceSize;
+        final String[] namespace = fNamespace;
         // find uri in current context
-        for (int i = fNamespaceSize; i > 0; i -= 2) {
-            if (fNamespace[i - 1] == uri) {
-                if (getURI(fNamespace[i - 2]) == uri)
-                    return fNamespace[i - 2];
+        for (int i = size; i > 0; i -= 2) {
+            if (namespace[i - 1] == uri) {
+                if (getURI(namespace[i - 2]) == uri)
+                    return namespace[i - 2];
             }
         }
 
@@ -254,20 +268,22 @@ public class NamespaceSupport implements NamespaceContext {
         }
         String prefix = null;
         boolean unique = true;
+        final String[] namespace = fNamespace;
+        final String[] prefixes = fPrefixes;
         for (int i = 2; i < (fNamespaceSize-2); i += 2) {
-            prefix = fNamespace[i + 2];            
+            prefix = namespace[i + 2];            
             for (int k=0;k<count;k++){
-                if (fPrefixes[k]==prefix){
+                if (prefixes[k]==prefix){
                     unique = false;
                     break;
                 }               
             }
             if (unique){
-                fPrefixes[count++] = prefix;
+                prefixes[count++] = prefix;
             }
             unique = true;
         }
-		return new Prefixes(fPrefixes, count);
+		return new Prefixes(prefixes, count);
 	}
     
     /*
@@ -283,10 +299,11 @@ public class NamespaceSupport implements NamespaceContext {
      * @return true if the given prefix exists in the context
      */
     public boolean containsPrefix(String prefix) {
-
+        final int size = fNamespaceSize;
+        final String[] namespace = fNamespace;
         // find prefix in current context
-        for (int i = fNamespaceSize; i > 0; i -= 2) {
-            if (fNamespace[i - 2] == prefix) {
+        for (int i = size; i > 0; i -= 2) {
+            if (namespace[i - 2] == prefix) {
                 return true;
             }
         }
@@ -295,15 +312,15 @@ public class NamespaceSupport implements NamespaceContext {
         return false;
     }
     
-    protected final class Prefixes implements Enumeration<String> {
-        private String[] prefixes;
+    protected static final class Prefixes implements Enumeration<String> {
+        private final String[] prefixes;
         private int counter = 0;
-        private int size = 0;
+        private final int size;
                
 		/**
 		 * Constructor for Prefixes.
 		 */
-		public Prefixes(String [] prefixes, int size) {
+		public Prefixes(String[] prefixes, int size) {
 			this.prefixes = prefixes;
             this.size = size;
 		}
@@ -313,7 +330,7 @@ public class NamespaceSupport implements NamespaceContext {
 		 */
 		@Override
         public boolean hasMoreElements() {           
-			return (counter< size);
+			return (counter < size);
 		}
 
 		/**
@@ -321,14 +338,15 @@ public class NamespaceSupport implements NamespaceContext {
 		 */
 		@Override
         public String nextElement() {
-            if (counter< size){
-                return fPrefixes[counter++];
+            if (counter < size){
+                return prefixes[counter++];
             }
 			throw new NoSuchElementException("Illegal access to Namespace prefixes enumeration.");
 		}
         
+        @Override
         public String toString(){
-            StringBuffer buf = new StringBuffer();
+            StringBuilder buf = new StringBuilder();
             for (int i=0;i<size;i++){
                 buf.append(prefixes[i]);
                 buf.append(' ');

@@ -116,8 +116,7 @@ extends XMLDocumentScannerImpl {
      * <strong>Note:</strong> This method uses the fElementQName and
      * fAttributes variables. The contents of these variables will be
      * destroyed. The caller should copy important information out of
-     * these variables before calling this method.
-     * </p>
+     * these variables before calling this method.</p>
      *
      * @return true if element is empty. (i.e. It matches production [44])
      */
@@ -211,31 +210,24 @@ extends XMLDocumentScannerImpl {
                                            XMLErrorReporter.SEVERITY_FATAL_ERROR);
             }
 
-            // bind attributes (xmlns are already bound bellow)
+            // bind attributes (xmlns are already bound below)
             int length = fAttributes.getLength();
-            // fLength = 0; //initialize structure
             for (int i = 0; i < length; i++) {
-                fAttributes.getName(i, fAttributeQName);
-
-                String aprefix = fAttributeQName.prefix != null
-                                 ? fAttributeQName.prefix : XMLSymbols.EMPTY_STRING;
-                String uri = fNamespaceContext.getURI(aprefix);
-                // REVISIT: try removing the first "if" and see if it is faster.
-                //
-                if (fAttributeQName.uri != null && fAttributeQName.uri == uri) {
-                    // checkDuplicates(fAttributeQName, fAttributes);
-                    continue;
-                }
-                if (aprefix != XMLSymbols.EMPTY_STRING) {
-                    fAttributeQName.uri = uri;
+                String aprefix = fAttributes.getPrefix(i);
+                if (aprefix != null && aprefix != XMLSymbols.EMPTY_STRING && aprefix.length() > 0) {
+                    String uri = fNamespaceContext.getURI(aprefix);
+                    String attrURI = fAttributes.getURI(i);
+                    if (attrURI != null && attrURI == uri) {
+                        continue;
+                    }
                     if (uri == null) {
+                        fAttributes.getName(i, fAttributeQName);
                         fErrorReporter.reportError(XMLMessageFormatter.XMLNS_DOMAIN,
                                                    "AttributePrefixUnbound",
-                                                   new Object[]{fElementQName.rawname,fAttributeQName.rawname,aprefix},
+                                                   new Object[]{fElementQName.rawname, fAttributeQName.rawname, aprefix},
                                                    XMLErrorReporter.SEVERITY_FATAL_ERROR);
                     }
                     fAttributes.setURI(i, uri);
-                    // checkDuplicates(fAttributeQName, fAttributes);
                 }
             }
             
@@ -397,31 +389,24 @@ extends XMLDocumentScannerImpl {
                                            XMLErrorReporter.SEVERITY_FATAL_ERROR);
             }
 
-            // bind attributes (xmlns are already bound bellow)
+            // bind attributes (xmlns are already bound below)
             int length = fAttributes.getLength();
-            // fLength = 0; //initialize structure
             for (int i = 0; i < length; i++) {
-                fAttributes.getName(i, fAttributeQName);
-
-                String aprefix = fAttributeQName.prefix != null
-                                 ? fAttributeQName.prefix : XMLSymbols.EMPTY_STRING;
-                String uri = fNamespaceContext.getURI(aprefix);
-                // REVISIT: try removing the first "if" and see if it is faster.
-                //
-                if (fAttributeQName.uri != null && fAttributeQName.uri == uri) {
-                    // checkDuplicates(fAttributeQName, fAttributes);
-                    continue;
-                }
-                if (aprefix != XMLSymbols.EMPTY_STRING) {
-                    fAttributeQName.uri = uri;
+                String aprefix = fAttributes.getPrefix(i);
+                if (aprefix != null && aprefix != XMLSymbols.EMPTY_STRING && aprefix.length() > 0) {
+                    String uri = fNamespaceContext.getURI(aprefix);
+                    String attrURI = fAttributes.getURI(i);
+                    if (attrURI != null && attrURI == uri) {
+                        continue;
+                    }
                     if (uri == null) {
+                        fAttributes.getName(i, fAttributeQName);
                         fErrorReporter.reportError(XMLMessageFormatter.XMLNS_DOMAIN,
                                                    "AttributePrefixUnbound",
-                                                   new Object[]{fElementQName.rawname,fAttributeQName.rawname,aprefix},
+                                                   new Object[]{fElementQName.rawname, fAttributeQName.rawname, aprefix},
                                                    XMLErrorReporter.SEVERITY_FATAL_ERROR);
                     }
                     fAttributes.setURI(i, uri);
-                    // checkDuplicates(fAttributeQName, fAttributes);
                 }
             }
             
@@ -599,7 +584,7 @@ extends XMLDocumentScannerImpl {
                 // declare prefix in context
                 fNamespaceContext.declarePrefix(prefix, uri.length() != 0 ? uri : null);
                 // bind namespace attribute to a namespace
-                attributes.setURI(attrIndex, fNamespaceContext.getURI(XMLSymbols.PREFIX_XMLNS));
+                attributes.setURI(attrIndex, NamespaceContext.XMLNS_URI);
 
             }
             else {
@@ -618,8 +603,7 @@ extends XMLDocumentScannerImpl {
     /**
      * Scans an end element.
      * <pre>
-     * [42] ETag ::= '&lt;/' Name S? '>'
-     * </pre>
+     * [42] ETag ::= '&lt;/' Name S? '>'\n     * </pre>
      * <strong>Note:</strong> This method uses the fElementQName variable.
      * The contents of this variable will be destroyed. The caller should
      * copy the needed information out of this variable before calling

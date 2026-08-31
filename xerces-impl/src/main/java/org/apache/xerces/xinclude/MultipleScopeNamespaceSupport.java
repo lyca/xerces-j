@@ -72,22 +72,24 @@ public class MultipleScopeNamespaceSupport extends NamespaceSupport {
         }
         String prefix = null;
         boolean unique = true;
+        final String[] namespace = fNamespace;
+        final String[] prefixes = fPrefixes;
         for (int i = fContext[fScope[fCurrentScope]];
             i <= (fNamespaceSize - 2);
             i += 2) {
-            prefix = fNamespace[i];
+            prefix = namespace[i];
             for (int k = 0; k < count; k++) {
-                if (fPrefixes[k] == prefix) {
+                if (prefixes[k] == prefix) {
                     unique = false;
                     break;
                 }
             }
             if (unique) {
-                fPrefixes[count++] = prefix;
+                prefixes[count++] = prefix;
             }
             unique = true;
         }
-        return new Prefixes(fPrefixes, count);
+        return new Prefixes(prefixes, count);
     }
 
     public int getScopeForContext(int context) {
@@ -129,11 +131,12 @@ public class MultipleScopeNamespaceSupport extends NamespaceSupport {
             return XMLSymbols.PREFIX_XMLNS;
         }
 
+        final String[] namespace = fNamespace;
         // find uri in current context
         for (int i = start; i > end; i -= 2) {
-            if (fNamespace[i - 1] == uri) {
-                if (getURI(fNamespace[i - 2]) == uri)
-                    return fNamespace[i - 2];
+            if (namespace[i - 1] == uri) {
+                if (getURI(namespace[i - 2]) == uri)
+                    return namespace[i - 2];
             }
         }
 
@@ -150,10 +153,11 @@ public class MultipleScopeNamespaceSupport extends NamespaceSupport {
             return NamespaceContext.XMLNS_URI;
         }
 
+        final String[] namespace = fNamespace;
         // find prefix in current context
         for (int i = start; i > end; i -= 2) {
-            if (fNamespace[i - 2] == prefix) {
-                return fNamespace[i - 1];
+            if (namespace[i - 2] == prefix) {
+                return namespace[i - 1];
             }
         }
 
