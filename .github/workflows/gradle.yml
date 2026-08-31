@@ -42,7 +42,7 @@ jobs:
     - name: Gradle Build & Test (Java ${{ matrix.jdk }})
       run: |
         if [ "${{ matrix.jdk }}" = "8" ] || [ "${{ matrix.jdk }}" = "11" ]; then
-          ./gradlew build samplesJar dtdJar sanity -PtestJavaVersion=${{ matrix.jdk }} --info
+          ./gradlew build dtdJar sanity -PtestJavaVersion=${{ matrix.jdk }} --info
         else
-          ./gradlew build samplesJar dtdJar sanity --info
+          ./gradlew build dtdJar sanity --info
         fi
