@@ -17,8 +17,8 @@
 
 package dom.registry;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 import org.apache.xerces.dom.CoreDOMImplementationImpl;
 import org.apache.xerces.dom.DOMImplementationImpl;
