@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 
+import java.security.MessageDigest
+
 plugins {
     id 'java-library'
 }
@@ -83,7 +85,73 @@ task dtdJar(type: Jar) {
     }
 }
 
+tasks.register('downloadXmlConformanceSuite') {
+    description = 'Downloads, verifies (SHA-256) and extracts the W3C XML Conformance Test Suite (xmlts)'
+    group = 'verification'
+
+    def archiveUrl = 'https://www.w3.org/XML/Test/xmlts20130923.tar.gz'
+    def expectedSha256 = '9b61db9f5dbffa545f4b8d78422167083a8568c59bd1129f94138f936cf6fc1f'
+    def suiteDir = rootProject.layout.buildDirectory.dir('xmlconf-suite')
+    def archiveFile = rootProject.layout.buildDirectory.file('xmlconf-suite/xmlts20130923.tar.gz')
+    def markerFile = rootProject.layout.buildDirectory.file('xmlconf-suite/xmlconf/xmlconf.xml')
+
+    outputs.file(markerFile)
+
+    doLast {
+        def targetDir = suiteDir.get().asFile
+        if (!targetDir.exists()) {
+            targetDir.mkdirs()
+        }
+        def targetFile = archiveFile.get().asFile
+        if (!targetFile.exists()) {
+            logger.lifecycle("Downloading XML Conformance Test Suite from ${archiveUrl}...")
+            ant.get(src: archiveUrl, dest: targetFile, verbose: false, usetimestamp: true)
+        }
+
+        // Verify SHA-256 checksum
+        def digest = MessageDigest.getInstance('SHA-256')
+        targetFile.eachByte(4096) { bytes, count ->
+            digest.update(bytes, 0, count)
+        }
+        def actualSha256 = digest.digest().collect { String.format('%02x', it) }.join('')
+        if (!actualSha256.equalsIgnoreCase(expectedSha256)) {
+            targetFile.delete()
+            throw new GradleException("SHA-256 checksum mismatch for ${targetFile.name}!\nExpected: ${expectedSha256}\nActual:   ${actualSha256}")
+        }
+
+        if (!markerFile.get().asFile.exists()) {
+            logger.lifecycle("Extracting XML Conformance Test Suite...")
+            ant.untar(src: targetFile, dest: targetDir, compression: 'gzip')
+        }
+    }
+}
+
+tasks.register('conformanceTest', Test) {
+    description = 'Runs the W3C XML Conformance Test Suite'
+    group = 'verification'
+    dependsOn 'downloadXmlConformanceSuite'
+
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+
+    useJUnitPlatform()
+    workingDir = rootProject.rootDir
+
+    systemProperty 'xmlconf.dir', rootProject.layout.buildDirectory.dir('xmlconf-suite/xmlconf').get().asFile.absolutePath
+
+    include 'conformance/XMLConformanceTest.class'
+
+    testLogging {
+        events 'passed', 'skipped', 'failed'
+        showStandardStreams = false
+    }
+}
+
 test {
+    dependsOn 'downloadXmlConformanceSuite'
+
+    systemProperty 'xmlconf.dir', rootProject.layout.buildDirectory.dir('xmlconf-suite/xmlconf').get().asFile.absolutePath
+
     include '**/*Test.class'
     include 'dom/dom3/Test.class'
     include 'dom/events/Test.class'
