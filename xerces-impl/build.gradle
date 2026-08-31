@@ -167,6 +167,47 @@ tasks.register('downloadXIncludeConformanceSuite') {
     }
 }
 
+tasks.register('downloadXmlSchemaConformanceSuite') {
+    description = 'Downloads, verifies (SHA-256) and extracts the W3C XML Schema Test Suite (XSTS)'
+    group = 'verification'
+
+    def archiveUrl = 'https://www.w3.org/XML/2004/xml-schema-test-suite/xmlschema2002-01-16/xsts-2002-01-16.tar.gz'
+    def expectedSha256 = '55e5c08db29946a91ea8e70e8f2418d3fd30d8b6777941dfba7f54726ffd9914'
+    def suiteDir = rootProject.layout.buildDirectory.dir('xsts-suite')
+    def archiveFile = rootProject.layout.buildDirectory.file('xsts-suite/xsts-2002-01-16.tar.gz')
+    def markerFile = rootProject.layout.buildDirectory.file('xsts-suite/xmlschema2002-01-16/SunXMLSchema1-0-20020116.testSet')
+
+    outputs.file(markerFile)
+
+    doLast {
+        def targetDir = suiteDir.get().asFile
+        if (!targetDir.exists()) {
+            targetDir.mkdirs()
+        }
+        def targetFile = archiveFile.get().asFile
+        if (!targetFile.exists()) {
+            logger.lifecycle("Downloading XML Schema Test Suite from ${archiveUrl}...")
+            ant.get(src: archiveUrl, dest: targetFile, verbose: false, usetimestamp: true)
+        }
+
+        // Verify SHA-256 checksum
+        def digest = MessageDigest.getInstance('SHA-256')
+        targetFile.eachByte(4096) { bytes, count ->
+            digest.update(bytes, 0, count)
+        }
+        def actualSha256 = digest.digest().collect { String.format('%02x', it) }.join('')
+        if (!actualSha256.equalsIgnoreCase(expectedSha256)) {
+            targetFile.delete()
+            throw new GradleException("SHA-256 checksum mismatch for ${targetFile.name}!\nExpected: ${expectedSha256}\nActual:   ${actualSha256}")
+        }
+
+        if (!markerFile.get().asFile.exists()) {
+            logger.lifecycle("Extracting XML Schema Test Suite...")
+            ant.untar(src: targetFile, dest: targetDir, compression: 'gzip')
+        }
+    }
+}
+
 tasks.register('conformanceTest', Test) {
     description = 'Runs the W3C XML Conformance Test Suite'
     group = 'verification'
@@ -209,11 +250,33 @@ tasks.register('xincludeConformanceTest', Test) {
     }
 }
 
+tasks.register('schemaConformanceTest', Test) {
+    description = 'Runs the W3C XML Schema Conformance Test Suite (XSTS)'
+    group = 'verification'
+    dependsOn 'downloadXmlSchemaConformanceSuite'
+
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+
+    useJUnitPlatform()
+    workingDir = rootProject.rootDir
+
+    systemProperty 'xmlschema.dir', rootProject.layout.buildDirectory.dir('xsts-suite/xmlschema2002-01-16').get().asFile.absolutePath
+
+    include 'conformance/schema/XMLSchemaConformanceTest.class'
+
+    testLogging {
+        events 'passed', 'skipped', 'failed'
+        showStandardStreams = false
+    }
+}
+
 test {
-    dependsOn 'downloadXmlConformanceSuite', 'downloadXIncludeConformanceSuite'
+    dependsOn 'downloadXmlConformanceSuite', 'downloadXIncludeConformanceSuite', 'downloadXmlSchemaConformanceSuite'
 
     systemProperty 'xmlconf.dir', rootProject.layout.buildDirectory.dir('xmlconf-suite/xmlconf').get().asFile.absolutePath
     systemProperty 'xinclude.dir', rootProject.layout.buildDirectory.dir('xinclude-suite/XIncl20060927').get().asFile.absolutePath
+    systemProperty 'xmlschema.dir', rootProject.layout.buildDirectory.dir('xsts-suite/xmlschema2002-01-16').get().asFile.absolutePath
 
     include '**/*Test.class'
     include 'dom/dom3/Test.class'
