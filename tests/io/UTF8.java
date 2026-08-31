@@ -17,6 +17,8 @@
 
 package io;
 
+import org.junit.jupiter.api.Test;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -31,32 +33,30 @@ public class UTF8 {
 
     private static final int BLOCK_READ_SIZE = 2048;
 
-    public static junit.framework.Test suite() {
-        return new junit.framework.JUnit4TestAdapter(UTF8.class);
-    }
+    
 
-    @org.junit.Test
+    @Test
     public void testJavaUTF8CharByChar() throws Exception {
         try (Reader reader = new InputStreamReader(new UTF8Producer(), "UTF8")) {
             testCharByChar(reader);
         }
     }
 
-    @org.junit.Test
+    @Test
     public void testJavaUTF8CharArray() throws Exception {
         try (Reader reader = new InputStreamReader(new UTF8Producer(), "UTF8")) {
             testCharArray(reader, BLOCK_READ_SIZE);
         }
     }
 
-    @org.junit.Test
+    @Test
     public void testCustomUTF8CharByChar() throws Exception {
         try (Reader reader = new UTF8Reader(new UTF8Producer())) {
             testCharByChar(reader);
         }
     }
 
-    @org.junit.Test
+    @Test
     public void testCustomUTF8CharArray() throws Exception {
         try (Reader reader = new UTF8Reader(new UTF8Producer())) {
             testCharArray(reader, BLOCK_READ_SIZE);

@@ -28,7 +28,8 @@ import java.net.URL;
 import org.apache.xerces.dom.CoreDocumentImpl;
 import org.apache.xerces.parsers.DOMParser;
 import org.apache.xerces.parsers.SAXParser;
-import org.junit.Assert;
+import static org.junit.jupiter.api.Assertions.*;
+
 import org.w3c.dom.DOMConfiguration;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
@@ -49,29 +50,27 @@ import org.xml.sax.SAXParseException;
  */
 public class Test {
 
-    public static junit.framework.Test suite() {
-        return new junit.framework.JUnit4TestAdapter(Test.class);
-    }
+    
 
-    @org.junit.Test
+    @org.junit.jupiter.api.Test
     public void testDOMThreaded() throws Exception {
         Test test = new Test();
         test.run(new String[]{"-dom", "-quiet", "-threads", "4", "-time", "1", resolveXmlPath("data/personal-schema.xml")});
     }
 
-    @org.junit.Test
+    @org.junit.jupiter.api.Test
     public void testSAXThreaded() throws Exception {
         Test test = new Test();
         test.run(new String[]{"-quiet", "-threads", "4", "-time", "1", resolveXmlPath("data/personal-schema.xml")});
     }
 
-    @org.junit.Test
+    @org.junit.jupiter.api.Test
     public void testDOMThreadedInMemory() throws Exception {
         Test test = new Test();
         test.run(new String[]{"-dom", "-mem", "-quiet", "-threads", "4", "-time", "1", resolveXmlPath("data/personal-schema.xml")});
     }
 
-    @org.junit.Test
+    @org.junit.jupiter.api.Test
     public void testSAXThreadedInMemory() throws Exception {
         Test test = new Test();
         test.run(new String[]{"-mem", "-quiet", "-threads", "4", "-time", "1", resolveXmlPath("data/personal-schema.xml")});
@@ -609,7 +608,7 @@ public class Test {
 
         for (int threadNum = 0; threadNum < gRunInfo.numThreads; threadNum++) {
             if (gThreadInfo[threadNum].fErrorMessage != null) {
-                Assert.fail("Worker thread failed: " + gThreadInfo[threadNum].fErrorMessage);
+                org.junit.jupiter.api.Assertions.fail("Worker thread failed: " + gThreadInfo[threadNum].fErrorMessage);
             }
         }
 

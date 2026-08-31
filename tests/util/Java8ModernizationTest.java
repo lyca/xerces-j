@@ -24,8 +24,9 @@ import org.apache.xerces.util.AugmentationsImpl;
 import org.apache.xerces.util.HTTPInputSource;
 import org.apache.xerces.xni.Augmentations;
 import org.apache.xml.serialize.HTMLdtd;
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.Test;
 
 /**
  * Regression unit tests verifying Java 8 modernized components (lambdas, try-with-resources, generics).
@@ -36,13 +37,13 @@ public class Java8ModernizationTest {
     public void testHTMLdtdInitializationAndEntityLookup() {
         // Verify entity character code and character lookup
         int ampCode = HTMLdtd.charFromName("amp");
-        Assert.assertEquals('&', (char) ampCode);
+        assertEquals('&', (char) ampCode);
 
         String ampName = HTMLdtd.fromChar('&');
-        Assert.assertEquals("amp", ampName);
+        assertEquals("amp", ampName);
 
-        Assert.assertTrue(HTMLdtd.isEmptyTag("BR") || HTMLdtd.isEmptyTag("br"));
-        Assert.assertTrue(HTMLdtd.isElementContent("HEAD") || HTMLdtd.isElementContent("head"));
+        assertTrue(HTMLdtd.isEmptyTag("BR") || HTMLdtd.isEmptyTag("br"));
+        assertTrue(HTMLdtd.isElementContent("HEAD") || HTMLdtd.isElementContent("head"));
     }
 
     @Test
@@ -51,12 +52,12 @@ public class Java8ModernizationTest {
         aug.putItem("key1", "val1");
         aug.putItem("key2", "val2");
 
-        Assert.assertEquals("val1", aug.getItem("key1"));
-        Assert.assertEquals("val2", aug.getItem("key2"));
+        assertEquals("val1", aug.getItem("key1"));
+        assertEquals("val2", aug.getItem("key2"));
 
         String str = aug.toString();
-        Assert.assertNotNull(str);
-        Assert.assertTrue(str.contains("key1") || str.contains("SmallContainer"));
+        assertNotNull(str);
+        assertTrue(str.contains("key1") || str.contains("SmallContainer"));
 
         // Put more than small container size limit to trigger LargeContainer
         for (int i = 0; i < 20; i++) {
@@ -64,9 +65,9 @@ public class Java8ModernizationTest {
         }
 
         String largeStr = aug.toString();
-        Assert.assertNotNull(largeStr);
-        Assert.assertTrue(largeStr.contains("LargeContainer"));
-        Assert.assertTrue(largeStr.contains("extraKey10"));
+        assertNotNull(largeStr);
+        assertTrue(largeStr.contains("LargeContainer"));
+        assertTrue(largeStr.contains("extraKey10"));
     }
 
     @Test
@@ -75,17 +76,17 @@ public class Java8ModernizationTest {
         source.setHTTPRequestProperty("Accept", "text/xml");
         source.setHTTPRequestProperty("User-Agent", "Xerces-Test");
 
-        Assert.assertEquals("text/xml", source.getHTTPRequestProperty("Accept"));
-        Assert.assertEquals("Xerces-Test", source.getHTTPRequestProperty("User-Agent"));
+        assertEquals("text/xml", source.getHTTPRequestProperty("Accept"));
+        assertEquals("Xerces-Test", source.getHTTPRequestProperty("User-Agent"));
 
         Iterator<Map.Entry<String, String>> it = source.getHTTPRequestProperties();
         int count = 0;
         while (it.hasNext()) {
             Map.Entry<String, String> entry = it.next();
-            Assert.assertNotNull(entry.getKey());
-            Assert.assertNotNull(entry.getValue());
+            assertNotNull(entry.getKey());
+            assertNotNull(entry.getValue());
             count++;
         }
-        Assert.assertEquals(2, count);
+        assertEquals(2, count);
     }
 }

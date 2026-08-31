@@ -24,7 +24,6 @@ import java.util.List;
 import javax.xml.XMLConstants;
 import javax.xml.validation.SchemaFactory;
 
-import junit.framework.TestCase;
 
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
@@ -34,7 +33,11 @@ import org.xml.sax.SAXParseException;
  * @author <a href="mailto:mukulg@apache.org">Mukul Gandhi</a>
  * @version $Id$
  */
-public class XercesAbstractTestCase extends TestCase implements ErrorHandler {
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+
+public class XercesAbstractTestCase implements ErrorHandler {
 	
 	protected SchemaFactory fSchemaFactory = null;	
 	protected String fErrSysId = null;
@@ -50,10 +53,44 @@ public class XercesAbstractTestCase extends TestCase implements ErrorHandler {
 	protected static final String DEFAULT_SCHEMA_LANGUAGE = XMLConstants.W3C_XML_SCHEMA_NS_URI;
 	protected static final String SCHEMA_FULL_CHECKING_FEATURE_ID = "http://apache.org/xml/features/validation/schema-full-checking";	
 	
-	public XercesAbstractTestCase(String name) {
-		super(name);
+	public XercesAbstractTestCase() {
 	}
 
+	public XercesAbstractTestCase(String name) {
+	}
+
+	public void assertTrue(boolean condition) {
+		Assertions.assertTrue(condition);
+	}
+	public void assertTrue(String message, boolean condition) {
+		Assertions.assertTrue(condition, message);
+	}
+	public void assertFalse(boolean condition) {
+		Assertions.assertFalse(condition);
+	}
+	public void assertFalse(String message, boolean condition) {
+		Assertions.assertFalse(condition, message);
+	}
+	public void assertNull(Object object) {
+		Assertions.assertNull(object);
+	}
+	public void assertNull(String message, Object object) {
+		Assertions.assertNull(object, message);
+	}
+	public void assertNotNull(Object object) {
+		Assertions.assertNotNull(object);
+	}
+	public void assertNotNull(String message, Object object) {
+		Assertions.assertNotNull(object, message);
+	}
+	public void assertEquals(Object expected, Object actual) {
+		Assertions.assertEquals(expected, actual);
+	}
+	public void assertEquals(String message, Object expected, Object actual) {
+		Assertions.assertEquals(expected, actual, message);
+	}
+
+	@BeforeEach
 	protected void setUp() throws Exception {		
 		fSchemaFactory = SchemaFactory.newInstance(DEFAULT_SCHEMA_LANGUAGE);
 		fSchemaFactory.setFeature(SCHEMA_FULL_CHECKING_FEATURE_ID, true);
@@ -61,6 +98,7 @@ public class XercesAbstractTestCase extends TestCase implements ErrorHandler {
 		warningList = new ArrayList(); 
 	}
 
+	@AfterEach
 	protected void tearDown() throws Exception {
 		fErrSysId = null;
 		fFatErrSysId = null;

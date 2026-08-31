@@ -17,6 +17,8 @@
 
 package idc;
 
+import org.junit.jupiter.api.Test;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,10 +35,9 @@ import util.XercesAbstractTestCase;
  */
 public class IDConstraintTests extends XercesAbstractTestCase {
     
-    public IDConstraintTests(String name) {
-        super(name);
-    }
+    public IDConstraintTests() {}
     
+    @Test
     public void testIDConstraint1() {
         String xmlfile = "tests/idc/idc_1_valid_1.xml";
         String schemapath = "tests/idc/idc_1.xsd";    
@@ -53,6 +54,7 @@ public class IDConstraintTests extends XercesAbstractTestCase {
         }
     }
     
+    @Test
     public void testIDConstraint2() {        
         String xmlfile = "tests/idc/idc_1_invalid_1.xml";
         String schemapath = "tests/idc/idc_1.xsd";    
@@ -80,6 +82,7 @@ public class IDConstraintTests extends XercesAbstractTestCase {
         }
     }
     
+    @Test
     public void testIDConstraint3() {        
         String xmlfile = "tests/idc/idc_1_invalid_2.xml";
         String schemapath = "tests/idc/idc_1.xsd";    
@@ -107,6 +110,7 @@ public class IDConstraintTests extends XercesAbstractTestCase {
         }
     }
     
+    @Test
     public void testIDConstraint4() {        
         String xmlfile = "tests/idc/idc_1_invalid_3.xml";
         String schemapath = "tests/idc/idc_1.xsd";    
@@ -137,6 +141,7 @@ public class IDConstraintTests extends XercesAbstractTestCase {
         }
     }
     
+    @Test
     public void testIDConstraint5() {
         String xmlfile = "tests/idc/idc_2_valid_1.xml";
         String schemapath = "tests/idc/idc_2.xsd";    
@@ -153,6 +158,7 @@ public class IDConstraintTests extends XercesAbstractTestCase {
         }
     }
     
+    @Test
     public void testIDConstraint6() {
         String xmlfile = "tests/idc/idc_2_valid_2.xml";
         String schemapath = "tests/idc/idc_2.xsd";    
@@ -169,6 +175,7 @@ public class IDConstraintTests extends XercesAbstractTestCase {
         }
     }
     
+    @Test
     public void testIDConstraint7() {        
         String xmlfile = "tests/idc/idc_2_invalid_1.xml";
         String schemapath = "tests/idc/idc_2.xsd";    
@@ -190,6 +197,7 @@ public class IDConstraintTests extends XercesAbstractTestCase {
         }
     }
     
+    @Test
     public void testIDConstraint8() {        
         String xmlfile = "tests/idc/idc_2_invalid_2.xml";
         String schemapath = "tests/idc/idc_2.xsd";    
@@ -211,6 +219,7 @@ public class IDConstraintTests extends XercesAbstractTestCase {
         }
     }
     
+    @Test
     public void testIDConstraint9() {
         String xmlfile = "tests/idc/idc_3_valid_1.xml";
         String schemapath = "tests/idc/idc_3.xsd";    
@@ -227,6 +236,7 @@ public class IDConstraintTests extends XercesAbstractTestCase {
         }
     }
     
+    @Test
     public void testIDConstraint10() {        
         String xmlfile = "tests/idc/idc_3_invalid_1.xml";
         String schemapath = "tests/idc/idc_3.xsd";    
@@ -248,6 +258,7 @@ public class IDConstraintTests extends XercesAbstractTestCase {
         }
     }
     
+    @Test
     public void testIDConstraint11() {        
         String xmlfile = "tests/idc/idc_3_invalid_2.xml";
         String schemapath = "tests/idc/idc_3.xsd";    
@@ -269,6 +280,7 @@ public class IDConstraintTests extends XercesAbstractTestCase {
         }
     }
     
+    @Test
     public void testIDConstraint12() {
         String xmlfile = "tests/idc/idc_4_valid_1.xml";
         String schemapath = "tests/idc/idc_4.xsd";    
@@ -285,6 +297,7 @@ public class IDConstraintTests extends XercesAbstractTestCase {
         }
     }
     
+    @Test
     public void testIDConstraint13() {
         String xmlfile = "tests/idc/idc_4_valid_2.xml";
         String schemapath = "tests/idc/idc_4.xsd";    
@@ -301,6 +314,7 @@ public class IDConstraintTests extends XercesAbstractTestCase {
         }
     }
     
+    @Test
     public void testIDConstraint14() {        
         String xmlfile = "tests/idc/idc_4_invalid_1.xml";
         String schemapath = "tests/idc/idc_4.xsd";    
@@ -322,6 +336,7 @@ public class IDConstraintTests extends XercesAbstractTestCase {
         }
     }
     
+    @Test
     public void testIDConstraint15() {        
         String xmlfile = "tests/idc/idc_4_invalid_2.xml";
         String schemapath = "tests/idc/idc_4.xsd";    
@@ -343,6 +358,7 @@ public class IDConstraintTests extends XercesAbstractTestCase {
         }
     }
     
+    @Test
     public void testIDConstraint16() {
         String xmlfile = "tests/idc/idc_5_valid_1.xml";
         String schemapath = "tests/idc/idc_5.xsd";    
@@ -359,6 +375,7 @@ public class IDConstraintTests extends XercesAbstractTestCase {
         }
     }
     
+    @Test
     public void testIDConstraint17() {        
         String xmlfile = "tests/idc/idc_5_invalid_1.xml";
         String schemapath = "tests/idc/idc_5.xsd";    
@@ -380,6 +397,7 @@ public class IDConstraintTests extends XercesAbstractTestCase {
         }
     }
     
+    @Test
     public void testIDConstraint18() {        
         String xmlfile = "tests/idc/idc_5_invalid_2.xml";
         String schemapath = "tests/idc/idc_5.xsd";    
@@ -401,6 +419,7 @@ public class IDConstraintTests extends XercesAbstractTestCase {
         }
     }
     
+    @Test
     public void testIDConstraint19() {
         String xmlfile = "tests/idc/idc_6_valid_1.xml";
         String schemapath = "tests/idc/idc_6.xsd";    
@@ -417,6 +436,7 @@ public class IDConstraintTests extends XercesAbstractTestCase {
         }
     }
     
+    @Test
     public void testIDConstraint20() {        
         String xmlfile = "tests/idc/idc_6_invalid_1.xml";
         String schemapath = "tests/idc/idc_6.xsd";    
@@ -438,6 +458,7 @@ public class IDConstraintTests extends XercesAbstractTestCase {
         }
     }
     
+    @Test
     public void testIDConstraint21() {
         String xmlfile = "tests/idc/valid_1_1515.xml";
         String schemapath = "tests/idc/jira_1515.xsd";    
@@ -454,6 +475,7 @@ public class IDConstraintTests extends XercesAbstractTestCase {
         }
     }
     
+    @Test
     public void testIDConstraint22() {
         String xmlfile = "tests/idc/valid_2_1515.xml";
         String schemapath = "tests/idc/jira_1515.xsd";    
@@ -470,6 +492,7 @@ public class IDConstraintTests extends XercesAbstractTestCase {
         }
     }
     
+    @Test
     public void testIDConstraint23() {        
         String xmlfile = "tests/idc/invalid_1_1515.xml";
         String schemapath = "tests/idc/jira_1515.xsd";   
@@ -491,6 +514,7 @@ public class IDConstraintTests extends XercesAbstractTestCase {
         }
     }
     
+    @Test
     public void testIDConstraint24() {
         String xmlfile = "tests/idc/jira_1585.xml";
         String schemapath = "tests/idc/jira_1585.xsd";    
@@ -507,6 +531,7 @@ public class IDConstraintTests extends XercesAbstractTestCase {
         }
     }
     
+    @Test
     public void testIDConstraint25() {        
         String xmlfile = "tests/idc/jira_1594.xml";
         String schemapath = "tests/idc/jira_1594.xsd";   
@@ -528,6 +553,7 @@ public class IDConstraintTests extends XercesAbstractTestCase {
         }
     }
     
+    @Test
     public void testIDConstraint26() {
         String xmlfile = "tests/idc/jira_1714_valid.xml";
         String schemapath = "tests/idc/jira_1714.xsd";    
@@ -544,6 +570,7 @@ public class IDConstraintTests extends XercesAbstractTestCase {
         }
     }
     
+    @Test
     public void testIDConstraint27() {        
         String xmlfile = "tests/idc/jira_1714_invalid.xml";
         String schemapath = "tests/idc/jira_1714.xsd";   

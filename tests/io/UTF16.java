@@ -17,6 +17,8 @@
 
 package io;
 
+import org.junit.jupiter.api.Test;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -32,60 +34,58 @@ public class UTF16 {
 
     private static final int BLOCK_READ_SIZE = 2048;
 
-    public static junit.framework.Test suite() {
-        return new junit.framework.JUnit4TestAdapter(UTF16.class);
-    }
+    
 
-    @org.junit.Test
+    @Test
     public void testJavaUTF16BECharByChar() throws Exception {
         try (Reader reader = new InputStreamReader(new UTF16Producer(true), "UnicodeBig")) {
             testCharByChar(reader);
         }
     }
 
-    @org.junit.Test
+    @Test
     public void testJavaUTF16BECharArray() throws Exception {
         try (Reader reader = new InputStreamReader(new UTF16Producer(true), "UnicodeBig")) {
             testCharArray(reader, BLOCK_READ_SIZE);
         }
     }
 
-    @org.junit.Test
+    @Test
     public void testCustomUTF16BECharByChar() throws Exception {
         try (Reader reader = new UTF16Reader(new UTF16Producer(true), true)) {
             testCharByChar(reader);
         }
     }
 
-    @org.junit.Test
+    @Test
     public void testCustomUTF16BECharArray() throws Exception {
         try (Reader reader = new UTF16Reader(new UTF16Producer(true), true)) {
             testCharArray(reader, BLOCK_READ_SIZE);
         }
     }
 
-    @org.junit.Test
+    @Test
     public void testJavaUTF16LECharByChar() throws Exception {
         try (Reader reader = new InputStreamReader(new UTF16Producer(false), "UnicodeLittle")) {
             testCharByChar(reader);
         }
     }
 
-    @org.junit.Test
+    @Test
     public void testJavaUTF16LECharArray() throws Exception {
         try (Reader reader = new InputStreamReader(new UTF16Producer(false), "UnicodeLittle")) {
             testCharArray(reader, BLOCK_READ_SIZE);
         }
     }
 
-    @org.junit.Test
+    @Test
     public void testCustomUTF16LECharByChar() throws Exception {
         try (Reader reader = new UTF16Reader(new UTF16Producer(false), false)) {
             testCharByChar(reader);
         }
     }
 
-    @org.junit.Test
+    @Test
     public void testCustomUTF16LECharArray() throws Exception {
         try (Reader reader = new UTF16Reader(new UTF16Producer(false), false)) {
             testCharArray(reader, BLOCK_READ_SIZE);
