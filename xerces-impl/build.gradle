@@ -126,6 +126,47 @@ tasks.register('downloadXmlConformanceSuite') {
     }
 }
 
+tasks.register('downloadXIncludeConformanceSuite') {
+    description = 'Downloads, verifies (SHA-256) and extracts the W3C XInclude Conformance Test Suite'
+    group = 'verification'
+
+    def archiveUrl = 'https://www.w3.org/XML/Test/XInclude/XIncl20060927.tar.gz'
+    def expectedSha256 = '9ac26dff910706a3a770502febc27c34fc9a966713ea94c42975ab2cc848170d'
+    def suiteDir = rootProject.layout.buildDirectory.dir('xinclude-suite')
+    def archiveFile = rootProject.layout.buildDirectory.file('xinclude-suite/XIncl20060927.tar.gz')
+    def markerFile = rootProject.layout.buildDirectory.file('xinclude-suite/XIncl20060927/testdescr.xml')
+
+    outputs.file(markerFile)
+
+    doLast {
+        def targetDir = suiteDir.get().asFile
+        if (!targetDir.exists()) {
+            targetDir.mkdirs()
+        }
+        def targetFile = archiveFile.get().asFile
+        if (!targetFile.exists()) {
+            logger.lifecycle("Downloading XInclude Conformance Test Suite from ${archiveUrl}...")
+            ant.get(src: archiveUrl, dest: targetFile, verbose: false, usetimestamp: true)
+        }
+
+        // Verify SHA-256 checksum
+        def digest = MessageDigest.getInstance('SHA-256')
+        targetFile.eachByte(4096) { bytes, count ->
+            digest.update(bytes, 0, count)
+        }
+        def actualSha256 = digest.digest().collect { String.format('%02x', it) }.join('')
+        if (!actualSha256.equalsIgnoreCase(expectedSha256)) {
+            targetFile.delete()
+            throw new GradleException("SHA-256 checksum mismatch for ${targetFile.name}!\nExpected: ${expectedSha256}\nActual:   ${actualSha256}")
+        }
+
+        if (!markerFile.get().asFile.exists()) {
+            logger.lifecycle("Extracting XInclude Conformance Test Suite...")
+            ant.untar(src: targetFile, dest: targetDir, compression: 'gzip')
+        }
+    }
+}
+
 tasks.register('conformanceTest', Test) {
     description = 'Runs the W3C XML Conformance Test Suite'
     group = 'verification'
@@ -147,10 +188,32 @@ tasks.register('conformanceTest', Test) {
     }
 }
 
+tasks.register('xincludeConformanceTest', Test) {
+    description = 'Runs the W3C XInclude Conformance Test Suite'
+    group = 'verification'
+    dependsOn 'downloadXIncludeConformanceSuite'
+
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+
+    useJUnitPlatform()
+    workingDir = rootProject.rootDir
+
+    systemProperty 'xinclude.dir', rootProject.layout.buildDirectory.dir('xinclude-suite/XIncl20060927').get().asFile.absolutePath
+
+    include 'conformance/xinclude/XIncludeConformanceTest.class'
+
+    testLogging {
+        events 'passed', 'skipped', 'failed'
+        showStandardStreams = false
+    }
+}
+
 test {
-    dependsOn 'downloadXmlConformanceSuite'
+    dependsOn 'downloadXmlConformanceSuite', 'downloadXIncludeConformanceSuite'
 
     systemProperty 'xmlconf.dir', rootProject.layout.buildDirectory.dir('xmlconf-suite/xmlconf').get().asFile.absolutePath
+    systemProperty 'xinclude.dir', rootProject.layout.buildDirectory.dir('xinclude-suite/XIncl20060927').get().asFile.absolutePath
 
     include '**/*Test.class'
     include 'dom/dom3/Test.class'
