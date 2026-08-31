@@ -201,8 +201,9 @@ public class SymbolTable {
         // search for identical symbol
         int collisionCount = 0;
         int bucket = hash(symbol) % fTableSize;
-        for (Entry entry = fBuckets[bucket]; entry != null; entry = entry.next) {
-            if (entry.symbol.equals(symbol)) {
+        final Entry[] buckets = fBuckets;
+        for (Entry entry = buckets[bucket]; entry != null; entry = entry.next) {
+            if (entry.symbol == symbol || entry.symbol.equals(symbol)) {
                 return entry.symbol;
             }
             ++collisionCount;
@@ -247,13 +248,21 @@ public class SymbolTable {
         
         // search for identical symbol
         int collisionCount = 0;
-        int bucket = hash(buffer, offset, length) % fTableSize;
-        OUTER: for (Entry entry = fBuckets[bucket]; entry != null; entry = entry.next) {
-            if (length == entry.characters.length) {
-                for (int i = 0; i < length; i++) {
-                    if (buffer[offset + i] != entry.characters[i]) {
+        final int bucket = hash(buffer, offset, length) % fTableSize;
+        final Entry[] buckets = fBuckets;
+        OUTER: for (Entry entry = buckets[bucket]; entry != null; entry = entry.next) {
+            final char[] ech = entry.characters;
+            if (length == ech.length) {
+                if (length > 0) {
+                    if (buffer[offset] != ech[0] || buffer[offset + length - 1] != ech[length - 1]) {
                         ++collisionCount;
-                        continue OUTER;
+                        continue;
+                    }
+                    for (int i = 1; i < length - 1; i++) {
+                        if (buffer[offset + i] != ech[i]) {
+                            ++collisionCount;
+                            continue OUTER;
+                        }
                     }
                 }
                 return entry.symbol;
@@ -401,14 +410,9 @@ public class SymbolTable {
 
         // search for identical symbol
         int bucket = hash(symbol) % fTableSize;
-        int length = symbol.length();
-        OUTER: for (Entry entry = fBuckets[bucket]; entry != null; entry = entry.next) {
-            if (length == entry.characters.length) {
-                for (int i = 0; i < length; i++) {
-                    if (symbol.charAt(i) != entry.characters[i]) {
-                        continue OUTER;
-                    }
-                }
+        final Entry[] buckets = fBuckets;
+        for (Entry entry = buckets[bucket]; entry != null; entry = entry.next) {
+            if (entry.symbol == symbol || entry.symbol.equals(symbol)) {
                 return true;
             }
         }
@@ -429,11 +433,18 @@ public class SymbolTable {
 
         // search for identical symbol
         int bucket = hash(buffer, offset, length) % fTableSize;
-        OUTER: for (Entry entry = fBuckets[bucket]; entry != null; entry = entry.next) {
-            if (length == entry.characters.length) {
-                for (int i = 0; i < length; i++) {
-                    if (buffer[offset + i] != entry.characters[i]) {
-                        continue OUTER;
+        final Entry[] buckets = fBuckets;
+        OUTER: for (Entry entry = buckets[bucket]; entry != null; entry = entry.next) {
+            final char[] ech = entry.characters;
+            if (length == ech.length) {
+                if (length > 0) {
+                    if (buffer[offset] != ech[0] || buffer[offset + length - 1] != ech[length - 1]) {
+                        continue;
+                    }
+                    for (int i = 1; i < length - 1; i++) {
+                        if (buffer[offset + i] != ech[i]) {
+                            continue OUTER;
+                        }
                     }
                 }
                 return true;

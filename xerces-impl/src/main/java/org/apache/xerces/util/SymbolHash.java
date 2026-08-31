@@ -98,7 +98,7 @@ public class SymbolHash {
         final int hash = hash(key);
         int bucket = hash % fTableSize;
         for (Entry entry = fBuckets[bucket]; entry != null; entry = entry.next) {
-            if (key.equals(entry.key)) {
+            if (key == entry.key || key.equals(entry.key)) {
                 // replace old value
                 entry.value = value;
                 return;
@@ -211,7 +211,7 @@ public class SymbolHash {
     protected Entry search(Object key, int bucket) {
         // search for identical key
         for (Entry entry = fBuckets[bucket]; entry != null; entry = entry.next) {
-            if (key.equals(entry.key))
+            if (key == entry.key || key.equals(entry.key))
                 return entry;
         }
         return null;
@@ -248,12 +248,12 @@ public class SymbolHash {
     protected void rehash() {
         rehashCommon((fBuckets.length << 1) + 1);
     }
-    
+
     /**
      * Randomly selects a new hash function and reorganizes this SymbolHash
      * in order to more evenly distribute its entries across the table. This 
      * method is called automatically when the number keys in one of the 
-     * SymbolHash's buckets exceeds MAX_HASH_COLLISIONS.
+     * SymbolHash's buckets exceeds the given collision threshold.
      */
     protected void rebalance() {
         if (fHashMultipliers == null) {
@@ -262,19 +262,19 @@ public class SymbolHash {
         PrimeNumberSequenceGenerator.generateSequence(fHashMultipliers);
         rehashCommon(fBuckets.length);
     }
-    
-    private void rehashCommon(final int newCapacity) {
-        
-        final int oldCapacity = fBuckets.length;
-        final Entry[] oldTable = fBuckets;
 
-        final Entry[] newTable = new Entry[newCapacity];
+    private void rehashCommon(final int newCapacity) {
+
+        int oldCapacity = fBuckets.length;
+        Entry[] oldTable = fBuckets;
+
+        Entry[] newTable = new Entry[newCapacity];
 
         fBuckets = newTable;
         fTableSize = fBuckets.length;
 
-        for (int i = oldCapacity; i-- > 0;) {
-            for (Entry old = oldTable[i]; old != null; ) {
+        for (int i = oldCapacity ; i-- > 0 ;) {
+            for (Entry old = oldTable[i] ; old != null ; ) {
                 Entry e = old;
                 old = old.next;
 
@@ -284,19 +284,27 @@ public class SymbolHash {
             }
         }
     }
-    
+
     //
     // Classes
     //
 
     /**
      * This class is a key table entry. Each entry acts as a node
-     * in a linked list.
+     * in a key table.
      */
     protected static final class Entry {
-        // key/value
+
+        //
+        // Data
+        //
+
+        /** key */
         public Object key;
+
+        /** value */
         public Object value;
+
         /** The next entry. */
         public Entry next;
 
@@ -320,7 +328,6 @@ public class SymbolHash {
                 entry.next = next.makeClone();
             return entry;
         }
-    } // entry
+    } // class Entry
 
 } // class SymbolHash
-
