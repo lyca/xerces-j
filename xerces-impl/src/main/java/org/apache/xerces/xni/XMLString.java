@@ -138,15 +138,16 @@ public class XMLString {
      * @param length The length of characters from the offset.
      */
     public boolean equals(char[] ch, int offset, int length) {
-        if (ch == null) {
+        if (ch == null || this.length != length) {
             return false;
         }
-        if (this.length != length) {
-            return false;
+        if (this.ch == ch && this.offset == offset) {
+            return true;
         }
-
-        for (int i=0; i<length; i++) {
-            if (this.ch[this.offset+i] != ch[offset+i] ) {
+        final char[] myCh = this.ch;
+        final int myOff = this.offset;
+        for (int i = 0; i < length; i++) {
+            if (myCh[myOff + i] != ch[offset + i]) {
                 return false;
             }
         }
@@ -161,22 +162,17 @@ public class XMLString {
      * @return true if the contents of this XMLString match the string
      */
     public boolean equals(String s) {
-        if (s == null) {
+        if (s == null || this.length != s.length()) {
             return false;
         }
-        if ( length != s.length() ) {
-            return false;
-        }
-
-        // is this faster than call s.toCharArray first and compare the 
-        // two arrays directly, which will possibly involve creating a
-        // new char array object.
-        for (int i=0; i<length; i++) {
-            if (ch[offset+i] != s.charAt(i)) {
+        final char[] myCh = this.ch;
+        final int myOff = this.offset;
+        final int len = this.length;
+        for (int i = 0; i < len; i++) {
+            if (myCh[myOff + i] != s.charAt(i)) {
                 return false;
             }
         }
-
         return true;
     } // equals(String):boolean
 

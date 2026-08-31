@@ -54,44 +54,46 @@ public class XMLStringBuffer
     // Constructors
     //
 
-    /**
-     * 
-     */
+    /** Default constructor. */
     public XMLStringBuffer() {
         this(DEFAULT_SIZE);
     } // <init>()
 
     /**
+     * Constructs a string buffer with a specified size.
      * 
-     * 
-     * @param size 
+     * @param size The initial size of the buffer.
      */
     public XMLStringBuffer(int size) {
-        ch = new char[size];
+        ch = new char[size > 0 ? size : DEFAULT_SIZE];
     } // <init>(int)
 
     /** Constructs a string buffer from a char. */
     public XMLStringBuffer(char c) {
-        this(1);
+        this(DEFAULT_SIZE);
         append(c);
     } // <init>(char)
 
     /** Constructs a string buffer from a String. */
     public XMLStringBuffer(String s) {
-        this(s.length());
-        append(s);
+        this(s != null ? s.length() : DEFAULT_SIZE);
+        if (s != null) {
+            append(s);
+        }
     } // <init>(String)
 
     /** Constructs a string buffer from the specified character array. */
     public XMLStringBuffer(char[] ch, int offset, int length) {
-        this(length);
+        this(length > 0 ? length : DEFAULT_SIZE);
         append(ch, offset, length);
     } // <init>(char[],int,int)
 
     /** Constructs a string buffer from the specified XMLString. */
     public XMLStringBuffer(XMLString s) {
-        this(s.length);
-        append(s);
+        this(s != null && s.length > 0 ? s.length : DEFAULT_SIZE);
+        if (s != null) {
+            append(s);
+        }
     } // <init>(XMLString)
 
     //
@@ -104,73 +106,79 @@ public class XMLStringBuffer
         length = 0;
     }
 
-    /**
-     * append
-     * 
-     * @param c 
-     */
-    public void append(char c) {
-        if (this.length + 1 > this.ch.length) {
+    private void ensureCapacity(int minCapacity) {
+        if (minCapacity > this.ch.length) {
             int newLength = this.ch.length * 2;
-            if (newLength < this.ch.length + DEFAULT_SIZE) {
-                newLength = this.ch.length + DEFAULT_SIZE;
+            if (newLength < minCapacity + DEFAULT_SIZE) {
+                newLength = minCapacity + DEFAULT_SIZE;
             }
             char[] newch = new char[newLength];
             System.arraycopy(this.ch, 0, newch, 0, this.length);
             this.ch = newch;
         }
-        this.ch[this.length] = c;
-        this.length++;
+    }
+
+    /**
+     * Appends a single character to the buffer.
+     * 
+     * @param c The character to append.
+     */
+    public void append(char c) {
+        if (this.length >= this.ch.length) {
+            ensureCapacity(this.length + 1);
+        }
+        this.ch[this.length++] = c;
     } // append(char)
 
     /**
-     * append
+     * Appends a string to the buffer.
      * 
-     * @param s 
+     * @param s The string to append.
      */
     public void append(String s) {
-        int length = s.length();
-        if (this.length + length > this.ch.length) {
-            int newLength = this.ch.length * 2;
-            if (newLength < this.length + length + DEFAULT_SIZE) {
-                newLength = this.ch.length + length + DEFAULT_SIZE;
-            }
-            char[] newch = new char[newLength];            
-            System.arraycopy(this.ch, 0, newch, 0, this.length);
-            this.ch = newch;
+        if (s == null) {
+            return;
         }
-        s.getChars(0, length, this.ch, this.length);
-        this.length += length;
+        int len = s.length();
+        if (len == 0) {
+            return;
+        }
+        int minCapacity = this.length + len;
+        if (minCapacity > this.ch.length) {
+            ensureCapacity(minCapacity);
+        }
+        s.getChars(0, len, this.ch, this.length);
+        this.length = minCapacity;
     } // append(String)
 
     /**
-     * append
+     * Appends a range of characters to the buffer.
      * 
-     * @param ch 
-     * @param offset 
-     * @param length 
+     * @param ch The character array.
+     * @param offset The offset into the character array.
+     * @param length The number of characters to append.
      */
     public void append(char[] ch, int offset, int length) {
-        if (this.length + length > this.ch.length) {
-            int newLength = this.ch.length * 2;
-            if (newLength < this.length + length + DEFAULT_SIZE) {
-                newLength = this.ch.length + length + DEFAULT_SIZE;
-            }
-            char[] newch = new char[newLength];
-            System.arraycopy(this.ch, 0, newch, 0, this.length);
-            this.ch = newch;
+        if (length <= 0 || ch == null) {
+            return;
+        }
+        int minCapacity = this.length + length;
+        if (minCapacity > this.ch.length) {
+            ensureCapacity(minCapacity);
         }
         System.arraycopy(ch, offset, this.ch, this.length, length);
-        this.length += length;
+        this.length = minCapacity;
     } // append(char[],int,int)
 
     /**
-     * append
+     * Appends the contents of an XMLString to the buffer.
      * 
-     * @param s 
+     * @param s The XMLString to append.
      */
     public void append(XMLString s) {
-        append(s.ch, s.offset, s.length);
+        if (s != null && s.length > 0) {
+            append(s.ch, s.offset, s.length);
+        }
     } // append(XMLString)
 
 } // class XMLStringBuffer
