@@ -41,8 +41,8 @@ public final class UTF8Reader
     // Constants
     //
 
-    /** Default byte buffer size (2048). */
-    public static final int DEFAULT_BUFFER_SIZE = 2048;
+    /** Default byte buffer size (8192). */
+    public static final int DEFAULT_BUFFER_SIZE = 8192;
 
     // debugging
 
@@ -139,7 +139,7 @@ public final class UTF8Reader
      * available, an I/O error occurs, or the end of the stream is reached.
      *
      * <p> Subclasses that intend to support efficient single-character input
-     * should override this method.
+     * should override this method.</p>
      *
      * @return     The character read, as an integer in the range 0 to 16383
      *             (<code>0x00-0xffff</code>), or -1 if the end of the stream has
@@ -324,25 +324,57 @@ public final class UTF8Reader
 
         // convert bytes to characters
         final int total = count;
-        int in;
-        byte byte1;
-        final byte byte0 = 0;
-        for (in = 0; in < total; in++) {
-            byte1 = fBuffer[in];
-            if (byte1 >= byte0) {
-                ch[out++] = (char)byte1;
-            }
-            else   {
+        final byte[] buffer = fBuffer;
+        int in = 0;
+
+        // Fast unrolled ASCII path
+        while (in + 4 <= total) {
+            byte b0 = buffer[in];
+            byte b1 = buffer[in + 1];
+            byte b2 = buffer[in + 2];
+            byte b3 = buffer[in + 3];
+            if ((b0 | b1 | b2 | b3) < 0) {
                 break;
             }
+            ch[out] = (char) b0;
+            ch[out + 1] = (char) b1;
+            ch[out + 2] = (char) b2;
+            ch[out + 3] = (char) b3;
+            out += 4;
+            in += 4;
         }
+        while (in < total) {
+            byte b = buffer[in];
+            if (b < 0) {
+                break;
+            }
+            ch[out++] = (char) b;
+            in++;
+        }
+
         for ( ; in < total; in++) {
-            byte1 = fBuffer[in];
+            byte byte1 = buffer[in];
 
             // UTF-8:   [0xxx xxxx]
             // Unicode: [0000 0000] [0xxx xxxx]
-            if (byte1 >= byte0) {
-                ch[out++] = (char)byte1;
+            if (byte1 >= 0) {
+                ch[out++] = (char) byte1;
+                // Fast-skip subsequent ASCII bytes
+                while (in + 4 < total) {
+                    byte b0 = buffer[in + 1];
+                    byte b1 = buffer[in + 2];
+                    byte b2 = buffer[in + 3];
+                    byte b3 = buffer[in + 4];
+                    if ((b0 | b1 | b2 | b3) < 0) {
+                        break;
+                    }
+                    ch[out] = (char) b0;
+                    ch[out + 1] = (char) b1;
+                    ch[out + 2] = (char) b2;
+                    ch[out + 3] = (char) b3;
+                    out += 4;
+                    in += 4;
+                }
                 continue;
             }
 
@@ -590,8 +622,8 @@ public final class UTF8Reader
         long remaining = n;
         final char[] ch = new char[fBuffer.length];
         do {
-            int length = ch.length < remaining ? ch.length : (int)remaining;
-            int count = read(ch, 0, length);
+            int len = ch.length < remaining ? ch.length : (int)remaining;
+            int count = read(ch, 0, len);
             if (count > 0) {
                 remaining -= count;
             }
@@ -616,14 +648,14 @@ public final class UTF8Reader
      */
     public boolean ready() throws IOException {
         return false;
-    } // ready()
+    } // ready():boolean
 
     /**
      * Tell whether this stream supports the mark() operation.
      */
     public boolean markSupported() {
         return false;
-    } // markSupported()
+    } // markSupported():boolean
 
     /**
      * Mark the present position in the stream.  Subsequent calls to reset()
@@ -635,8 +667,8 @@ public final class UTF8Reader
      *                         reading this many characters, attempting to
      *                         reset the stream may fail.
      *
-     * @exception  IOException  If the stream does not support mark(),
-     *                          or if some other I/O error occurs
+     * @exception  IOException  If the stream does not support the mark()
+     *                          operation, or if some other I/O error occurs
      */
     public void mark(int readAheadLimit) throws IOException {
         throw new IOException(fFormatter.formatMessage(fLocale, "OperationNotSupported", new Object[]{"mark()", "UTF-8"}));
@@ -652,8 +684,8 @@ public final class UTF8Reader
      *
      * @exception  IOException  If the stream has not been marked,
      *                          or if the mark has been invalidated,
-     *                          or if the stream does not support reset(),
-     *                          or if some other I/O error occurs
+     *                          or if the stream does not support the reset()
+     *                          operation, or if some other I/O error occurs
      */
     public void reset() throws IOException {
         fOffset = 0;
@@ -694,18 +726,20 @@ public final class UTF8Reader
         throw new MalformedByteSequenceException(fFormatter,
             fLocale,
             XMLMessageFormatter.XML_DOMAIN,
-            "InvalidByte", 
-            new Object [] {Integer.toString(position), Integer.toString(count)});
+            "InvalidByte",
+            new Object[] {Integer.toString(position), 
+                          Integer.toString(count),
+                          Integer.toHexString(c)});
 
-    } // invalidByte(int,int,int)
+    } // invalidByte(int,int,int,int)
 
-    /** Throws an exception for invalid surrogate bits. */
+    /** Throws an exception for invalid surrogate. */
     private void invalidSurrogate(int uuuuu) throws MalformedByteSequenceException {
 
         throw new MalformedByteSequenceException(fFormatter,
             fLocale,
             XMLMessageFormatter.XML_DOMAIN,
-            "InvalidHighSurrogate", 
+            "InvalidHighSurrogate",
             new Object[] {Integer.toHexString(uuuuu)});
 
     } // invalidSurrogate(int)

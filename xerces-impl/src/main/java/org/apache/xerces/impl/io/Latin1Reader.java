@@ -17,29 +17,29 @@
 
 package org.apache.xerces.impl.io;
 
-import java.io.IOException;
 import java.io.InputStream;
+import java.io.IOException;
 import java.io.Reader;
 
 /**
  * <p>Reader for the ISO-8859-1 encoding.</p>
  * 
  * @xerces.internal
- * 
+ *
  * @author Michael Glavassevich, IBM
- * 
+ *
  * @version $Id$
  */
-public final class Latin1Reader 
+public final class Latin1Reader
     extends Reader {
-    
+
     //
     // Constants
     //
 
-    /** Default byte buffer size (2048). */
-    public static final int DEFAULT_BUFFER_SIZE = 2048;
-    
+    /** Default byte buffer size (8192). */
+    public static final int DEFAULT_BUFFER_SIZE = 8192;
+
     //
     // Data
     //
@@ -49,7 +49,7 @@ public final class Latin1Reader
 
     /** Byte buffer. */
     protected final byte[] fBuffer;
-    
+
     //
     // Constructors
     //
@@ -63,7 +63,7 @@ public final class Latin1Reader
     public Latin1Reader(InputStream inputStream) {
         this(inputStream, DEFAULT_BUFFER_SIZE);
     } // <init>(InputStream)
-    
+
     /** 
      * Constructs an ISO-8859-1 reader from the specified input stream 
      * and buffer size.
@@ -74,9 +74,10 @@ public final class Latin1Reader
     public Latin1Reader(InputStream inputStream, int size) {
         this(inputStream, new byte[size]);
     } // <init>(InputStream, int)
-    
+
     /** 
-     * Constructs an ISO-8859-1 reader from the specified input stream and buffer.
+     * Constructs an ISO-8859-1 reader from the specified input stream 
+     * and byte array.
      *
      * @param inputStream The input stream.
      * @param buffer      The byte buffer.
@@ -126,8 +127,20 @@ public final class Latin1Reader
             length = fBuffer.length;
         }
         int count = fInputStream.read(fBuffer, 0, length);
-        for (int i = 0; i < count; ++i) {
-            ch[offset + i] = (char) (fBuffer[i] & 0xff);
+        if (count == -1) {
+            return -1;
+        }
+        final byte[] buffer = fBuffer;
+        int i = 0;
+        while (i + 4 <= count) {
+            ch[offset + i] = (char) (buffer[i] & 0xff);
+            ch[offset + i + 1] = (char) (buffer[i + 1] & 0xff);
+            ch[offset + i + 2] = (char) (buffer[i + 2] & 0xff);
+            ch[offset + i + 3] = (char) (buffer[i + 3] & 0xff);
+            i += 4;
+        }
+        for (; i < count; ++i) {
+            ch[offset + i] = (char) (buffer[i] & 0xff);
         }
         return count;
     } // read(char[],int,int)
@@ -143,7 +156,21 @@ public final class Latin1Reader
      * @exception  IOException  If an I/O error occurs
      */
     public long skip(long n) throws IOException {
-        return fInputStream.skip(n);
+        long remaining = n;
+        final char[] ch = new char[fBuffer.length];
+        do {
+            int len = ch.length < remaining ? ch.length : (int)remaining;
+            int count = read(ch, 0, len);
+            if (count > 0) {
+                remaining -= count;
+            }
+            else {
+                break;
+            }
+        } while (remaining > 0);
+
+        long skipped = n - remaining;
+        return skipped;
     } // skip(long):long
 
     /**
@@ -157,14 +184,14 @@ public final class Latin1Reader
      */
     public boolean ready() throws IOException {
         return false;
-    } // ready()
+    } // ready():boolean
 
     /**
      * Tell whether this stream supports the mark() operation.
      */
     public boolean markSupported() {
-        return fInputStream.markSupported();
-    } // markSupported()
+        return false;
+    } // markSupported():boolean
 
     /**
      * Mark the present position in the stream.  Subsequent calls to reset()
@@ -176,11 +203,11 @@ public final class Latin1Reader
      *                         reading this many characters, attempting to
      *                         reset the stream may fail.
      *
-     * @exception  IOException  If the stream does not support mark(),
-     *                          or if some other I/O error occurs
+     * @exception  IOException  If the stream does not support the mark()
+     *                          operation, or if some other I/O error occurs
      */
     public void mark(int readAheadLimit) throws IOException {
-        fInputStream.mark(readAheadLimit);
+        throw new IOException("mark() not supported");
     } // mark(int)
 
     /**
@@ -193,11 +220,10 @@ public final class Latin1Reader
      *
      * @exception  IOException  If the stream has not been marked,
      *                          or if the mark has been invalidated,
-     *                          or if the stream does not support reset(),
-     *                          or if some other I/O error occurs
+     *                          or if the stream does not support the reset()
+     *                          operation, or if some other I/O error occurs
      */
     public void reset() throws IOException {
-        fInputStream.reset();
     } // reset()
 
     /**
@@ -207,8 +233,8 @@ public final class Latin1Reader
      *
      * @exception  IOException  If an I/O error occurs
      */
-     public void close() throws IOException {
-         fInputStream.close();
-     } // close()
+    public void close() throws IOException {
+        fInputStream.close();
+    } // close()
 
 } // class Latin1Reader

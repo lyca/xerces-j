@@ -17,17 +17,16 @@
 
 package org.apache.xerces.impl.io;
 
-import java.io.IOException;
 import java.io.InputStream;
+import java.io.IOException;
 import java.io.Reader;
 import java.util.Locale;
-
 import org.apache.xerces.impl.msg.XMLMessageFormatter;
 import org.apache.xerces.util.MessageFormatter;
 
 /**
- * A simple ASCII byte reader. This is an optimized reader for reading
- * byte streams that only contain 7-bit ASCII characters.
+ * A simple ASCII byte reader. This reader processes bytes 
+ * compiled into an ASCII format.
  * 
  * @xerces.internal
  *
@@ -42,8 +41,8 @@ public final class ASCIIReader
     // Constants
     //
 
-    /** Default byte buffer size (2048). */
-    public static final int DEFAULT_BUFFER_SIZE = 2048;
+    /** Default byte buffer size (8192). */
+    public static final int DEFAULT_BUFFER_SIZE = 8192;
 
     //
     // Data
@@ -68,7 +67,7 @@ public final class ASCIIReader
 
     /** 
      * Constructs an ASCII reader from the specified input stream 
-     * using the default buffer size.
+     * using the default byte buffer size.
      *
      * @param inputStream The input stream.
      * @param messageFormatter  the MessageFormatter to use to message reporting.
@@ -81,7 +80,7 @@ public final class ASCIIReader
 
     /** 
      * Constructs an ASCII reader from the specified input stream 
-     * and buffer size.
+     * and buffer size and MessageFormatter.
      *
      * @param inputStream The input stream.
      * @param size        The initial buffer size.
@@ -92,9 +91,10 @@ public final class ASCIIReader
             MessageFormatter messageFormatter, Locale locale) {
         this(inputStream, new byte[size], messageFormatter, locale);
     } // <init>(InputStream, int, MessageFormatter, Locale)
-    
+
     /** 
-     * Constructs an ASCII reader from the specified input stream and buffer.
+     * Constructs an ASCII reader from the specified input stream 
+     * and byte array.
      *
      * @param inputStream The input stream.
      * @param buffer      The byte buffer.
@@ -155,8 +155,27 @@ public final class ASCIIReader
             length = fBuffer.length;
         }
         int count = fInputStream.read(fBuffer, 0, length);
-        for (int i = 0; i < count; i++) {
-            int b0 = fBuffer[i];
+        if (count == -1) {
+            return -1;
+        }
+        final byte[] buffer = fBuffer;
+        int i = 0;
+        while (i + 4 <= count) {
+            byte b0 = buffer[i];
+            byte b1 = buffer[i + 1];
+            byte b2 = buffer[i + 2];
+            byte b3 = buffer[i + 3];
+            if ((b0 | b1 | b2 | b3) < 0) {
+                break;
+            }
+            ch[offset + i] = (char) b0;
+            ch[offset + i + 1] = (char) b1;
+            ch[offset + i + 2] = (char) b2;
+            ch[offset + i + 3] = (char) b3;
+            i += 4;
+        }
+        for (; i < count; i++) {
+            int b0 = buffer[i];
             if (b0 < 0) {
                 throw new MalformedByteSequenceException(fFormatter,
                     fLocale, XMLMessageFormatter.XML_DOMAIN,
@@ -178,7 +197,21 @@ public final class ASCIIReader
      * @exception  IOException  If an I/O error occurs
      */
     public long skip(long n) throws IOException {
-        return fInputStream.skip(n);
+        long remaining = n;
+        final char[] ch = new char[fBuffer.length];
+        do {
+            int len = ch.length < remaining ? ch.length : (int)remaining;
+            int count = read(ch, 0, len);
+            if (count > 0) {
+                remaining -= count;
+            }
+            else {
+                break;
+            }
+        } while (remaining > 0);
+
+        long skipped = n - remaining;
+        return skipped;
     } // skip(long):long
 
     /**
@@ -192,14 +225,14 @@ public final class ASCIIReader
      */
     public boolean ready() throws IOException {
 	    return false;
-    } // ready()
+    } // ready():boolean
 
     /**
      * Tell whether this stream supports the mark() operation.
      */
     public boolean markSupported() {
-	    return fInputStream.markSupported();
-    } // markSupported()
+	    return false;
+    } // markSupported():boolean
 
     /**
      * Mark the present position in the stream.  Subsequent calls to reset()
@@ -211,11 +244,11 @@ public final class ASCIIReader
      *                         reading this many characters, attempting to
      *                         reset the stream may fail.
      *
-     * @exception  IOException  If the stream does not support mark(),
-     *                          or if some other I/O error occurs
+     * @exception  IOException  If the stream does not support the mark()
+     *                          operation, or if some other I/O error occurs
      */
     public void mark(int readAheadLimit) throws IOException {
-	    fInputStream.mark(readAheadLimit);
+	    throw new IOException(fFormatter.formatMessage(fLocale, "OperationNotSupported", new Object[]{"mark()", "US-ASCII"}));
     } // mark(int)
 
     /**
@@ -228,11 +261,10 @@ public final class ASCIIReader
      *
      * @exception  IOException  If the stream has not been marked,
      *                          or if the mark has been invalidated,
-     *                          or if the stream does not support reset(),
-     *                          or if some other I/O error occurs
+     *                          or if the stream does not support the reset()
+     *                          operation, or if some other I/O error occurs
      */
     public void reset() throws IOException {
-        fInputStream.reset();
     } // reset()
 
     /**
@@ -242,8 +274,8 @@ public final class ASCIIReader
      *
      * @exception  IOException  If an I/O error occurs
      */
-     public void close() throws IOException {
-         fInputStream.close();
-     } // close()
+    public void close() throws IOException {
+        fInputStream.close();
+    } // close()
 
 } // class ASCIIReader

@@ -105,7 +105,7 @@ public class XMLEntityManager
     //
 
     /** Default buffer size (2048). */
-    public static final int DEFAULT_BUFFER_SIZE = 2048; 
+    public static final int DEFAULT_BUFFER_SIZE = 8192; 
 
     /** Default buffer size before we've finished with the XMLDecl:  */
     public static final int DEFAULT_XMLDECL_BUFFER_SIZE = 64;
