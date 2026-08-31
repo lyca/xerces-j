@@ -15,8 +15,16 @@
  * limitations under the License.
  */
 
-rootProject.name = 'xerces-j'
+plugins {
+    id 'java-library'
+}
 
-include 'xerces-impl'
-include 'xerces-samples'
-include 'xerces-tools'
+description = 'Apache Xerces-J Tools and Code Generators'
+
+dependencies {
+    implementation project(':xerces-impl')
+}
+
+jar {
+    archiveBaseName.set('xercesTools')
+}

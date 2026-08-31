@@ -1,0 +1,109 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+plugins {
+    id 'java-library'
+}
+
+description = 'Apache Xerces-J Core Implementation'
+
+java {
+    withSourcesJar()
+    withJavadocJar()
+}
+
+dependencies {
+    api 'xml-apis:xml-apis:1.4.01'
+    implementation 'xml-resolver:xml-resolver:1.2'
+
+    testImplementation platform('org.junit:junit-bom:5.10.2')
+    testImplementation 'org.junit.jupiter:junit-jupiter-api'
+    testImplementation 'org.junit.jupiter:junit-jupiter-params'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+jar {
+    archiveBaseName.set('xercesImpl')
+    manifest {
+        attributes(
+            'Implementation-Title': 'org.apache.xerces.impl',
+            'Implementation-Version': project.version,
+            'Implementation-Vendor': 'Apache Software Foundation',
+            'Implementation-URL': 'http://xerces.apache.org/xerces2-j/',
+            'Automatic-Module-Name': 'org.apache.xerces'
+        )
+    }
+}
+
+sourcesJar {
+    archiveBaseName.set('xercesImpl')
+}
+
+javadocJar {
+    archiveBaseName.set('xercesImpl')
+}
+
+javadoc {
+    options {
+        encoding = 'UTF-8'
+        charSet = 'UTF-8'
+        author = true
+        version = true
+        windowTitle = 'Xerces2 Implementation'
+        docTitle = 'Xerces2 Implementation'
+        bottom = 'Copyright &copy; 1999-2026 The Apache Software Foundation. All Rights Reserved.'
+        tags = [
+            'xerces.internal:a:Internal:',
+            'xerces.experimental:a:Experimental:'
+        ]
+        addStringOption('Xdoclint:none', '-quiet')
+    }
+}
+
+task dtdJar(type: Jar) {
+    archiveBaseName.set('xerces-dtd')
+    from(sourceSets.main.output) {
+        exclude 'org/apache/xerces/impl/xs/**'
+        exclude 'org/apache/xerces/impl/xpath/regex/**'
+    }
+}
+
+test {
+    include '**/*Test.class'
+    include 'dom/dom3/Test.class'
+    include 'dom/events/Test.class'
+    include 'dom/ids/Test.class'
+    include 'dom/mem/Test.class'
+    include 'dom/range/Test.class'
+    include 'dom/range/TestCompare.class'
+    include 'dom/registry/Test.class'
+    include 'dom/rename/Test.class'
+    include 'dom/serialization/Test.class'
+    include 'dom/serialize/Test*.class'
+    include 'dom/traversal/*Test.class'
+    include 'dom/treewalker/TestFirstChild.class'
+    include 'idc/IDConstraintTests.class'
+    include 'io/UTF*.class'
+    include 'jaxp/*Test*.class'
+    include 'jaxp/PropertyTest.class'
+    include 'schema/Test.class'
+    include 'schema/annotations/*Test.class'
+    include 'schema/config/*Test.class'
+    include 'thread/Test.class'
+    include 'xinclude/Test.class'
+}

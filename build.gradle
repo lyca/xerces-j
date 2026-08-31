@@ -15,253 +15,69 @@
  * limitations under the License.
  */
 
-import javax.inject.Inject
-
 plugins {
-    id 'java'
+    id 'base'
 }
 
-group = 'org.apache.xerces'
-version = '2.12.3'
-description = 'Apache Xerces-J XML Parser'
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
-    withSourcesJar()
-    withJavadocJar()
-    if (project.hasProperty('testJavaVersion')) {
-        toolchain {
-            languageVersion = JavaLanguageVersion.of(project.property('testJavaVersion') as int)
-        }
-    }
+allprojects {
+    group = 'org.apache.xerces'
+    version = '2.12.3'
+    description = 'Apache Xerces-J XML Parser'
 }
 
-repositories {
-    mavenCentral()
-}
+subprojects {
+    apply plugin: 'java-library'
 
-sourceSets {
-    main {
-        java {
-            srcDirs = ['src']
-            exclude 'tools/**'
-        }
-        resources {
-            srcDirs = ['src']
-            exclude '**/*.java'
-            exclude 'tools/**'
-            exclude 'manifest.xerces'
-            exclude 'org/apache/xerces/jaxp/javax.xml.*'
-            exclude 'org/apache/xerces/jaxp/datatype/javax.xml.*'
-            exclude 'org/apache/xerces/jaxp/validation/javax.xml.*'
-            exclude 'org/apache/xerces/stax/javax.xml.*'
-        }
-    }
-    samples {
-        java {
-            srcDirs = ['samples']
-        }
-        resources {
-            srcDirs = ['samples']
-            exclude '**/*.java'
-        }
-        compileClasspath += sourceSets.main.output
-        runtimeClasspath += sourceSets.main.output
-    }
-    test {
-        java {
-            srcDirs = ['tests']
-        }
-        resources {
-            srcDirs = ['tests', 'data']
-            exclude '**/*.java'
-        }
-        compileClasspath += sourceSets.samples.output
-        runtimeClasspath += sourceSets.samples.output
-    }
-    tools {
-        java {
-            srcDirs = ['src/tools/java']
-        }
-        compileClasspath += sourceSets.main.output
-        runtimeClasspath += sourceSets.main.output
-    }
-}
-
-configurations {
-    samplesImplementation.extendsFrom implementation
-    samplesRuntimeOnly.extendsFrom runtimeOnly
-    toolsImplementation.extendsFrom implementation
-    toolsRuntimeOnly.extendsFrom runtimeOnly
-}
-
-dependencies {
-    implementation 'xml-apis:xml-apis:1.4.01'
-    implementation 'xml-resolver:xml-resolver:1.2'
-
-    testImplementation platform('org.junit:junit-bom:5.10.2')
-    testImplementation 'org.junit.jupiter:junit-jupiter-api'
-    testImplementation 'org.junit.jupiter:junit-jupiter-params'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-    testImplementation sourceSets.samples.output
-}
-
-tasks.named('compileJava') {
-    options.encoding = 'UTF-8'
-}
-
-tasks.named('compileTestJava') {
-    options.encoding = 'UTF-8'
-}
-
-tasks.named('compileSamplesJava') {
-    options.encoding = 'UTF-8'
-}
-
-tasks.named('compileToolsJava') {
-    options.encoding = 'UTF-8'
-}
-
-processResources {
-    into('META-INF/services') {
-        from('src/org/apache/xerces/jaxp/javax.xml.parsers.DocumentBuilderFactory')
-        from('src/org/apache/xerces/jaxp/javax.xml.parsers.SAXParserFactory')
-        from('src/org/apache/xerces/jaxp/datatype/javax.xml.datatype.DatatypeFactory')
-        from('src/org/apache/xerces/jaxp/validation/javax.xml.validation.SchemaFactory')
-        from('src/org/apache/xerces/stax/javax.xml.stream.XMLEventFactory')
-    }
-}
-
-javadoc {
-    options {
-        encoding = 'UTF-8'
-        charSet = 'UTF-8'
-        author = true
-        version = true
-        windowTitle = 'Xerces2 Implementation'
-        docTitle = 'Xerces2 Implementation'
-        bottom = 'Copyright &copy; 1999-2026 The Apache Software Foundation. All Rights Reserved.'
-        tags = [
-            'xerces.internal:a:Internal:',
-            'xerces.experimental:a:Experimental:'
-        ]
-        addStringOption('Xdoclint:none', '-quiet')
-    }
-}
-
-tasks.withType(Jar).configureEach {
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-}
-
-jar {
-    archiveBaseName.set('xercesImpl')
-    manifest {
-        attributes(
-            'Implementation-Title': 'org.apache.xerces.impl',
-            'Implementation-Version': project.version,
-            'Implementation-Vendor': 'Apache Software Foundation',
-            'Implementation-URL': 'http://xerces.apache.org/xerces2-j/',
-            'Automatic-Module-Name': 'org.apache.xerces'
-        )
-    }
-    from(project.rootDir) {
-        include 'LICENSE', 'NOTICE'
-        into 'META-INF'
-    }
-}
-
-sourcesJar {
-    archiveBaseName.set('xercesImpl')
-}
-
-javadocJar {
-    archiveBaseName.set('xercesImpl')
-}
-
-task samplesJar(type: Jar) {
-    archiveBaseName.set('xercesSamples')
-    from sourceSets.samples.output
-    from(project.rootDir) {
-        include 'LICENSE', 'NOTICE'
-        into 'META-INF'
-    }
-}
-
-task dtdJar(type: Jar) {
-    archiveBaseName.set('xerces-dtd')
-    from(sourceSets.main.output) {
-        exclude 'org/apache/xerces/impl/xs/**'
-        exclude 'org/apache/xerces/impl/xpath/regex/**'
-    }
-    from(project.rootDir) {
-        include 'LICENSE', 'NOTICE'
-        into 'META-INF'
-    }
-}
-
-test {
-    useJUnitPlatform()
-    workingDir = project.rootDir
-
-    systemProperty 'javax.xml.parsers.DocumentBuilderFactory', 'org.apache.xerces.jaxp.DocumentBuilderFactoryImpl'
-    systemProperty 'javax.xml.parsers.SAXParserFactory', 'org.apache.xerces.jaxp.SAXParserFactoryImpl'
-    systemProperty 'javax.xml.validation.SchemaFactory:http://www.w3.org/2001/XMLSchema', 'org.apache.xerces.jaxp.validation.XMLSchemaFactory'
-
-    include '**/*Test.class'
-    include 'dom/dom3/Test.class'
-    include 'dom/events/Test.class'
-    include 'dom/ids/Test.class'
-    include 'dom/mem/Test.class'
-    include 'dom/range/Test.class'
-    include 'dom/range/TestCompare.class'
-    include 'dom/registry/Test.class'
-    include 'dom/rename/Test.class'
-    include 'dom/serialization/Test.class'
-    include 'dom/serialize/Test*.class'
-    include 'dom/traversal/*Test.class'
-    include 'dom/treewalker/TestFirstChild.class'
-    include 'idc/IDConstraintTests.class'
-    include 'io/UTF*.class'
-    include 'jaxp/*Test*.class'
-    include 'jaxp/PropertyTest.class'
-    include 'schema/Test.class'
-    include 'schema/annotations/*Test.class'
-    include 'schema/config/*Test.class'
-    include 'thread/Test.class'
-    include 'xinclude/Test.class'
-
-    testLogging {
-        events 'passed', 'skipped', 'failed'
-        showStandardStreams = false
-    }
-}
-
-abstract class SanityCheckTask extends DefaultTask {
-    @InputFiles
-    abstract ConfigurableFileCollection getClasspath()
-
-    @Inject
-    abstract ExecOperations getExecOperations()
-
-    @TaskAction
-    void run() {
-        def cp = getClasspath()
-        ['sax.Counter', 'sax.Writer', 'dom.Counter', 'dom.Writer'].each { className ->
-            println "Running sanity check: ${className} ..."
-            getExecOperations().javaexec {
-                classpath = cp
-                mainClass = className
-                args = ['data/personal.xml']
+    java {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+        withSourcesJar()
+        withJavadocJar()
+        if (project.hasProperty('testJavaVersion')) {
+            toolchain {
+                languageVersion = JavaLanguageVersion.of(project.property('testJavaVersion') as int)
             }
         }
     }
-}
 
-tasks.register('sanity', SanityCheckTask) {
-    group = 'verification'
-    description = 'Runs sample Counter and Writer programs as a sanity check.'
-    dependsOn compileSamplesJava
-    classpath.from(sourceSets.samples.runtimeClasspath)
+    repositories {
+        mavenCentral()
+    }
+
+    tasks.withType(JavaCompile).configureEach {
+        options.encoding = 'UTF-8'
+    }
+
+    tasks.withType(Javadoc).configureEach {
+        options.encoding = 'UTF-8'
+        options.tags = [
+            'xerces.internal:a:Internal:',
+            'xerces.experimental:a:Experimental:'
+        ]
+        if (options instanceof CoreJavadocOptions) {
+            options.addStringOption('Xdoclint:none', '-quiet')
+        }
+    }
+
+    tasks.withType(Jar).configureEach {
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+        from(rootProject.rootDir) {
+            include 'LICENSE', 'NOTICE'
+            into 'META-INF'
+        }
+    }
+
+    tasks.withType(Test).configureEach {
+        useJUnitPlatform()
+        workingDir = rootProject.rootDir
+
+        systemProperty 'javax.xml.parsers.DocumentBuilderFactory', 'org.apache.xerces.jaxp.DocumentBuilderFactoryImpl'
+        systemProperty 'javax.xml.parsers.SAXParserFactory', 'org.apache.xerces.jaxp.SAXParserFactoryImpl'
+        systemProperty 'javax.xml.validation.SchemaFactory:http://www.w3.org/2001/XMLSchema', 'org.apache.xerces.jaxp.validation.XMLSchemaFactory'
+
+        testLogging {
+            events 'passed', 'skipped', 'failed'
+            showStandardStreams = false
+        }
+    }
 }
