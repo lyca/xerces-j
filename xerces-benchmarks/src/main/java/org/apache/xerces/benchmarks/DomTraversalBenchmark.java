@@ -66,13 +66,13 @@ public class DomTraversalBenchmark {
         xercesEagerFactory.setNamespaceAware(true);
         xercesEagerFactory.setFeature(FEATURE_DEFER_EXPANSION, false);
 
-        jdkDeferredFactory = DocumentBuilderFactory.newDefaultInstance();
+        jdkDeferredFactory = JdkFactoryHelper.newJdkDocumentBuilderFactory();
         jdkDeferredFactory.setNamespaceAware(true);
         try {
             jdkDeferredFactory.setFeature(FEATURE_DEFER_EXPANSION, true);
         } catch (Exception ignored) {}
 
-        jdkEagerFactory = DocumentBuilderFactory.newDefaultInstance();
+        jdkEagerFactory = JdkFactoryHelper.newJdkDocumentBuilderFactory();
         jdkEagerFactory.setNamespaceAware(true);
         try {
             jdkEagerFactory.setFeature(FEATURE_DEFER_EXPANSION, false);

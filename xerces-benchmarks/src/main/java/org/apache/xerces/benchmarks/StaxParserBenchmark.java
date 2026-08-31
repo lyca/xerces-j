@@ -60,7 +60,7 @@ public class StaxParserBenchmark {
         aaltoFactory = (XMLInputFactory) Class.forName("com.fasterxml.aalto.stax.InputFactoryImpl").getDeclaredConstructor().newInstance();
         aaltoFactory.setProperty(XMLInputFactory.IS_NAMESPACE_AWARE, Boolean.TRUE);
 
-        jdkFactory = XMLInputFactory.newDefaultFactory();
+        jdkFactory = JdkFactoryHelper.newJdkXmlInputFactory();
         jdkFactory.setProperty(XMLInputFactory.IS_NAMESPACE_AWARE, Boolean.TRUE);
     }
 

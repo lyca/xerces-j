@@ -59,7 +59,7 @@ public class SaxParserBenchmark {
         aaltoFactory = (SAXParserFactory) Class.forName("com.fasterxml.aalto.sax.SAXParserFactoryImpl").getDeclaredConstructor().newInstance();
         aaltoFactory.setNamespaceAware(true);
 
-        jdkFactory = SAXParserFactory.newDefaultInstance();
+        jdkFactory = JdkFactoryHelper.newJdkSaxParserFactory();
         jdkFactory.setNamespaceAware(true);
     }
 
