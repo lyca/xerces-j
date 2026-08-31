@@ -58,6 +58,12 @@ public class XIncludeConformanceTest {
         KNOWN_EXCLUSIONS.add("harold-34");
         KNOWN_EXCLUSIONS.add("harold-63");
 
+        // Harold testcases that rely on external HTTP network connections (content negotiation to ibiblio / cafeconleche.org)
+        KNOWN_EXCLUSIONS.add("harold-87");
+        KNOWN_EXCLUSIONS.add("harold-88");
+        KNOWN_EXCLUSIONS.add("harold-89");
+        KNOWN_EXCLUSIONS.add("harold-90");
+
         // NIST testcases testing intra-document xpointer references without href or unparsed entities
         KNOWN_EXCLUSIONS.add("Nist-include-17");
         KNOWN_EXCLUSIONS.add("Nist-include-21");
@@ -207,36 +213,19 @@ public class XIncludeConformanceTest {
             }
         }
 
-        switch (testCase.getType()) {
-            case SUCCESS:
-                assertTrue(errorHandler.fatalErrors.isEmpty(),
-                        () -> "Test marked as SUCCESS failed with fatal error: " + formatErrors(errorHandler.fatalErrors));
-                break;
-
-            case ERROR:
-                boolean hasErrors = !errorHandler.fatalErrors.isEmpty() || !errorHandler.errors.isEmpty();
-                assertTrue(hasErrors,
-                        () -> "Test marked as ERROR should have reported an error or fatal error, but parsed without errors.");
-                break;
+        if (testCase.getType() == XIncludeTestCase.Type.ERROR) {
+            assertTrue(errorHandler.hasErrors(),
+                    () -> "Test expected to fail with error, but passed cleanly: " + testCase.getId());
+        } else {
+            assertTrue(!errorHandler.hasErrors(),
+                    () -> "Test marked as SUCCESS failed with fatal error: \n  - " + errorHandler.formatErrors());
         }
-    }
-
-    private static String formatErrors(List<SAXParseException> list) {
-        if (list.isEmpty()) {
-            return "[]";
-        }
-        StringBuilder sb = new StringBuilder();
-        for (SAXParseException e : list) {
-            sb.append("\n  - [Line ").append(e.getLineNumber()).append(", Col ").append(e.getColumnNumber())
-                    .append("] ").append(e.getMessage());
-        }
-        return sb.toString();
     }
 
     private static class TestErrorHandler implements ErrorHandler {
-        final List<SAXParseException> warnings = Collections.synchronizedList(new ArrayList<SAXParseException>());
-        final List<SAXParseException> errors = Collections.synchronizedList(new ArrayList<SAXParseException>());
-        final List<SAXParseException> fatalErrors = Collections.synchronizedList(new ArrayList<SAXParseException>());
+        final List<SAXParseException> warnings = Collections.synchronizedList(new ArrayList<>());
+        final List<SAXParseException> errors = Collections.synchronizedList(new ArrayList<>());
+        final List<SAXParseException> fatalErrors = Collections.synchronizedList(new ArrayList<>());
 
         @Override
         public void warning(SAXParseException exception) {
@@ -251,6 +240,21 @@ public class XIncludeConformanceTest {
         @Override
         public void fatalError(SAXParseException exception) {
             fatalErrors.add(exception);
+        }
+
+        boolean hasErrors() {
+            return !fatalErrors.isEmpty();
+        }
+
+        String formatErrors() {
+            StringBuilder sb = new StringBuilder();
+            for (SAXParseException e : fatalErrors) {
+                if (sb.length() > 0) sb.append("\n  - ");
+                sb.append("[Line ").append(e.getLineNumber())
+                  .append(", Col ").append(e.getColumnNumber()).append("] ")
+                  .append(e.getMessage());
+            }
+            return sb.toString();
         }
     }
 }
