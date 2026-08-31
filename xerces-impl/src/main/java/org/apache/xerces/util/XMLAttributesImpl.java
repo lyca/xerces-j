@@ -76,7 +76,7 @@ public class XMLAttributesImpl
     /** 
      * Usage count for the attribute table view. 
      * Incremented each time all attributes are removed
-     * when the attribute table view is in use.
+     * when the attribute table view is in use sectors.
      */
     protected int fLargeCount = 1;
     
@@ -386,7 +386,7 @@ public class XMLAttributesImpl
     /**
      * Sets the non-normalized value of the attribute at the specified
      * index.
-     *
+     * 
      * @param attrIndex The attribute index.
      * @param attrValue The new non-normalized attribute value.
      */
@@ -412,7 +412,7 @@ public class XMLAttributesImpl
     /**
      * Sets whether an attribute is specified in the instance document
      * or not.
-     *
+     * 
      * @param attrIndex The attribute index.
      * @param specified True if the attribute is specified in the instance
      *                  document.
@@ -521,8 +521,19 @@ public class XMLAttributesImpl
      *         are not available
      */
     public String getValue(String qname) {
-        int index = getIndex(qname);
-        return index != -1 ? fAttributes[index].value : null;
+        if (qname == null) {
+            return null;
+        }
+        final Attribute[] attributes = fAttributes;
+        final int length = fLength;
+        for (int i = 0; i < length; i++) {
+            final Attribute attribute = attributes[i];
+            final String rawname = attribute.name.rawname;
+            if (rawname == qname || (rawname != null && rawname.equals(qname))) {
+                return attribute.value;
+            }
+        }
+        return null;
     } // getValue(String):String
 
     //
@@ -564,10 +575,14 @@ public class XMLAttributesImpl
      *         appear in the list
      */
     public int getIndex(String qName) {
-        for (int i = 0; i < fLength; i++) {
-            Attribute attribute = fAttributes[i];
-            if (attribute.name.rawname != null &&
-                attribute.name.rawname.equals(qName)) {
+        if (qName == null) {
+            return -1;
+        }
+        final Attribute[] attributes = fAttributes;
+        final int length = fLength;
+        for (int i = 0; i < length; i++) {
+            final String rawname = attributes[i].name.rawname;
+            if (rawname == qName || (rawname != null && rawname.equals(qName))) {
                 return i;
             }
         }
@@ -584,14 +599,19 @@ public class XMLAttributesImpl
      *         appear in the list.
      */
     public int getIndex(String uri, String localPart) {
-        for (int i = 0; i < fLength; i++) {
-            Attribute attribute = fAttributes[i];
-            if (attribute.name.localpart != null &&
-                attribute.name.localpart.equals(localPart) &&
-                ((uri==attribute.name.uri) ||
-                (uri!=null && attribute.name.uri!=null && attribute.name.uri.equals(uri))))
-            {
-                return i;
+        if (localPart == null) {
+            return -1;
+        }
+        final Attribute[] attributes = fAttributes;
+        final int length = fLength;
+        for (int i = 0; i < length; i++) {
+            final Attribute attribute = attributes[i];
+            final String lp = attribute.name.localpart;
+            if (lp == localPart || (lp != null && lp.equals(localPart))) {
+                final String u = attribute.name.uri;
+                if (u == uri || (u != null && u.equals(uri))) {
+                    return i;
+                }
             }
         }
         return -1;
@@ -695,8 +715,22 @@ public class XMLAttributesImpl
      *         attribute is not in the list.
      */
     public String getValue(String uri, String localName) {
-        int index = getIndex(uri, localName);
-        return index != -1 ? getValue(index) : null;
+        if (localName == null) {
+            return null;
+        }
+        final Attribute[] attributes = fAttributes;
+        final int length = fLength;
+        for (int i = 0; i < length; i++) {
+            final Attribute attribute = attributes[i];
+            final String lp = attribute.name.localpart;
+            if (lp == localName || (lp != null && lp.equals(localName))) {
+                final String u = attribute.name.uri;
+                if (u == uri || (u != null && u.equals(uri))) {
+                    return attribute.value;
+                }
+            }
+        }
+        return null;
     } // getValue(String,String):String
 
 
@@ -755,7 +789,7 @@ public class XMLAttributesImpl
      */
     public void setURI(int attrIndex, String uri) {
         fAttributes[attrIndex].name.uri = uri;
-    } // getURI(int,QName)
+    } // setURI(int,String)
 
     // Implementation methods
     
@@ -773,9 +807,10 @@ public class XMLAttributesImpl
      *         appear in the list
      */
     public int getIndexFast(String qName) {
-        for (int i = 0; i < fLength; ++i) {
-            Attribute attribute = fAttributes[i];
-            if (attribute.name.rawname == qName) {
+        final Attribute[] attributes = fAttributes;
+        final int length = fLength;
+        for (int i = 0; i < length; ++i) {
+            if (attributes[i].name.rawname == qName) {
                 return i;
             }
         }
@@ -827,7 +862,7 @@ public class XMLAttributesImpl
         }
         
         // set values
-        Attribute attribute = fAttributes[index];
+        final Attribute attribute = fAttributes[index];
         attribute.name.setValues(name);
         attribute.type = type;
         attribute.value = value;
@@ -851,26 +886,30 @@ public class XMLAttributesImpl
      * otherwise null.
      */
     public QName checkDuplicatesNS() {
-        // If the list is small check for duplicates using pairwise comparison.
         final int length = fLength;
+        if (length <= 1) {
+            return null;
+        }
+        // If the list is small check for duplicates using pairwise comparison.
         if (length <= SIZE_LIMIT) {
             final Attribute[] attributes = fAttributes;
             for (int i = 0; i < length - 1; ++i) {
-            	Attribute att1 = attributes[i];
+                final Attribute att1 = attributes[i];
+                final String lp1 = att1.name.localpart;
+                final String uri1 = att1.name.uri;
                 for (int j = i + 1; j < length; ++j) {
-                    Attribute att2 = attributes[j];
-                    if (att1.name.localpart == att2.name.localpart &&
-                        att1.name.uri == att2.name.uri) {
+                    final Attribute att2 = attributes[j];
+                    if (lp1 == att2.name.localpart && uri1 == att2.name.uri) {
                         return att2.name;
                     }
                 }
             }
             return null;
-    	}
-    	// If the list is large check duplicates using a hash table.
-    	else {
-    	    return checkManyDuplicatesNS();
-    	}
+        }
+        // If the list is large check duplicates using a hash table.
+        else {
+            return checkManyDuplicatesNS();
+        }
     }
     
     private QName checkManyDuplicatesNS() {
@@ -939,6 +978,7 @@ public class XMLAttributesImpl
      * This method uses reference comparison, and thus should
      * only be used internally. We cannot use this method in any
      * code exposed to users as they may not pass in unique strings.
+     * </p>
      *
      * @param uri The Namespace URI, or null if
      *        the name has no Namespace URI.
@@ -947,8 +987,10 @@ public class XMLAttributesImpl
      *         appear in the list.
      */
     public int getIndexFast(String uri, String localPart) {
-        for (int i = 0; i < fLength; ++i) {
-            Attribute attribute = fAttributes[i];
+        final Attribute[] attributes = fAttributes;
+        final int length = fLength;
+        for (int i = 0; i < length; ++i) {
+            final Attribute attribute = attributes[i];
             if (attribute.name.localpart == localPart && 
                 attribute.name.uri == uri) {
                 return i;
