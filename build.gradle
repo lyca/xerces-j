@@ -100,6 +100,12 @@ dependencies {
     implementation 'xml-apis:xml-apis:1.4.01'
     implementation 'xml-resolver:xml-resolver:1.2'
 
+    testImplementation platform('org.junit:junit-bom:5.10.2')
+    testImplementation 'org.junit.jupiter:junit-jupiter-api'
+    testImplementation 'org.junit.jupiter:junit-jupiter-params'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+    testRuntimeOnly 'org.junit.vintage:junit-vintage-engine'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     testImplementation 'junit:junit:4.13.2'
     testImplementation sourceSets.samples.output
 }
@@ -198,7 +204,7 @@ task dtdJar(type: Jar) {
 }
 
 test {
-    useJUnit()
+    useJUnitPlatform()
     workingDir = project.rootDir
 
     systemProperty 'javax.xml.parsers.DocumentBuilderFactory', 'org.apache.xerces.jaxp.DocumentBuilderFactoryImpl'
