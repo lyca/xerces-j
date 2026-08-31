@@ -208,6 +208,46 @@ tasks.register('downloadXmlSchemaConformanceSuite') {
     }
 }
 
+tasks.register('downloadDomConformanceSuite') {
+    description = 'Downloads and verifies (SHA-256) W3C DOM Conformance Test Suite (DOM TS) JARs'
+    group = 'verification'
+
+    def suiteDir = rootProject.layout.buildDirectory.dir('domts-suite')
+    def jars = [
+        [name: 'dom1-core-tests-20040405.jar', url: 'https://www.w3.org/2004/04/dom1-core-tests-20040405.jar', sha256: '4869b75952fe8b5af4bbd2aa62583fdcdb5fcb164bf9be7242dbcf0e6a73595b'],
+        [name: 'dom2-core-tests-20040405.jar', url: 'https://www.w3.org/2004/04/dom2-core-tests-20040405.jar', sha256: 'a0a80cec1b9726210a8dda5ccf22668445afdda08c8b75a64e3a93c58957a67c'],
+        [name: 'dom3-core-tests-20040405.jar', url: 'https://www.w3.org/2004/04/dom3-core-tests-20040405.jar', sha256: '5dca89f01ee3aab59d941eb08dc93dd2304a40f8eaeffaf3aea3845110d2a26e'],
+        [name: 'dom3-ls-tests-20040405.jar',   url: 'https://www.w3.org/2004/04/dom3-ls-tests-20040405.jar',   sha256: '399ef6f6ed37553b234b2f0fc77e24394042fa4ef83536110544f49d2ef345b0']
+    ]
+
+    outputs.files(jars.collect { rootProject.layout.buildDirectory.file("domts-suite/${it.name}") })
+
+    doLast {
+        def targetDir = suiteDir.get().asFile
+        if (!targetDir.exists()) {
+            targetDir.mkdirs()
+        }
+
+        jars.each { jarInfo ->
+            def targetFile = new File(targetDir, jarInfo.name)
+            if (!targetFile.exists()) {
+                logger.lifecycle("Downloading DOM Conformance Test Suite JAR: ${jarInfo.name}...")
+                ant.get(src: jarInfo.url, dest: targetFile, verbose: false, usetimestamp: true)
+            }
+
+            def digest = MessageDigest.getInstance('SHA-256')
+            targetFile.eachByte(4096) { bytes, count ->
+                digest.update(bytes, 0, count)
+            }
+            def actualSha256 = digest.digest().collect { String.format('%02x', it) }.join('')
+            if (!actualSha256.equalsIgnoreCase(jarInfo.sha256)) {
+                targetFile.delete()
+                throw new GradleException("SHA-256 checksum mismatch for ${jarInfo.name}!\nExpected: ${jarInfo.sha256}\nActual:   ${actualSha256}")
+            }
+        }
+    }
+}
+
 tasks.register('conformanceTest', Test) {
     description = 'Runs the W3C XML Conformance Test Suite'
     group = 'verification'
@@ -271,12 +311,34 @@ tasks.register('schemaConformanceTest', Test) {
     }
 }
 
+tasks.register('domConformanceTest', Test) {
+    description = 'Runs the W3C DOM Conformance Test Suite (DOM TS)'
+    group = 'verification'
+    dependsOn 'downloadDomConformanceSuite'
+
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+
+    useJUnitPlatform()
+    workingDir = rootProject.rootDir
+
+    systemProperty 'domts.dir', rootProject.layout.buildDirectory.dir('domts-suite').get().asFile.absolutePath
+
+    include 'conformance/dom/DOMConformanceTest.class'
+
+    testLogging {
+        events 'passed', 'skipped', 'failed'
+        showStandardStreams = false
+    }
+}
+
 test {
-    dependsOn 'downloadXmlConformanceSuite', 'downloadXIncludeConformanceSuite', 'downloadXmlSchemaConformanceSuite'
+    dependsOn 'downloadXmlConformanceSuite', 'downloadXIncludeConformanceSuite', 'downloadXmlSchemaConformanceSuite', 'downloadDomConformanceSuite'
 
     systemProperty 'xmlconf.dir', rootProject.layout.buildDirectory.dir('xmlconf-suite/xmlconf').get().asFile.absolutePath
     systemProperty 'xinclude.dir', rootProject.layout.buildDirectory.dir('xinclude-suite/XIncl20060927').get().asFile.absolutePath
     systemProperty 'xmlschema.dir', rootProject.layout.buildDirectory.dir('xsts-suite/xmlschema2002-01-16').get().asFile.absolutePath
+    systemProperty 'domts.dir', rootProject.layout.buildDirectory.dir('domts-suite').get().asFile.absolutePath
 
     include '**/*Test.class'
     include 'dom/dom3/Test.class'
