@@ -30,15 +30,15 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.StringTokenizer;
 
+import org.junit.jupiter.api.BeforeEach;
+import xni.Writer;
+
 import org.apache.xerces.parsers.XIncludeParserConfiguration;
 import org.apache.xerces.xni.XNIException;
 import org.apache.xerces.xni.parser.XMLErrorHandler;
 import org.apache.xerces.xni.parser.XMLInputSource;
 import org.apache.xerces.xni.parser.XMLParseException;
 import org.apache.xerces.xni.parser.XMLParserConfiguration;
-import org.junit.jupiter.api.BeforeEach;
-
-import xni.Writer;
 
 /**
  * Tests for XInclude implementation converted to JUnit 4.

@@ -17,6 +17,11 @@
 
 package schema.config;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.URL;
@@ -32,6 +37,8 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 
 import org.apache.xerces.dom.PSVIElementNSImpl;
 import org.apache.xerces.impl.Constants;
@@ -47,10 +54,6 @@ import org.w3c.dom.Node;
  * @author Peter McCracken, IBM
  * @version $Id$
  */
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.AfterEach;
-
 public abstract class BaseTest {
     protected final static String ROOT_TYPE = Constants.XERCES_PROPERTY_PREFIX
         + Constants.ROOT_TYPE_DEFINITION_PROPERTY;
@@ -187,7 +190,7 @@ public abstract class BaseTest {
                         : "notKnown");
         String message = "{validity} was <" + actualString
         + "> but it should have been <" + expectedString + ">";
-        assertEquals(message, expectedValidity, actualValidity);
+        assertEquals(expectedValidity, actualValidity, message);
     }
     
     protected void assertValidationAttempted(short expectedAttempted,
@@ -200,112 +203,61 @@ public abstract class BaseTest {
                         : "none");
         String message = "{validity} was <" + actualString
         + "> but it should have been <" + expectedString + ">";
-        assertEquals(message, expectedAttempted, actualAttempted);
+        assertEquals(expectedAttempted, actualAttempted, message);
     }
     
     protected void assertElementName(String expectedName, String actualName) {
-        assertEquals("Local name of element declaration is wrong.",
-                expectedName, actualName);
+        assertEquals(expectedName, actualName,
+                "Local name of element declaration is wrong.");
     }
     
     protected void assertElementNull(XSElementDeclaration elem) {
-        assertNull("Element declaration should be null.", elem);
+        assertNull(elem, "Element declaration should be null.");
     }
     
     protected void assertElementNamespace(String expectedName, String actualName) {
-        assertEquals("Namespace of element declaration is wrong.",
-                expectedName, actualName);
+        assertEquals(expectedName, actualName,
+                "Namespace of element declaration is wrong.");
     }
     
     protected void assertElementNamespaceNull(String actualName) {
-        assertNull("Local name of element declaration should be null.",
-                actualName);
+        assertNull(actualName,
+                "Local name of element declaration should be null.");
     }
     
     protected void assertTypeName(String expectedName, String actualName) {
-        assertEquals("Local name of type definition is wrong.", expectedName,
-                actualName);
+        assertEquals(expectedName, actualName,
+                "Local name of type definition is wrong.");
     }
     
     protected void assertTypeNull(XSTypeDefinition type) {
-        assertNull("Type definition should be null.", type);
+        assertNull(type, "Type definition should be null.");
     }
     
     protected void assertTypeNamespace(String expectedName, String actualName) {
-        assertEquals("Namespace of type definition is wrong.", expectedName,
-                actualName);
+        assertEquals(expectedName, actualName,
+                "Namespace of type definition is wrong.");
     }
     
     protected void assertTypeNamespaceNull(String actualName) {
-        assertNull("Namespace of type definition should be null.", actualName);
+        assertNull(actualName,
+                "Namespace of type definition should be null.");
     }
     
     protected void assertError(String error) {
-        assertTrue("Error <" + error + "> should have occured, but did not.",
-                fErrorHandler.specialCaseFound(error));
+        assertTrue(fErrorHandler.specialCaseFound(error),
+                "Error <" + error + "> should have occured, but did not.");
     }
     
     protected void assertNoError(String error) {
-        assertFalse("Error <" + error
-                + "> should not have occured (but it did)", fErrorHandler
-                .specialCaseFound(error));
+        assertFalse(fErrorHandler.specialCaseFound(error),
+                "Error <" + error
+                + "> should not have occured (but it did)");
     }
     
     protected void assertAnyType(XSTypeDefinition type) {
-        assertEquals("Type is supposed to be anyType", SchemaGrammar.fAnyType,
-                type);
-    }
-
-    public void assertTrue(boolean condition) {
-        Assertions.assertTrue(condition);
-    }
-    public void assertTrue(String message, boolean condition) {
-        Assertions.assertTrue(condition, message);
-    }
-    public void assertFalse(boolean condition) {
-        Assertions.assertFalse(condition);
-    }
-    public void assertFalse(String message, boolean condition) {
-        Assertions.assertFalse(condition, message);
-    }
-    public void assertNull(Object object) {
-        Assertions.assertNull(object);
-    }
-    public void assertNull(String message, Object object) {
-        Assertions.assertNull(object, message);
-    }
-    public void assertNotNull(Object object) {
-        Assertions.assertNotNull(object);
-    }
-    public void assertNotNull(String message, Object object) {
-        Assertions.assertNotNull(object, message);
-    }
-    public void assertEquals(Object expected, Object actual) {
-        Assertions.assertEquals(expected, actual);
-    }
-    public void assertEquals(String message, Object expected, Object actual) {
-        Assertions.assertEquals(expected, actual, message);
-    }
-    public void assertEquals(long expected, long actual) {
-        Assertions.assertEquals(expected, actual);
-    }
-    public void assertEquals(String message, long expected, long actual) {
-        Assertions.assertEquals(expected, actual, message);
-    }
-    public void assertEquals(double expected, double actual) {
-        Assertions.assertEquals(expected, actual);
-    }
-    public void assertEquals(String message, double expected, double actual) {
-        Assertions.assertEquals(expected, actual, message);
-    }
-    public void assertSame(Object expected, Object actual) {
-        Assertions.assertSame(expected, actual);
-    }
-    public void assertSame(String message, Object expected, Object actual) {
-        Assertions.assertSame(expected, actual, message);
-    }
-    public void fail(String message) {
-        Assertions.fail(message);
+        assertEquals(SchemaGrammar.fAnyType, type,
+                "Type is supposed to be anyType");
     }
 
 }

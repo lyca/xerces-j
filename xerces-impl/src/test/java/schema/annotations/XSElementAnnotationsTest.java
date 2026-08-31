@@ -17,9 +17,13 @@
 
 package schema.annotations;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.apache.xerces.xs.XSAnnotation;
 import org.apache.xerces.xs.XSElementDeclaration;
@@ -108,9 +112,9 @@ public class XSElementAnnotationsTest extends TestCase {
                 "XSElement");
 
         XSAnnotation annotation = elem.getAnnotation();
-        assertNull("TEST1_NO_ANNOTATION", annotation);
+        assertNull(annotation, "TEST1_NO_ANNOTATION");
         XSObjectList annotations = elem.getAnnotations();
-        assertEquals("TEST1_NO_ANNOTATIONS", 0, annotations.getLength());
+        assertEquals(0, annotations.getLength(), "TEST1_NO_ANNOTATIONS");
     }
 
     /**
@@ -130,9 +134,9 @@ public class XSElementAnnotationsTest extends TestCase {
                 "XSElement");
 
         XSAnnotation annotation = elem.getAnnotation();
-        assertNull("TEST2_NO_ANNOTATION", annotation);
+        assertNull(annotation, "TEST2_NO_ANNOTATION");
         XSObjectList annotations = elem.getAnnotations();
-        assertEquals("TEST2_NO_ANNOTATIONS", 0, annotations.getLength());
+        assertEquals(0, annotations.getLength(), "TEST2_NO_ANNOTATIONS");
     }
 
     /**
@@ -158,13 +162,13 @@ public class XSElementAnnotationsTest extends TestCase {
                 "XSElement");
 
         XSAnnotation annotation = elem.getAnnotation();
-        assertEquals("TEST3_ANNOTATION", expected, trim(annotation
-                .getAnnotationString()));
+        assertEquals(expected, trim(annotation
+                .getAnnotationString()), "TEST3_ANNOTATION");
         XSObjectList annotations = elem.getAnnotations();
         assertEquals(
-                "TEST3_ANNOTATIONS",
                 expected,
-                trim(((XSAnnotation) annotations.item(0)).getAnnotationString()));
+                trim(((XSAnnotation) annotations.item(0)).getAnnotationString()),
+                "TEST3_ANNOTATIONS");
     }
 
     /**
@@ -188,13 +192,13 @@ public class XSElementAnnotationsTest extends TestCase {
                 "XSElement");
 
         XSAnnotation annotation = elem.getAnnotation();
-        assertEquals("TEST3_ANNOTATION", expected, trim(annotation
-                .getAnnotationString()));
+        assertEquals(expected, trim(annotation
+                .getAnnotationString()), "TEST3_ANNOTATION");
         XSObjectList annotations = elem.getAnnotations();
         assertEquals(
-                "TEST3_ANNOTATIONS",
                 expected,
-                trim(((XSAnnotation) annotations.item(0)).getAnnotationString()));
+                trim(((XSAnnotation) annotations.item(0)).getAnnotationString()),
+                "TEST3_ANNOTATIONS");
     }
 
     /**
@@ -218,13 +222,13 @@ public class XSElementAnnotationsTest extends TestCase {
                 "XSElement");
 
         XSAnnotation annotation = elem.getAnnotation();
-        assertEquals("TEST4_NO_SYNTH_ANNOTATION", expected, trim(annotation
-                .getAnnotationString()));
+        assertEquals(expected, trim(annotation
+                .getAnnotationString()), "TEST4_NO_SYNTH_ANNOTATION");
         XSObjectList annotations = elem.getAnnotations();
         assertEquals(
-                "TEST4_NO_SYNTH_ANNOTATIONS",
                 expected,
-                trim(((XSAnnotation) annotations.item(0)).getAnnotationString()));
+                trim(((XSAnnotation) annotations.item(0)).getAnnotationString()),
+                "TEST4_NO_SYNTH_ANNOTATIONS");
     }
 
     /**
@@ -244,9 +248,9 @@ public class XSElementAnnotationsTest extends TestCase {
                 "XSElement");
 
         XSAnnotation annotation = elem.getAnnotation();
-        assertNull("TEST5_NO_ANNOTATION", annotation);
+        assertNull(annotation, "TEST5_NO_ANNOTATION");
         XSObjectList annotations = elem.getAnnotations();
-        assertEquals("TEST5_NO_ANNOTATIONS", 0, annotations.getLength());
+        assertEquals(0, annotations.getLength(), "TEST5_NO_ANNOTATIONS");
     }
 
     /**
@@ -266,8 +270,8 @@ public class XSElementAnnotationsTest extends TestCase {
                 "XSElement");
 
         XSAnnotation annotation = elem.getAnnotation();
-        assertNull("TEST5_NO_ANNOTATION", annotation);
+        assertNull(annotation, "TEST5_NO_ANNOTATION");
         XSObjectList annotations = elem.getAnnotations();
-        assertEquals("TEST5_NO_ANNOTATIONS", 0, annotations.getLength());
+        assertEquals(0, annotations.getLength(), "TEST5_NO_ANNOTATIONS");
     }
 }

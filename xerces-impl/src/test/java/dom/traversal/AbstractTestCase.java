@@ -22,7 +22,8 @@ import java.io.StringReader;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
+
+import org.junit.jupiter.api.BeforeEach;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -39,7 +40,7 @@ public abstract class AbstractTestCase {
     
     private DocumentBuilder fDocumentBuilder;
     
-    @org.junit.jupiter.api.BeforeEach
+    @BeforeEach
     public void setUpAbstractTestCase() throws Exception {
         
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();

@@ -16,6 +16,9 @@
  */
 package dom.range;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.Test;
 
 import org.apache.xerces.dom.DocumentImpl;
 import org.w3c.dom.Element;
@@ -168,7 +171,7 @@ public class TestCompare
             for( int j=0; j<ranges.length; ++j )
             {
                 int result = ranges[i].compareBoundaryPoints( how, ranges[j] );
-                assertTrue( "Compare returned the wrong value i="+i+" j="+j + " result="+result, result == results[i][j] );
+                assertTrue( result == results[i][j], "Compare returned the wrong value i="+i+" j="+j + " result="+result );
             }
         }
     }
@@ -178,7 +181,7 @@ public class TestCompare
      * specification, compare each starting point to every other 
      * starting point.
      */
-    @org.junit.jupiter.api.Test
+    @Test
     public void testCompareStartToStart()
     {
         doTestCompare( Range.START_TO_START, results_START_TO_START );
@@ -189,7 +192,7 @@ public class TestCompare
      * specification, compare each starting point to every other 
      * ending point.
      */
-    @org.junit.jupiter.api.Test
+    @Test
     public void testCompareStartToEnd()
     {
         doTestCompare( Range.START_TO_END, results_START_TO_END );
@@ -200,7 +203,7 @@ public class TestCompare
      * specification, compare each ending point to every other 
      * starting point.
      */
-    @org.junit.jupiter.api.Test
+    @Test
     public void testCompareEndToStart()
     {
         doTestCompare( Range.END_TO_START, results_END_TO_START );
@@ -211,73 +214,10 @@ public class TestCompare
      * specification, compare each ending point to every other 
      * ending point.
      */
-    @org.junit.jupiter.api.Test
+    @Test
     public void testCompareEndToEnd()
     {
         doTestCompare( Range.END_TO_END, results_END_TO_END );
-    }
-
-    /**
-     * Returns the set of all tests in this class
-     */
-    
-
-    /**
-     * Utility for invoking the class from the command line.
-     */
-
-
-
-    public static void assertTrue(boolean condition) {
-        org.junit.jupiter.api.Assertions.assertTrue(condition);
-    }
-    public static void assertTrue(String message, boolean condition) {
-        org.junit.jupiter.api.Assertions.assertTrue(condition, message);
-    }
-    public static void assertFalse(boolean condition) {
-        org.junit.jupiter.api.Assertions.assertFalse(condition);
-    }
-    public static void assertFalse(String message, boolean condition) {
-        org.junit.jupiter.api.Assertions.assertFalse(condition, message);
-    }
-    public static void assertNull(Object object) {
-        org.junit.jupiter.api.Assertions.assertNull(object);
-    }
-    public static void assertNull(String message, Object object) {
-        org.junit.jupiter.api.Assertions.assertNull(object, message);
-    }
-    public static void assertNotNull(Object object) {
-        org.junit.jupiter.api.Assertions.assertNotNull(object);
-    }
-    public static void assertNotNull(String message, Object object) {
-        org.junit.jupiter.api.Assertions.assertNotNull(object, message);
-    }
-    public static void assertEquals(Object expected, Object actual) {
-        org.junit.jupiter.api.Assertions.assertEquals(expected, actual);
-    }
-    public static void assertEquals(String message, Object expected, Object actual) {
-        org.junit.jupiter.api.Assertions.assertEquals(expected, actual, message);
-    }
-    public static void assertEquals(long expected, long actual) {
-        org.junit.jupiter.api.Assertions.assertEquals(expected, actual);
-    }
-    public static void assertEquals(String message, long expected, long actual) {
-        org.junit.jupiter.api.Assertions.assertEquals(expected, actual, message);
-    }
-    public static void assertEquals(double expected, double actual) {
-        org.junit.jupiter.api.Assertions.assertEquals(expected, actual);
-    }
-    public static void assertEquals(String message, double expected, double actual) {
-        org.junit.jupiter.api.Assertions.assertEquals(expected, actual, message);
-    }
-    public static void assertSame(Object expected, Object actual) {
-        org.junit.jupiter.api.Assertions.assertSame(expected, actual);
-    }
-    public static void assertSame(String message, Object expected, Object actual) {
-        org.junit.jupiter.api.Assertions.assertSame(expected, actual, message);
-    }
-    public static void fail(String message) {
-        org.junit.jupiter.api.Assertions.fail(message);
     }
 
 }

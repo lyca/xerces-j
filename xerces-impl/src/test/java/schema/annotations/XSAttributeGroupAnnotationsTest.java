@@ -16,9 +16,14 @@
  */
 package schema.annotations;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.apache.xerces.xs.XSAnnotation;
 import org.apache.xerces.xs.XSAttributeGroupDefinition;
@@ -208,7 +213,7 @@ public class XSAttributeGroupAnnotationsTest extends TestCase {
                 "XSAttributeGroupAnnotationsTest");
         XSAnnotation annotation = AG.getAnnotation();
 
-        assertNotNull("Synthetic Annotation Null", annotation);
+        assertNotNull(annotation, "Synthetic Annotation Null");
     }
 
     /**
@@ -229,7 +234,7 @@ public class XSAttributeGroupAnnotationsTest extends TestCase {
                 "XSAttributeGroupAnnotationsTest");
         XSObjectList annotations = AG.getAnnotations();
 
-        assertEquals("Synthetic Annotation Empty", 1, annotations.getLength());
+        assertEquals(1, annotations.getLength(), "Synthetic Annotation Empty");
     }
 
     /**
@@ -250,7 +255,7 @@ public class XSAttributeGroupAnnotationsTest extends TestCase {
                 "XSAttributeGroupAnnotationsTest");
         XSAnnotation annotation = AG.getAnnotation();
 
-        assertNull("Synthetic Annotation Not Null", annotation);
+        assertNull(annotation, "Synthetic Annotation Not Null");
     }
 
     /**
@@ -271,7 +276,7 @@ public class XSAttributeGroupAnnotationsTest extends TestCase {
                 "XSAttributeGroupAnnotationsTest");
         XSObjectList annotations = AG.getAnnotations();
 
-        assertEquals("Synthetic Annotation Empty", 0, annotations.getLength());
+        assertEquals(0, annotations.getLength(), "Synthetic Annotation Empty");
     }
 
     /**

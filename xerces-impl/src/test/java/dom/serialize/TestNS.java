@@ -23,16 +23,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.StringReader;
 
+import org.junit.jupiter.api.Test;
+
 import org.apache.xerces.dom.DOMImplementationImpl;
 import org.apache.xerces.dom.DocumentImpl;
 import org.apache.xerces.parsers.DOMParser;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.w3c.dom.ls.DOMImplementationLS;
-import org.w3c.dom.ls.LSInput;
-import org.w3c.dom.ls.LSParser;
 import org.w3c.dom.ls.LSSerializer;
 import org.xml.sax.InputSource;
 
@@ -41,9 +40,7 @@ import org.xml.sax.InputSource;
  */
 public class TestNS {
 
-    
-
-    @org.junit.jupiter.api.Test
+    @Test
     public void testNamespaceFixupSerialization() throws Exception {
         DocumentImpl doc = new DocumentImpl();
         Element root = doc.createElementNS("urn:root", "r:root");
@@ -63,7 +60,7 @@ public class TestNS {
         String serialized = serializer.writeToString(doc);
 
         assertNotNull(serialized);
-        assertTrue("Serialized output should contain root element", serialized.contains("root"));
+        assertTrue(serialized.contains("root"), "Serialized output should contain root element");
 
         DOMParser parser = new DOMParser();
         parser.setFeature("http://xml.org/sax/features/namespaces", true);
@@ -73,7 +70,7 @@ public class TestNS {
         assertEquals("root", parsedDoc.getDocumentElement().getLocalName());
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     public void testAttributeNamespaceSynthesis() throws Exception {
         DocumentImpl doc = new DocumentImpl();
         Element root = doc.createElementNS("urn:test", "t:root");
@@ -90,7 +87,7 @@ public class TestNS {
         String xml = serializer.writeToString(doc);
 
         assertNotNull(xml);
-        assertTrue("Synthesized NS prefix or declaration should be present", xml.contains("http://attrUri"));
+        assertTrue(xml.contains("http://attrUri"), "Synthesized NS prefix or declaration should be present");
 
         DOMParser parser = new DOMParser();
         parser.setFeature("http://xml.org/sax/features/namespaces", true);
@@ -100,58 +97,6 @@ public class TestNS {
         assertNotNull(parsedChild);
         Attr parsedAttr = parsedChild.getAttributeNodeNS("http://attrUri", "attrWithoutPrefix");
         assertNotNull(parsedAttr);
-    }
-
-    public static void assertTrue(boolean condition) {
-        org.junit.jupiter.api.Assertions.assertTrue(condition);
-    }
-    public static void assertTrue(String message, boolean condition) {
-        org.junit.jupiter.api.Assertions.assertTrue(condition, message);
-    }
-    public static void assertFalse(boolean condition) {
-        org.junit.jupiter.api.Assertions.assertFalse(condition);
-    }
-    public static void assertFalse(String message, boolean condition) {
-        org.junit.jupiter.api.Assertions.assertFalse(condition, message);
-    }
-    public static void assertNull(Object object) {
-        org.junit.jupiter.api.Assertions.assertNull(object);
-    }
-    public static void assertNull(String message, Object object) {
-        org.junit.jupiter.api.Assertions.assertNull(object, message);
-    }
-    public static void assertNotNull(Object object) {
-        org.junit.jupiter.api.Assertions.assertNotNull(object);
-    }
-    public static void assertNotNull(String message, Object object) {
-        org.junit.jupiter.api.Assertions.assertNotNull(object, message);
-    }
-    public static void assertEquals(Object expected, Object actual) {
-        org.junit.jupiter.api.Assertions.assertEquals(expected, actual);
-    }
-    public static void assertEquals(String message, Object expected, Object actual) {
-        org.junit.jupiter.api.Assertions.assertEquals(expected, actual, message);
-    }
-    public static void assertEquals(long expected, long actual) {
-        org.junit.jupiter.api.Assertions.assertEquals(expected, actual);
-    }
-    public static void assertEquals(String message, long expected, long actual) {
-        org.junit.jupiter.api.Assertions.assertEquals(expected, actual, message);
-    }
-    public static void assertEquals(double expected, double actual) {
-        org.junit.jupiter.api.Assertions.assertEquals(expected, actual);
-    }
-    public static void assertEquals(String message, double expected, double actual) {
-        org.junit.jupiter.api.Assertions.assertEquals(expected, actual, message);
-    }
-    public static void assertSame(Object expected, Object actual) {
-        org.junit.jupiter.api.Assertions.assertSame(expected, actual);
-    }
-    public static void assertSame(String message, Object expected, Object actual) {
-        org.junit.jupiter.api.Assertions.assertSame(expected, actual, message);
-    }
-    public static void fail(String message) {
-        org.junit.jupiter.api.Assertions.fail(message);
     }
 
 }

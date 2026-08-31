@@ -17,16 +17,19 @@
 
 package util;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Iterator;
 import java.util.Map;
+
+import org.apache.xml.serialize.HTMLdtd;
+import org.junit.jupiter.api.Test;
 
 import org.apache.xerces.util.AugmentationsImpl;
 import org.apache.xerces.util.HTTPInputSource;
 import org.apache.xerces.xni.Augmentations;
-import org.apache.xml.serialize.HTMLdtd;
-import static org.junit.jupiter.api.Assertions.*;
-
-import org.junit.jupiter.api.Test;
 
 /**
  * Regression unit tests verifying Java 8 modernized components (lambdas, try-with-resources, generics).

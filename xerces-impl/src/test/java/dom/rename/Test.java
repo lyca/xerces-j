@@ -26,8 +26,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.net.URL;
 
-import org.apache.xerces.parsers.DOMParser;
 import org.junit.jupiter.api.BeforeEach;
+
+import org.apache.xerces.parsers.DOMParser;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;

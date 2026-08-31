@@ -17,8 +17,6 @@
 
 package dom.treewalker;
 
-import java.nio.charset.StandardCharsets;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -26,10 +24,13 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+
+import org.junit.jupiter.api.Test;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -43,8 +44,6 @@ import org.w3c.dom.traversal.TreeWalker;
  * Tests TreeWalker.firstChild() and TreeWalker.nextSibling().
  */
 public class TestFirstChild {
-
-    
 
     private Document createTestDocument() throws ParserConfigurationException {
         DocumentBuilderFactory dfactory = DocumentBuilderFactory.newInstance();
@@ -67,7 +66,7 @@ public class TestFirstChild {
         return doc;
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     public void testTreeWalkerFirstChildAndNextSibling() throws Exception {
         Document doc = createTestDocument();
         TreeWalker treewalker = ((DocumentTraversal) doc).createTreeWalker(
@@ -82,7 +81,7 @@ public class TestFirstChild {
         assertEquals(expected, new String(baos.toByteArray(), StandardCharsets.UTF_8));
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     public void testTreeWalkerStepByStep() throws Exception {
         Document doc = createTestDocument();
         TreeWalker tw = ((DocumentTraversal) doc).createTreeWalker(
@@ -148,58 +147,6 @@ public class TestFirstChild {
                 }
                 break;
         }
-    }
-
-    public static void assertTrue(boolean condition) {
-        org.junit.jupiter.api.Assertions.assertTrue(condition);
-    }
-    public static void assertTrue(String message, boolean condition) {
-        org.junit.jupiter.api.Assertions.assertTrue(condition, message);
-    }
-    public static void assertFalse(boolean condition) {
-        org.junit.jupiter.api.Assertions.assertFalse(condition);
-    }
-    public static void assertFalse(String message, boolean condition) {
-        org.junit.jupiter.api.Assertions.assertFalse(condition, message);
-    }
-    public static void assertNull(Object object) {
-        org.junit.jupiter.api.Assertions.assertNull(object);
-    }
-    public static void assertNull(String message, Object object) {
-        org.junit.jupiter.api.Assertions.assertNull(object, message);
-    }
-    public static void assertNotNull(Object object) {
-        org.junit.jupiter.api.Assertions.assertNotNull(object);
-    }
-    public static void assertNotNull(String message, Object object) {
-        org.junit.jupiter.api.Assertions.assertNotNull(object, message);
-    }
-    public static void assertEquals(Object expected, Object actual) {
-        org.junit.jupiter.api.Assertions.assertEquals(expected, actual);
-    }
-    public static void assertEquals(String message, Object expected, Object actual) {
-        org.junit.jupiter.api.Assertions.assertEquals(expected, actual, message);
-    }
-    public static void assertEquals(long expected, long actual) {
-        org.junit.jupiter.api.Assertions.assertEquals(expected, actual);
-    }
-    public static void assertEquals(String message, long expected, long actual) {
-        org.junit.jupiter.api.Assertions.assertEquals(expected, actual, message);
-    }
-    public static void assertEquals(double expected, double actual) {
-        org.junit.jupiter.api.Assertions.assertEquals(expected, actual);
-    }
-    public static void assertEquals(String message, double expected, double actual) {
-        org.junit.jupiter.api.Assertions.assertEquals(expected, actual, message);
-    }
-    public static void assertSame(Object expected, Object actual) {
-        org.junit.jupiter.api.Assertions.assertSame(expected, actual);
-    }
-    public static void assertSame(String message, Object expected, Object actual) {
-        org.junit.jupiter.api.Assertions.assertSame(expected, actual, message);
-    }
-    public static void fail(String message) {
-        org.junit.jupiter.api.Assertions.fail(message);
     }
 
 }

@@ -28,8 +28,6 @@ import java.net.URL;
 import org.apache.xerces.dom.CoreDocumentImpl;
 import org.apache.xerces.parsers.DOMParser;
 import org.apache.xerces.parsers.SAXParser;
-import static org.junit.jupiter.api.Assertions.*;
-
 import org.w3c.dom.DOMConfiguration;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;

@@ -18,13 +18,13 @@
 package dom.events;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
-import org.apache.xerces.dom.DocumentImpl;
 import org.junit.jupiter.api.BeforeEach;
+
+import org.apache.xerces.dom.DocumentImpl;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -42,8 +42,6 @@ public class Test {
     private EventReporter reporter;
     private Document doc;
 
-    
-
     @BeforeEach
     public void setUp() {
         reporter = new EventReporter();
@@ -58,8 +56,8 @@ public class Test {
         reportAllMutations(root);
         doc.appendChild(root);
 
-        assertTrue("DOMNodeInserted event should be recorded", reporter.getEventsOfType("DOMNodeInserted").size() > 0);
-        assertTrue("DOMSubtreeModified event should be recorded", reporter.getEventsOfType("DOMSubtreeModified").size() > 0);
+        assertTrue(reporter.getEventsOfType("DOMNodeInserted").size() > 0, "DOMNodeInserted event should be recorded");
+        assertTrue(reporter.getEventsOfType("DOMSubtreeModified").size() > 0, "DOMSubtreeModified event should be recorded");
 
         reporter.clear();
         Element e0 = doc.createElement("E0");
@@ -72,7 +70,7 @@ public class Test {
         e0.setAttributeNode(a0);
 
         List<EventReporter.EventRecord> attrEvents = reporter.getEventsOfType("DOMAttrModified");
-        assertTrue("DOMAttrModified event should be recorded", attrEvents.size() > 0);
+        assertTrue(attrEvents.size() > 0, "DOMAttrModified event should be recorded");
         boolean foundAdd = false;
         for (EventReporter.EventRecord r : attrEvents) {
             if ("A0".equals(r.attrName) && r.attrChange == MutationEvent.ADDITION) {
@@ -80,18 +78,18 @@ public class Test {
                 break;
             }
         }
-        assertTrue("Attr addition should be reported", foundAdd);
+        assertTrue(foundAdd, "Attr addition should be reported");
 
         reporter.clear();
         a0.setNodeValue("Updated A0");
         List<EventReporter.EventRecord> modEvents = reporter.getEventsOfType("DOMAttrModified");
-        assertTrue("DOMAttrModified should be fired on value change", modEvents.size() > 0);
+        assertTrue(modEvents.size() > 0, "DOMAttrModified should be fired on value change");
 
         reporter.clear();
         NamedNodeMap nnm = e0.getAttributes();
         nnm.removeNamedItem("A0");
         List<EventReporter.EventRecord> remEvents = reporter.getEventsOfType("DOMAttrModified");
-        assertTrue("DOMAttrModified should be fired on attribute removal", remEvents.size() > 0);
+        assertTrue(remEvents.size() > 0, "DOMAttrModified should be fired on attribute removal");
     }
 
     @org.junit.jupiter.api.Test
@@ -111,12 +109,12 @@ public class Test {
         root.appendChild(lateAdd);
 
         List<EventReporter.EventRecord> insertedIntoDoc = reporter.getEventsOfType("DOMNodeInsertedIntoDocument");
-        assertTrue("DOMNodeInsertedIntoDocument should be recorded on append to tree", insertedIntoDoc.size() > 0);
+        assertTrue(insertedIntoDoc.size() > 0, "DOMNodeInsertedIntoDocument should be recorded on append to tree");
 
         reporter.clear();
         root.removeChild(lateAdd);
         List<EventReporter.EventRecord> removedFromDoc = reporter.getEventsOfType("DOMNodeRemovedFromDocument");
-        assertTrue("DOMNodeRemovedFromDocument should be recorded on remove from tree", removedFromDoc.size() > 0);
+        assertTrue(removedFromDoc.size() > 0, "DOMNodeRemovedFromDocument should be recorded on remove from tree");
     }
 
     @org.junit.jupiter.api.Test
@@ -134,7 +132,7 @@ public class Test {
         t.insertData(1, "o");
 
         List<EventReporter.EventRecord> charEvents = reporter.getEventsOfType("DOMCharacterDataModified");
-        assertTrue("DOMCharacterDataModified should be fired on insertData", charEvents.size() > 0);
+        assertTrue(charEvents.size() > 0, "DOMCharacterDataModified should be fired on insertData");
         EventReporter.EventRecord first = charEvents.get(0);
         assertEquals("fo", first.prevValue);
         assertEquals("foo", first.newValue);
@@ -152,58 +150,6 @@ public class Test {
             t.addEventListener(evtNames[i], reporter, true);
             t.addEventListener(evtNames[i], reporter, false);
         }
-    }
-
-    public static void assertTrue(boolean condition) {
-        org.junit.jupiter.api.Assertions.assertTrue(condition);
-    }
-    public static void assertTrue(String message, boolean condition) {
-        org.junit.jupiter.api.Assertions.assertTrue(condition, message);
-    }
-    public static void assertFalse(boolean condition) {
-        org.junit.jupiter.api.Assertions.assertFalse(condition);
-    }
-    public static void assertFalse(String message, boolean condition) {
-        org.junit.jupiter.api.Assertions.assertFalse(condition, message);
-    }
-    public static void assertNull(Object object) {
-        org.junit.jupiter.api.Assertions.assertNull(object);
-    }
-    public static void assertNull(String message, Object object) {
-        org.junit.jupiter.api.Assertions.assertNull(object, message);
-    }
-    public static void assertNotNull(Object object) {
-        org.junit.jupiter.api.Assertions.assertNotNull(object);
-    }
-    public static void assertNotNull(String message, Object object) {
-        org.junit.jupiter.api.Assertions.assertNotNull(object, message);
-    }
-    public static void assertEquals(Object expected, Object actual) {
-        org.junit.jupiter.api.Assertions.assertEquals(expected, actual);
-    }
-    public static void assertEquals(String message, Object expected, Object actual) {
-        org.junit.jupiter.api.Assertions.assertEquals(expected, actual, message);
-    }
-    public static void assertEquals(long expected, long actual) {
-        org.junit.jupiter.api.Assertions.assertEquals(expected, actual);
-    }
-    public static void assertEquals(String message, long expected, long actual) {
-        org.junit.jupiter.api.Assertions.assertEquals(expected, actual, message);
-    }
-    public static void assertEquals(double expected, double actual) {
-        org.junit.jupiter.api.Assertions.assertEquals(expected, actual);
-    }
-    public static void assertEquals(String message, double expected, double actual) {
-        org.junit.jupiter.api.Assertions.assertEquals(expected, actual, message);
-    }
-    public static void assertSame(Object expected, Object actual) {
-        org.junit.jupiter.api.Assertions.assertSame(expected, actual);
-    }
-    public static void assertSame(String message, Object expected, Object actual) {
-        org.junit.jupiter.api.Assertions.assertSame(expected, actual, message);
-    }
-    public static void fail(String message) {
-        org.junit.jupiter.api.Assertions.fail(message);
     }
 
 }

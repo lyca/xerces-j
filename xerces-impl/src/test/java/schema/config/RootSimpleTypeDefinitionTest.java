@@ -17,14 +17,11 @@
 
 package schema.config;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.AfterEach;
-
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import org.apache.xerces.xs.ItemPSVI;
 import org.xml.sax.SAXException;

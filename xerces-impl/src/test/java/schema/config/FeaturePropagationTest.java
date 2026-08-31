@@ -17,9 +17,9 @@
 
 package schema.config;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.AfterEach;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -32,6 +32,7 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
+import org.junit.jupiter.api.Test;
 
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXNotRecognizedException;
@@ -41,19 +42,7 @@ import org.xml.sax.SAXNotSupportedException;
  * @author Peter McCracken, IBM
  * @version $Id$
  */
-import org.junit.jupiter.api.Assertions;
-
 public class FeaturePropagationTest {
-
-    public void assertTrue(String message, boolean condition) {
-        Assertions.assertTrue(condition, message);
-    }
-    public void assertFalse(String message, boolean condition) {
-        Assertions.assertFalse(condition, message);
-    }
-    public void fail(String message) {
-        Assertions.fail(message);
-    }
     
     public final String FEATURE_STRING_DEFAULT_FALSE = "http://apache.org/xml/features/honour-all-schemaLocations";
     public final String FEATURE_STRING_DEFAULT_TRUE = "http://apache.org/xml/features/validation/schema-full-checking";
@@ -71,10 +60,10 @@ public class FeaturePropagationTest {
         Object beforeReset = validator.getProperty(SECURITY_MANAGER);
         validator.setProperty(SECURITY_MANAGER, null);
         Object changed = validator.getProperty(SECURITY_MANAGER);
-        assertFalse("Property value should have changed after calling setProperty().", beforeReset != changed);
+        assertFalse(beforeReset != changed, "Property value should have changed after calling setProperty().");
         validator.reset();
         Object afterReset = validator.getProperty(SECURITY_MANAGER);
-        assertTrue("Property value should be the same after calling reset()", beforeReset == afterReset);
+        assertTrue(beforeReset == afterReset, "Property value should be the same after calling reset()");
     }
     
     @Test
@@ -88,9 +77,9 @@ public class FeaturePropagationTest {
         validator.setFeature(FEATURE_STRING_DEFAULT_FALSE, true);
         validator.reset();
         boolean value = validator.getFeature(FEATURE_STRING_DEFAULT_TRUE);
-        assertTrue("After reset, value of feature on Validator should be true.", value);
+        assertTrue(value, "After reset, value of feature on Validator should be true.");
         value = validator.getFeature(FEATURE_STRING_DEFAULT_FALSE);
-        assertFalse("After reset, value of feature on Validator should be false.", value);        
+        assertFalse(value, "After reset, value of feature on Validator should be false.");        
     }
     
     @Test
@@ -100,18 +89,18 @@ public class FeaturePropagationTest {
         SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
         boolean value;
         value = factory.getFeature(XMLConstants.FEATURE_SECURE_PROCESSING);
-        assertFalse("Default value of feature on SchemaFactory should have been false.", value);
+        assertFalse(value, "Default value of feature on SchemaFactory should have been false.");
         factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
         Schema schema = makeSchema(factory, null);
         Validator validator = schema.newValidator();
         value = validator.getFeature(XMLConstants.FEATURE_SECURE_PROCESSING);
-        assertTrue("Value of feature on Validator should have been true.", value);
+        assertTrue(value, "Value of feature on Validator should have been true.");
         validator.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, false);
         value = validator.getFeature(XMLConstants.FEATURE_SECURE_PROCESSING);
-        assertFalse("Value of feature on Validator should have been false.", value);
+        assertFalse(value, "Value of feature on Validator should have been false.");
         validator.reset();
         value = validator.getFeature(XMLConstants.FEATURE_SECURE_PROCESSING);
-        assertTrue("After reset, value of feature on Validator should be true.", value);
+        assertTrue(value, "After reset, value of feature on Validator should be true.");
     }
     
     /*
@@ -155,9 +144,9 @@ public class FeaturePropagationTest {
             Validator validator = schema.newValidator();
             boolean value;
             value = validator.getFeature(FEATURE_STRING_DEFAULT_TRUE);
-            assertTrue("Default value of feature on Validator should have been true.", value);
+            assertTrue(value, "Default value of feature on Validator should have been true.");
             value = validator.getFeature(FEATURE_STRING_DEFAULT_FALSE);
-            assertFalse("Default value of feature on Validator should have been false.", value);
+            assertFalse(value, "Default value of feature on Validator should have been false.");
             
             // checking that the value propagates to the validator
             factory.setFeature(FEATURE_STRING_DEFAULT_TRUE, false);
@@ -165,17 +154,17 @@ public class FeaturePropagationTest {
             schema = makeSchema(factory, sources);
             validator = schema.newValidator();
             value = validator.getFeature(FEATURE_STRING_DEFAULT_TRUE);
-            assertFalse("Value of feature on Validator should have been false.", value);
+            assertFalse(value, "Value of feature on Validator should have been false.");
             value = validator.getFeature(FEATURE_STRING_DEFAULT_FALSE);
-            assertTrue("Value of feature on Validator should have been true.", value);
+            assertTrue(value, "Value of feature on Validator should have been true.");
             
             // checking that the validator contains a copy of the features, not a reference
             factory.setFeature(FEATURE_STRING_DEFAULT_TRUE, true);
             factory.setFeature(FEATURE_STRING_DEFAULT_FALSE, false);
             value = validator.getFeature(FEATURE_STRING_DEFAULT_TRUE);
-            assertFalse("Value of feature on Validator should have stayed false.", value);
+            assertFalse(value, "Value of feature on Validator should have stayed false.");
             value = validator.getFeature(FEATURE_STRING_DEFAULT_FALSE);
-            assertTrue("Value of feature on Validator should have stayed true.", value);            
+            assertTrue(value, "Value of feature on Validator should have stayed true.");            
         }
         catch (SAXNotRecognizedException e) {
             fail(e.getMessage());

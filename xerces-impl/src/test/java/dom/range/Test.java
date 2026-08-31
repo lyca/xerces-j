@@ -162,7 +162,7 @@ public class Test {
             Range range = document.createRange();
             setupRange(range, document.getDocumentElement(), i, false);
             range.deleteContents();
-            assertEquals("Delete test failed at index " + i, DELETE_RESULT[i], toString(document));
+            assertEquals(DELETE_RESULT[i], toString(document), "Delete test failed at index " + i);
         }
     }
 
@@ -173,8 +173,8 @@ public class Test {
             Range range = document.createRange();
             setupRange(range, document.getDocumentElement(), i, false);
             DocumentFragment frag = range.extractContents();
-            assertEquals("Extract doc failed at index " + i, DELETE_RESULT[i], toString(document));
-            assertEquals("Extract fragment failed at index " + i, EXTRACT_RESULT[i], toString(frag));
+            assertEquals(DELETE_RESULT[i], toString(document), "Extract doc failed at index " + i);
+            assertEquals(EXTRACT_RESULT[i], toString(frag), "Extract fragment failed at index " + i);
         }
     }
 
@@ -185,7 +185,7 @@ public class Test {
             Range range = document.createRange();
             setupRange(range, document.getDocumentElement(), i, false);
             DocumentFragment frag = range.cloneContents();
-            assertEquals("Clone fragment failed at index " + i, EXTRACT_RESULT[i], toString(frag));
+            assertEquals(EXTRACT_RESULT[i], toString(frag), "Clone fragment failed at index " + i);
         }
     }
 
@@ -196,7 +196,7 @@ public class Test {
             Range range = document.createRange();
             setupRange(range, document.getDocumentElement(), i, false);
             range.insertNode(document.createTextNode(INSERT));
-            assertEquals("Insert test failed at index " + i, INSERT_RESULT[i], toString(document));
+            assertEquals(INSERT_RESULT[i], toString(document), "Insert test failed at index " + i);
         }
     }
 
@@ -208,7 +208,7 @@ public class Test {
             setupRange(range, document.getDocumentElement(), i, true);
             Node surroundNode = document.createElement(SURROUND);
             range.surroundContents(surroundNode);
-            assertEquals("Surround test failed at index " + i, SURROUND_RESULT[i], toString(document));
+            assertEquals(SURROUND_RESULT[i], toString(document), "Surround test failed at index " + i);
         }
     }
 
@@ -232,7 +232,7 @@ public class Test {
                 rangei.setEnd(root.getFirstChild(), 17);
             }
             rangei.insertNode(document.createTextNode(INSERTED_TEXT));
-            assertEquals("Insert mutation failed at index " + i, RANGE_INSERT_RESULT[i], toString(document));
+            assertEquals(RANGE_INSERT_RESULT[i], toString(document), "Insert mutation failed at index " + i);
         }
     }
 
@@ -261,7 +261,7 @@ public class Test {
 
             ranged.deleteContents();
             ranged.insertNode(document.createTextNode("^"));
-            assertEquals("Delete mutation failed at index " + i, RANGE_DELETE_RESULT[i], toString(document));
+            assertEquals(RANGE_DELETE_RESULT[i], toString(document), "Delete mutation failed at index " + i);
         }
     }
 
@@ -399,60 +399,6 @@ public class Test {
             }
         }
         return str.toString();
-    }
-
-    
-
-    public static void assertTrue(boolean condition) {
-        org.junit.jupiter.api.Assertions.assertTrue(condition);
-    }
-    public static void assertTrue(String message, boolean condition) {
-        org.junit.jupiter.api.Assertions.assertTrue(condition, message);
-    }
-    public static void assertFalse(boolean condition) {
-        org.junit.jupiter.api.Assertions.assertFalse(condition);
-    }
-    public static void assertFalse(String message, boolean condition) {
-        org.junit.jupiter.api.Assertions.assertFalse(condition, message);
-    }
-    public static void assertNull(Object object) {
-        org.junit.jupiter.api.Assertions.assertNull(object);
-    }
-    public static void assertNull(String message, Object object) {
-        org.junit.jupiter.api.Assertions.assertNull(object, message);
-    }
-    public static void assertNotNull(Object object) {
-        org.junit.jupiter.api.Assertions.assertNotNull(object);
-    }
-    public static void assertNotNull(String message, Object object) {
-        org.junit.jupiter.api.Assertions.assertNotNull(object, message);
-    }
-    public static void assertEquals(Object expected, Object actual) {
-        org.junit.jupiter.api.Assertions.assertEquals(expected, actual);
-    }
-    public static void assertEquals(String message, Object expected, Object actual) {
-        org.junit.jupiter.api.Assertions.assertEquals(expected, actual, message);
-    }
-    public static void assertEquals(long expected, long actual) {
-        org.junit.jupiter.api.Assertions.assertEquals(expected, actual);
-    }
-    public static void assertEquals(String message, long expected, long actual) {
-        org.junit.jupiter.api.Assertions.assertEquals(expected, actual, message);
-    }
-    public static void assertEquals(double expected, double actual) {
-        org.junit.jupiter.api.Assertions.assertEquals(expected, actual);
-    }
-    public static void assertEquals(String message, double expected, double actual) {
-        org.junit.jupiter.api.Assertions.assertEquals(expected, actual, message);
-    }
-    public static void assertSame(Object expected, Object actual) {
-        org.junit.jupiter.api.Assertions.assertSame(expected, actual);
-    }
-    public static void assertSame(String message, Object expected, Object actual) {
-        org.junit.jupiter.api.Assertions.assertSame(expected, actual, message);
-    }
-    public static void fail(String message) {
-        org.junit.jupiter.api.Assertions.fail(message);
     }
 
 }
