@@ -157,6 +157,18 @@ public class Benchmark {
                 };
             }
 
+            case "repo-stax": {
+                final XMLInputFactory xif = (XMLInputFactory) Class.forName("org.apache.xerces.stax.XMLInputFactoryImpl").getDeclaredConstructor().newInstance();
+                xif.setProperty(XMLInputFactory.IS_NAMESPACE_AWARE, true);
+                return xml -> {
+                    XMLStreamReader reader = xif.createXMLStreamReader(new ByteArrayInputStream(xml));
+                    while (reader.hasNext()) {
+                        reader.next();
+                    }
+                    reader.close();
+                };
+            }
+
             case "aalto-stax": {
                 final XMLInputFactory xif = (XMLInputFactory) Class.forName("com.fasterxml.aalto.stax.InputFactoryImpl").getDeclaredConstructor().newInstance();
                 xif.setProperty(XMLInputFactory.IS_NAMESPACE_AWARE, true);

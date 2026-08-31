@@ -599,6 +599,7 @@ public class NonValidatingConfiguration
             if (fNamespaceScanner == null) {
                 fNamespaceScanner = new XMLNSDocumentScannerImpl();
                 addComponent((XMLComponent)fNamespaceScanner);
+                fConfigUpdated = true;
             }
             fProperties.put(DOCUMENT_SCANNER, fNamespaceScanner);
             fNamespaceScanner.setDTDValidator(null);
@@ -608,6 +609,7 @@ public class NonValidatingConfiguration
             if (fNonNSScanner == null) {
                 fNonNSScanner = new XMLDocumentScannerImpl();
                 addComponent((XMLComponent)fNonNSScanner);
+                fConfigUpdated = true;
             }
             fProperties.put(DOCUMENT_SCANNER, fNonNSScanner);
             fScanner = fNonNSScanner;

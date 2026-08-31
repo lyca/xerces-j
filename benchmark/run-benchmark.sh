@@ -69,6 +69,7 @@ echo "--------------------------------------------------------------------------
 declare -a PARSERS=(
     "aalto-stax|FasterXML Aalto (StAX)|${LIB_DIR}/aalto-xml-1.3.3.jar:${LIB_DIR}/stax2-api-4.2.2.jar"
     "woodstox-stax|FasterXML Woodstox (StAX)|${LIB_DIR}/woodstox-core-7.1.0.jar:${LIB_DIR}/stax2-api-4.2.2.jar"
+    "repo-stax|This Repo (StAX)|${REPO_JAR}:${LIB_DIR}/xml-apis-1.4.01.jar"
     "aalto-sax|FasterXML Aalto (SAX)|${LIB_DIR}/aalto-xml-1.3.3.jar:${LIB_DIR}/stax2-api-4.2.2.jar"
     "woodstox-sax|FasterXML Woodstox (SAX)|${LIB_DIR}/woodstox-core-7.1.0.jar:${LIB_DIR}/stax2-api-4.2.2.jar"
     "jdk-sax|JDK Internal (SAX)|"
