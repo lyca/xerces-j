@@ -17,7 +17,11 @@
 
 package schema.config;
 
-import junit.framework.Assert;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
+
+import org.junit.jupiter.api.Assertions;
 
 import org.apache.xerces.xs.ItemPSVI;
 
@@ -46,9 +50,7 @@ public class UseGrammarPoolOnly_False_Test extends BaseTest {
         return false;
     }
     
-    public UseGrammarPoolOnly_False_Test(String name) {
-        super(name);
-    }
+    public UseGrammarPoolOnly_False_Test() {}
     
     /**
      * The purpose of this test is to check if setting the USE_GRAMMAR_POOL_ONLY
@@ -58,12 +60,14 @@ public class UseGrammarPoolOnly_False_Test extends BaseTest {
      * this test simply ensures that the existing functionality did not disappear.
      * -PM
      */
+    @Test
+
     public void testUsingOnlyGrammarPool() {
         try {
             validateDocument();
         } 
         catch (Exception e) {
-            Assert.fail("Validation failed: " + e.getMessage());
+            Assertions.fail("Validation failed: " + e.getMessage());
         }
         
         assertValidity(ItemPSVI.VALIDITY_VALID, fRootNode.getValidity());

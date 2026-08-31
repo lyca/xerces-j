@@ -17,6 +17,10 @@
 
 package schema.annotations;
 
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
+
 import org.apache.xerces.xs.XSAnnotation;
 import org.apache.xerces.xs.XSAttributeGroupDefinition;
 import org.apache.xerces.xs.XSComplexTypeDefinition;
@@ -55,6 +59,7 @@ public class XSWildcardAnnotationsTest extends TestCase {
      * This method is called before every test case method, to set up the test
      * fixture.
      */
+    @BeforeEach
     protected void setUp() {
         try {
             // get DOM Implementation using DOM Registry
@@ -83,6 +88,7 @@ public class XSWildcardAnnotationsTest extends TestCase {
      * This method is called before every test case method, to tears down the
      * test fixture.
      */
+    @AfterEach
     protected void tearDown() {
         fConfig
                 .setParameter(
@@ -93,6 +99,8 @@ public class XSWildcardAnnotationsTest extends TestCase {
     /**
      * Test #1.
      */
+    @Test
+
     public void testAttrWCNoAnnotation() {
         fConfig
                 .setParameter(
@@ -136,6 +144,8 @@ public class XSWildcardAnnotationsTest extends TestCase {
     /**
      * Test #2.
      */
+    @Test
+
     public void testAttrWCAnnotation() {
         attrWCAnnotationTest(false);
         attrWCAnnotationTest(true);
@@ -181,6 +191,8 @@ public class XSWildcardAnnotationsTest extends TestCase {
     /**
      * Test #3.
      */
+    @Test
+
     public void testAttGpWCAnnotations() {
         attrgpWCAnnotationTest(false);
         attrgpWCAnnotationTest(true);
@@ -213,6 +225,8 @@ public class XSWildcardAnnotationsTest extends TestCase {
     /**
      * Test #4.
      */
+    @Test
+
     public void testElemWCNoAnnotation() {
         fConfig
                 .setParameter(
@@ -240,6 +254,8 @@ public class XSWildcardAnnotationsTest extends TestCase {
     /**
      * Test #5.
      */
+    @Test
+
     public void testElemWCSynthAnnotation() {
         fConfig
                 .setParameter(
@@ -268,6 +284,8 @@ public class XSWildcardAnnotationsTest extends TestCase {
     /**
      * Test #6.
      */
+    @Test
+
     public void testElemWCAnnotation() {
         String expected = trim("<annotation id=\"ANNOT1\" "
                 + "xmlns=\"http://www.w3.org/2001/XMLSchema\" "
@@ -303,6 +321,8 @@ public class XSWildcardAnnotationsTest extends TestCase {
     /**
      * Test #7.
      */
+    @Test
+
     public void testElemWCAnnotationnoSynth() {
         String expected = trim("<annotation sn:attr=\"SYNTH\"  id=\"ANNOT2\" "
                 + "xmlns=\"http://www.w3.org/2001/XMLSchema\" "

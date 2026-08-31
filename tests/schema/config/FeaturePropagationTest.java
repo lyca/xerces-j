@@ -17,6 +17,10 @@
 
 package schema.config;
 
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.URL;
@@ -28,7 +32,6 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
-import junit.framework.TestCase;
 
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXNotRecognizedException;
@@ -38,15 +41,28 @@ import org.xml.sax.SAXNotSupportedException;
  * @author Peter McCracken, IBM
  * @version $Id$
  */
-public class FeaturePropagationTest extends TestCase {
+import org.junit.jupiter.api.Assertions;
+
+public class FeaturePropagationTest {
+
+    public void assertTrue(String message, boolean condition) {
+        Assertions.assertTrue(condition, message);
+    }
+    public void assertFalse(String message, boolean condition) {
+        Assertions.assertFalse(condition, message);
+    }
+    public void fail(String message) {
+        Assertions.fail(message);
+    }
     
     public final String FEATURE_STRING_DEFAULT_FALSE = "http://apache.org/xml/features/honour-all-schemaLocations";
     public final String FEATURE_STRING_DEFAULT_TRUE = "http://apache.org/xml/features/validation/schema-full-checking";
     public final String SECURITY_MANAGER = "http://apache.org/xml/properties/security-manager";
     
-    public FeaturePropagationTest(String name) {
-        super(name);
-    }
+    public FeaturePropagationTest() {}
+    
+    @Test
+
     
     public void testPropertyReset() throws Exception {
         SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
@@ -61,6 +77,9 @@ public class FeaturePropagationTest extends TestCase {
         assertTrue("Property value should be the same after calling reset()", beforeReset == afterReset);
     }
     
+    @Test
+
+    
     public void testFeatureReset() throws Exception {
         SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
         Schema schema = makeSchema(factory, null);
@@ -73,6 +92,9 @@ public class FeaturePropagationTest extends TestCase {
         value = validator.getFeature(FEATURE_STRING_DEFAULT_FALSE);
         assertFalse("After reset, value of feature on Validator should be false.", value);        
     }
+    
+    @Test
+
     
     public void testSecureProcessingFeaturePropagationAndReset() throws Exception {
         SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
@@ -98,17 +120,29 @@ public class FeaturePropagationTest extends TestCase {
      * code is in a common base class.
      */
     
+    @Test
+
+    
     public void testFeaturePropagationNull() throws Exception {
         checkFeaturesOnValidator(null);
     }
+    
+    @Test
+
     
     public void testFeaturePropagationEmpty() throws Exception {
         checkFeaturesOnValidator(new Source[] {});
     }
     
+    @Test
+
+    
     public void testFeaturePropagationSingle() throws Exception {
         checkFeaturesOnValidator(new Source[] {makeSource("base.xsd")});
     }
+    
+    @Test
+
     
     public void testFeaturePropagationMultiple() throws Exception {
         checkFeaturesOnValidator(new Source[] {makeSource("base.xsd"), makeSource("idc.xsd")});

@@ -17,7 +17,11 @@
 
 package schema.config;
 
-import junit.framework.Assert;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
+
+import org.junit.jupiter.api.Assertions;
 
 import org.apache.xerces.dom.PSVIElementNSImpl;
 import org.apache.xerces.xs.ItemPSVI;
@@ -37,91 +41,107 @@ public class IgnoreXSIType_A_A_Test extends BaseTest {
         return "base.xsd";
     }
     
-    public IgnoreXSIType_A_A_Test(String name) {
-        super(name);
-    }
+    public IgnoreXSIType_A_A_Test() {}
+    
+    @Test
+
     
     public void testDefaultDocument() {
         try {
             validateDocument();
         } catch (Exception e) {
-            Assert.fail("Validation failed: " + e.getMessage());
+            Assertions.fail("Validation failed: " + e.getMessage());
         }
         
         // default value of the feature is false
         checkFalseResult();
     }
+    
+    @Test
+
     
     public void testDefaultFragment() {
         try {
             validateFragment();
         } catch (Exception e) {
-            Assert.fail("Validation failed: " + e.getMessage());
+            Assertions.fail("Validation failed: " + e.getMessage());
         }
         
         // default value of the feature is false
         checkFalseResult();
     }
     
+    @Test
+
+    
     public void testSetFalseDocument() {
         try {
             fValidator.setFeature(IGNORE_XSI_TYPE, false);
         } catch (SAXException e1) {
-            Assert.fail("Problem setting feature: " + e1.getMessage());
+            Assertions.fail("Problem setting feature: " + e1.getMessage());
         }
         
         try {
             validateDocument();
         } catch (Exception e) {
-            Assert.fail("Validation failed: " + e.getMessage());
+            Assertions.fail("Validation failed: " + e.getMessage());
         }
         
         checkFalseResult();
     }
+    
+    @Test
+
     
     public void testSetFalseFragment() {
         try {
             fValidator.setFeature(IGNORE_XSI_TYPE, false);
         } catch (SAXException e1) {
-            Assert.fail("Problem setting feature: " + e1.getMessage());
+            Assertions.fail("Problem setting feature: " + e1.getMessage());
         }
         
         try {
             validateFragment();
         } catch (Exception e) {
-            Assert.fail("Validation failed: " + e.getMessage());
+            Assertions.fail("Validation failed: " + e.getMessage());
         }
         
         checkFalseResult();
     }
     
+    @Test
+
+    
     public void testSetTrueDocument() {
         try {
             fValidator.setFeature(IGNORE_XSI_TYPE, true);
         } catch (SAXException e1) {
-            Assert.fail("Problem setting feature: " + e1.getMessage());
+            Assertions.fail("Problem setting feature: " + e1.getMessage());
         }
         
         try {
             validateDocument();
         } catch (Exception e) {
-            Assert.fail("Validation failed: " + e.getMessage());
+            Assertions.fail("Validation failed: " + e.getMessage());
         }
         
         checkTrueResult();
     }
     
+    @Test
+
+    
     public void testSetTrueFragment() {
         try {
             fValidator.setFeature(IGNORE_XSI_TYPE, true);
         } catch (SAXException e1) {
-            Assert.fail("Problem setting feature: " + e1.getMessage());
+            Assertions.fail("Problem setting feature: " + e1.getMessage());
         }
         
         try {
             validateFragment();
         } catch (Exception e) {
-            Assert.fail("Validation failed: " + e.getMessage());
+            Assertions.fail("Validation failed: " + e.getMessage());
         }
         
         checkTrueResult();

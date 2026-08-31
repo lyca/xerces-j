@@ -17,7 +17,11 @@
 
 package schema.config;
 
-import junit.framework.Assert;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
+
+import org.junit.jupiter.api.Assertions;
 
 import org.apache.xerces.dom.PSVIElementNSImpl;
 import org.apache.xerces.xs.ItemPSVI;
@@ -40,23 +44,26 @@ public class FixedAttrTest extends BaseTest {
         return "base.xsd";
     }
     
-    public FixedAttrTest(String name) {
-        super(name);
-    }
+    public FixedAttrTest() {}
     
+    @BeforeEach
     protected void setUp() throws Exception {
         super.setUp();
     }
     
+    @AfterEach
     protected void tearDown() throws Exception {
         super.tearDown();
     }
+    
+    @Test
+
     
     public void testDefault() {
         try {
             validateDocument();
         } catch (Exception e) {
-            Assert.fail("Validation failed: " + e.getMessage());
+            Assertions.fail("Validation failed: " + e.getMessage());
         }
         
         assertValidity(ItemPSVI.VALIDITY_VALID, fRootNode.getValidity());

@@ -32,7 +32,6 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
-import junit.framework.TestCase;
 
 import org.apache.xerces.dom.PSVIElementNSImpl;
 import org.apache.xerces.impl.Constants;
@@ -48,7 +47,11 @@ import org.w3c.dom.Node;
  * @author Peter McCracken, IBM
  * @version $Id$
  */
-public abstract class BaseTest extends TestCase {
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
+
+public abstract class BaseTest {
     protected final static String ROOT_TYPE = Constants.XERCES_PROPERTY_PREFIX
         + Constants.ROOT_TYPE_DEFINITION_PROPERTY;
     
@@ -87,14 +90,17 @@ public abstract class BaseTest extends TestCase {
     
     protected abstract String getXMLDocument();
     
+    public BaseTest() {
+        fErrorHandler = new SpecialCaseErrorHandler(getRelevantErrorIDs());
+    }
+
     public BaseTest(String name) {
-        super(name);
         fErrorHandler = new SpecialCaseErrorHandler(getRelevantErrorIDs());
     }
     
+    @BeforeEach
     protected void setUp() throws Exception {
-        super.setUp();
-        
+                
         DocumentBuilderFactory docFactory = DocumentBuilderFactory
         .newInstance();
         docFactory.setAttribute(DOCUMENT_CLASS_NAME,
@@ -125,9 +131,9 @@ public abstract class BaseTest extends TestCase {
         fValidator.setFeature(DYNAMIC_VALIDATION, false);
     }
     
+    @AfterEach
     protected void tearDown() throws Exception {
-        super.tearDown();
-        fValidator = null;
+                fValidator = null;
         fDocument = null;
         fRootNode = null;
         fErrorHandler.reset();
@@ -249,4 +255,57 @@ public abstract class BaseTest extends TestCase {
         assertEquals("Type is supposed to be anyType", SchemaGrammar.fAnyType,
                 type);
     }
+
+    public void assertTrue(boolean condition) {
+        Assertions.assertTrue(condition);
+    }
+    public void assertTrue(String message, boolean condition) {
+        Assertions.assertTrue(condition, message);
+    }
+    public void assertFalse(boolean condition) {
+        Assertions.assertFalse(condition);
+    }
+    public void assertFalse(String message, boolean condition) {
+        Assertions.assertFalse(condition, message);
+    }
+    public void assertNull(Object object) {
+        Assertions.assertNull(object);
+    }
+    public void assertNull(String message, Object object) {
+        Assertions.assertNull(object, message);
+    }
+    public void assertNotNull(Object object) {
+        Assertions.assertNotNull(object);
+    }
+    public void assertNotNull(String message, Object object) {
+        Assertions.assertNotNull(object, message);
+    }
+    public void assertEquals(Object expected, Object actual) {
+        Assertions.assertEquals(expected, actual);
+    }
+    public void assertEquals(String message, Object expected, Object actual) {
+        Assertions.assertEquals(expected, actual, message);
+    }
+    public void assertEquals(long expected, long actual) {
+        Assertions.assertEquals(expected, actual);
+    }
+    public void assertEquals(String message, long expected, long actual) {
+        Assertions.assertEquals(expected, actual, message);
+    }
+    public void assertEquals(double expected, double actual) {
+        Assertions.assertEquals(expected, actual);
+    }
+    public void assertEquals(String message, double expected, double actual) {
+        Assertions.assertEquals(expected, actual, message);
+    }
+    public void assertSame(Object expected, Object actual) {
+        Assertions.assertSame(expected, actual);
+    }
+    public void assertSame(String message, Object expected, Object actual) {
+        Assertions.assertSame(expected, actual, message);
+    }
+    public void fail(String message) {
+        Assertions.fail(message);
+    }
+
 }

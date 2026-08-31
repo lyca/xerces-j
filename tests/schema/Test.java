@@ -17,7 +17,6 @@
 
 package schema;
 
-import junit.framework.TestCase;
 import org.apache.xerces.parsers.SAXParser;
 import org.xml.sax.helpers.DefaultHandler;
 
@@ -26,7 +25,9 @@ import org.xml.sax.helpers.DefaultHandler;
  *
  * @author Khaled Noaman, IBM
  */
-public class Test extends TestCase {
+import org.junit.jupiter.api.Assertions;
+
+public class Test {
 
     // feature ids
     protected static final String NAMESPACES_FEATURE_ID = "http://xml.org/sax/features/namespaces";
@@ -42,10 +43,9 @@ public class Test extends TestCase {
     // Default data source location
     protected static final String SOURCE_LOC_ID = "./tests/schema/";
 
-    public Test(String name) {
-        super(name);
-    }
+    public Test() {}
 
+    @org.junit.jupiter.api.Test
     public void testSettingNoNamespaceSchemaLocation() throws Exception {
         SAXParser parser = new org.apache.xerces.parsers.SAXParser();
 

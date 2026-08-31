@@ -17,6 +17,10 @@
 
 package schema.annotations;
 
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
+
 import org.apache.xerces.xs.XSAnnotation;
 import org.apache.xerces.xs.XSElementDeclaration;
 import org.apache.xerces.xs.XSImplementation;
@@ -50,6 +54,7 @@ public class XSElementAnnotationsTest extends TestCase {
      * This method is called before every test case method, to set up the test
      * fixture.
      */
+    @BeforeEach
     protected void setUp() {
         try {
             // get DOM Implementation using DOM Registry
@@ -78,6 +83,7 @@ public class XSElementAnnotationsTest extends TestCase {
      * This method is called before every test case method, to tears down the
      * test fixture.
      */
+    @AfterEach
     protected void tearDown() {
         fConfig
                 .setParameter(
@@ -88,6 +94,8 @@ public class XSElementAnnotationsTest extends TestCase {
     /**
      * Test #1.
      */
+    @Test
+
     public void testElem1Annotation() {
         fConfig
                 .setParameter(
@@ -108,6 +116,8 @@ public class XSElementAnnotationsTest extends TestCase {
     /**
      * Test #2.
      */
+    @Test
+
     public void testElem2Annotation() {
         fConfig
                 .setParameter(
@@ -128,6 +138,8 @@ public class XSElementAnnotationsTest extends TestCase {
     /**
      * Test #3.
      */
+    @Test
+
     public void testElem2SynthAnnotation() {
         String expected = trim("<annotation sn:att=\"SYNTH\" "
                 + "xmlns=\"http://www.w3.org/2001/XMLSchema\" "
@@ -158,6 +170,8 @@ public class XSElementAnnotationsTest extends TestCase {
     /**
      * Test #4.
      */
+    @Test
+
     public void testElem3Annotation() {
         String expected = trim("<annotation id=\"ANNOT1\" "
                 + "xmlns=\"http://www.w3.org/2001/XMLSchema\" xmlns:sv=\"XSElement\" "
@@ -186,6 +200,8 @@ public class XSElementAnnotationsTest extends TestCase {
     /**
      * Test #5.
      */
+    @Test
+
     public void testElem4Annotation() {
         String expected = trim("<annotation sn:att=\"SYNTH\"  id=\"ANNOT2\" "
                 + "xmlns=\"http://www.w3.org/2001/XMLSchema\" xmlns:sv=\"XSElement\" "
@@ -214,6 +230,8 @@ public class XSElementAnnotationsTest extends TestCase {
     /**
      * Test #6.
      */
+    @Test
+
     public void testElem5Annotation() {
         fConfig
                 .setParameter(
@@ -234,6 +252,8 @@ public class XSElementAnnotationsTest extends TestCase {
     /**
      * Test #6.
      */
+    @Test
+
     public void testElem6Annotation() {
         fConfig
                 .setParameter(

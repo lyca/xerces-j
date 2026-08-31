@@ -17,7 +17,11 @@
 
 package schema.config;
 
-import junit.framework.Assert;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
+
+import org.junit.jupiter.api.Assertions;
 
 import org.apache.xerces.dom.PSVIElementNSImpl;
 import org.apache.xerces.xs.ItemPSVI;
@@ -36,18 +40,22 @@ public class BasicTest extends BaseTest {
         return "base.xsd";
     }
     
-    public BasicTest(String name) {
-        super(name);
-    }
+    public BasicTest() {}
+    
+    @Test
+
     
     public void testSimpleValidation() {
         try {
             validateDocument();
         } catch (Exception e) {
-            Assert.fail("Validation failed: " + e.getMessage());
+            Assertions.fail("Validation failed: " + e.getMessage());
         }
         doValidityAsserts();
     }
+    
+    @Test
+
     
     public void testSimpleValidationWithTrivialXSIType() {
         ((PSVIElementNSImpl) fRootNode).setAttributeNS(
@@ -55,7 +63,7 @@ public class BasicTest extends BaseTest {
         try {
             validateDocument();
         } catch (Exception e) {
-            Assert.fail("Validation failed: " + e.getMessage());
+            Assertions.fail("Validation failed: " + e.getMessage());
         }
         doValidityAsserts();
     }

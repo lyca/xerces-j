@@ -17,6 +17,10 @@
 
 package schema.annotations;
 
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
+
 import org.apache.xerces.xs.XSAnnotation;
 import org.apache.xerces.xs.XSComplexTypeDefinition;
 import org.apache.xerces.xs.XSElementDeclaration;
@@ -54,6 +58,7 @@ public class XSParticleAnnotationsTest extends TestCase {
      * This method is called before every test case method, to set up the test
      * fixture.
      */
+    @BeforeEach
     protected void setUp() {
         try {
             // get DOM Implementation using DOM Registry
@@ -82,6 +87,7 @@ public class XSParticleAnnotationsTest extends TestCase {
      * This method is called before every test case method, to tears down the
      * test fixture.
      */
+    @AfterEach
     protected void tearDown() {
         fConfig
                 .setParameter(
@@ -92,6 +98,8 @@ public class XSParticleAnnotationsTest extends TestCase {
     /**
      * Test #1.
      */
+    @Test
+
     public void testNoAnnotations() {
         noAnnotationsTest(Boolean.FALSE);
         noAnnotationsTest(Boolean.TRUE);
@@ -129,6 +137,8 @@ public class XSParticleAnnotationsTest extends TestCase {
     /**
      * Test #2.
      */
+    @Test
+
     public void testSynthAnnotations() {
         synthAnnotationsTest(Boolean.FALSE);
         synthAnnotationsTest(Boolean.TRUE);
@@ -166,6 +176,8 @@ public class XSParticleAnnotationsTest extends TestCase {
     /**
      * Test #3.
      */
+    @Test
+
     public void testAllSynthAnnotations() {
         synthAllAnnotationsTest(Boolean.FALSE);
         synthAllAnnotationsTest(Boolean.TRUE);
@@ -209,6 +221,8 @@ public class XSParticleAnnotationsTest extends TestCase {
     /**
      * Test #4.
      */
+    @Test
+
     public void test4Annotations() {
         annotationsTest4(Boolean.FALSE);
         annotationsTest4(Boolean.TRUE);
@@ -268,6 +282,8 @@ public class XSParticleAnnotationsTest extends TestCase {
     /**
      * Test #5.
      */
+    @Test
+
     public void test5Annotations() {
         annotationsTest5(Boolean.FALSE);
         annotationsTest5(Boolean.TRUE);
@@ -337,6 +353,8 @@ public class XSParticleAnnotationsTest extends TestCase {
     /**
      * Test #6.
      */
+    @Test
+
     public void test6Annotations() {
         annotationsTest6(Boolean.FALSE);
         annotationsTest6(Boolean.TRUE);
@@ -456,6 +474,8 @@ public class XSParticleAnnotationsTest extends TestCase {
     /**
      * Test #7.
      */
+    @Test
+
     public void test7Annotations() {
         annotationsTest7(Boolean.FALSE);
         annotationsTest7(Boolean.TRUE);

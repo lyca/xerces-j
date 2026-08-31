@@ -24,13 +24,62 @@ import java.net.URL;
  * @author Neil Delima, IBM
  * @version $Id$
  */
-public class TestCase extends junit.framework.TestCase {
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
+
+public class TestCase {
 
     public TestCase() {
     }
 
-    public TestCase(String test) {
-        super(test);
+    public TestCase(String test) {}
+
+    
+    public void assertTrue(boolean condition) {
+        Assertions.assertTrue(condition);
+    }
+    public void assertTrue(String message, boolean condition) {
+        Assertions.assertTrue(condition, message);
+    }
+    public void assertFalse(boolean condition) {
+        Assertions.assertFalse(condition);
+    }
+    public void assertFalse(String message, boolean condition) {
+        Assertions.assertFalse(condition, message);
+    }
+    public void assertNull(Object object) {
+        Assertions.assertNull(object);
+    }
+    public void assertNull(String message, Object object) {
+        Assertions.assertNull(object, message);
+    }
+    public void assertNotNull(Object object) {
+        Assertions.assertNotNull(object);
+    }
+    public void assertNotNull(String message, Object object) {
+        Assertions.assertNotNull(object, message);
+    }
+    public void assertEquals(Object expected, Object actual) {
+        Assertions.assertEquals(expected, actual);
+    }
+    public void assertEquals(String message, Object expected, Object actual) {
+        Assertions.assertEquals(expected, actual, message);
+    }
+    public void assertEquals(int expected, int actual) {
+        Assertions.assertEquals(expected, actual);
+    }
+    public void assertEquals(String message, int expected, int actual) {
+        Assertions.assertEquals(expected, actual, message);
+    }
+    public void assertSame(Object expected, Object actual) {
+        Assertions.assertSame(expected, actual);
+    }
+    public void assertSame(String message, Object expected, Object actual) {
+        Assertions.assertSame(expected, actual, message);
+    }
+    public void fail(String message) {
+        Assertions.fail(message);
     }
 
     protected String getResourceURL(String path) {

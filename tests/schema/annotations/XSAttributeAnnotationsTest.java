@@ -17,6 +17,10 @@
 
 package schema.annotations;
 
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
+
 import org.apache.xerces.xs.XSAnnotation;
 import org.apache.xerces.xs.XSAttributeDeclaration;
 import org.apache.xerces.xs.XSImplementation;
@@ -50,6 +54,7 @@ public class XSAttributeAnnotationsTest extends TestCase {
      * This method is called before every test case method, to set up the test
      * fixture.
      */
+    @BeforeEach
     protected void setUp() {
         try {
             // get DOM Implementation using DOM Registry
@@ -78,6 +83,7 @@ public class XSAttributeAnnotationsTest extends TestCase {
      * This method is called before every test case method, to tears down the
      * test fixture.
      */
+    @AfterEach
     protected void tearDown() {
         fConfig
                 .setParameter(
@@ -88,6 +94,8 @@ public class XSAttributeAnnotationsTest extends TestCase {
     /**
      * Test #1.
      */
+    @Test
+
     public void testNoAnnotation() {
         XSModel model = fSchemaLoader
                 .loadURI(getResourceURL("XSAttributeAnnotationsTest01.xsd"));
@@ -102,6 +110,8 @@ public class XSAttributeAnnotationsTest extends TestCase {
     /**
      * Test #2.
      */
+    @Test
+
     public void testNoAnnotations() {
         XSModel model = fSchemaLoader
                 .loadURI(getResourceURL("XSAttributeAnnotationsTest01.xsd"));
@@ -116,6 +126,8 @@ public class XSAttributeAnnotationsTest extends TestCase {
     /**
      * Test #3.
      */
+    @Test
+
     public void testAnnotation() {
         XSModel model = fSchemaLoader
                 .loadURI(getResourceURL("XSAttributeAnnotationsTest02.xsd"));
@@ -140,6 +152,8 @@ public class XSAttributeAnnotationsTest extends TestCase {
     /**
      * Test #4.
      */
+    @Test
+
     public void testAnnotations() {
         XSModel model = fSchemaLoader
                 .loadURI(getResourceURL("XSAttributeAnnotationsTest02.xsd"));
@@ -180,6 +194,8 @@ public class XSAttributeAnnotationsTest extends TestCase {
     /**
      * Test #5.
      */
+    @Test
+
     public void testSyntheticAnnotation() {
         fConfig
                 .setParameter(
@@ -199,6 +215,8 @@ public class XSAttributeAnnotationsTest extends TestCase {
     /**
      * Test #6.
      */
+    @Test
+
     public void testSyntheticAnnotation6() {
         fConfig
                 .setParameter(
@@ -218,6 +236,8 @@ public class XSAttributeAnnotationsTest extends TestCase {
     /**
      * Test #7
      */
+    @Test
+
     public void testNoSyntheticAnnotation() {
         fConfig
                 .setParameter(
@@ -237,6 +257,8 @@ public class XSAttributeAnnotationsTest extends TestCase {
     /**
      * Test #8
      */
+    @Test
+
     public void testSyntheticAnnotationsAbsent() {
         fConfig
                 .setParameter(

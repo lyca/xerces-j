@@ -17,6 +17,10 @@
 
 package schema.annotations;
 
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
+
 import org.apache.xerces.xs.XSAnnotation;
 import org.apache.xerces.xs.XSImplementation;
 import org.apache.xerces.xs.XSLoader;
@@ -50,6 +54,7 @@ public class XSNotationAnnotationsTest extends TestCase {
      * This method is called before every test case method, to set up the test
      * fixture.
      */
+    @BeforeEach
     protected void setUp() {
         try {
             // get DOM Implementation using DOM Registry
@@ -78,6 +83,7 @@ public class XSNotationAnnotationsTest extends TestCase {
      * This method is called before every test case method, to tears down the
      * test fixture.
      */
+    @AfterEach
     protected void tearDown() {
         fConfig
                 .setParameter(
@@ -88,6 +94,8 @@ public class XSNotationAnnotationsTest extends TestCase {
     /**
      * Test #1.
      */
+    @Test
+
     public void testNoAnnotation() {
         XSModel model = fSchemaLoader
                 .loadURI(getResourceURL("XSNotationAnnotationsTest01.xsd"));
@@ -105,6 +113,8 @@ public class XSNotationAnnotationsTest extends TestCase {
     /**
      * Test #2.
      */
+    @Test
+
     public void testSyntheticAnnotations() {
         fConfig
                 .setParameter(
@@ -126,6 +136,8 @@ public class XSNotationAnnotationsTest extends TestCase {
     /**
      * Test #3.
      */
+    @Test
+
     public void testNoSyntheticAnnotations() {
         fConfig
                 .setParameter(
@@ -148,6 +160,8 @@ public class XSNotationAnnotationsTest extends TestCase {
     /**
      * Test #4.
      */
+    @Test
+
     public void testAnnotations() {
         fConfig
                 .setParameter(
@@ -190,6 +204,8 @@ public class XSNotationAnnotationsTest extends TestCase {
     /**
      * Test #5.
      */
+    @Test
+
     public void testAnnotationsWithSynth() {
         fConfig
                 .setParameter(

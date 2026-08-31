@@ -16,6 +16,10 @@
  */
 package schema.annotations;
 
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
+
 import org.apache.xerces.xs.XSAnnotation;
 import org.apache.xerces.xs.XSAttributeGroupDefinition;
 import org.apache.xerces.xs.XSImplementation;
@@ -49,6 +53,7 @@ public class XSAttributeGroupAnnotationsTest extends TestCase {
      * This method is called before every test case method, to set up the test
      * fixture.
      */
+    @BeforeEach
     protected void setUp() {
         try {
             // get DOM Implementation using DOM Registry
@@ -77,6 +82,7 @@ public class XSAttributeGroupAnnotationsTest extends TestCase {
      * This method is called after every test case method, to tear down the
      * test fixture.
      */
+    @AfterEach
     protected void tearDown() {
         fConfig
                 .setParameter(
@@ -87,6 +93,8 @@ public class XSAttributeGroupAnnotationsTest extends TestCase {
     /**
      * Test #1.
      */
+    @Test
+
     public void testNoAnnotation() {
         XSModel model = fSchemaLoader
                 .loadURI(getResourceURL("XSAttributeGroupAnnotationsTest01.xsd"));
@@ -101,6 +109,8 @@ public class XSAttributeGroupAnnotationsTest extends TestCase {
     /**
      * Test #2.
      */
+    @Test
+
     public void testNoAnnotations() {
         XSModel model = fSchemaLoader
                 .loadURI(getResourceURL("XSAttributeGroupAnnotationsTest01.xsd"));
@@ -115,6 +125,8 @@ public class XSAttributeGroupAnnotationsTest extends TestCase {
     /**
      * Test #3.
      */
+    @Test
+
     public void testAnnotation() {
         XSModel model = fSchemaLoader
                 .loadURI(getResourceURL("XSAttributeGroupAnnotationsTest02.xsd"));
@@ -139,6 +151,8 @@ public class XSAttributeGroupAnnotationsTest extends TestCase {
     /**
      * Test #4.
      */
+    @Test
+
     public void testAnnotations() {
         String resourceURL = getResourceURL("XSAttributeGroupAnnotationsTest02.xsd");
         XSModel model = fSchemaLoader.loadURI(resourceURL);
@@ -179,6 +193,8 @@ public class XSAttributeGroupAnnotationsTest extends TestCase {
     /**
      * Test #5.
      */
+    @Test
+
     public void testSyntheticAnnotation() {
         fConfig
                 .setParameter(
@@ -198,6 +214,8 @@ public class XSAttributeGroupAnnotationsTest extends TestCase {
     /**
      * Test #6.
      */
+    @Test
+
     public void testSyntheticAnnotation6() {
         fConfig
                 .setParameter(
@@ -217,6 +235,8 @@ public class XSAttributeGroupAnnotationsTest extends TestCase {
     /**
      * Test #7
      */
+    @Test
+
     public void testNoSyntheticAnnotation() {
         fConfig
                 .setParameter(
@@ -236,6 +256,8 @@ public class XSAttributeGroupAnnotationsTest extends TestCase {
     /**
      * Test #8
      */
+    @Test
+
     public void testSyntheticAnnotationsAbsent() {
         fConfig
                 .setParameter(
@@ -255,6 +277,8 @@ public class XSAttributeGroupAnnotationsTest extends TestCase {
     /**
      * Test #9.
      */
+    @Test
+
     public void testAnnotationsInGroup() {
         XSModel model = fSchemaLoader
                 .loadURI(getResourceURL("XSAttributeGroupAnnotationsTest04.xsd"));

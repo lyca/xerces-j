@@ -17,7 +17,11 @@
 
 package schema.config;
 
-import junit.framework.Assert;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
+
+import org.junit.jupiter.api.Assertions;
 
 import org.apache.xerces.xs.ElementPSVI;
 import org.apache.xerces.xs.ItemPSVI;
@@ -41,37 +45,44 @@ public class SurrogatePairLengthTest extends BaseTest {
         return new String[] { LENGTH_ERROR };
     }
     
-    public SurrogatePairLengthTest(String name) {
-        super(name);
-    }
+    public SurrogatePairLengthTest() {}
+    
+    @Test
+
     
     public void testDefault() {
         try {
             validateDocument();
         } catch (Exception e) {
-            Assert.fail("Validation failed: " + e.getMessage());
+            Assertions.fail("Validation failed: " + e.getMessage());
         }
         
         checkInvalidResult();
     }
+
+    @Test
+
 
     public void testSetFalse() {
         try {
             fValidator.setFeature(USE_CODE_POINT_COUNT_FOR_STRING_LENGTH, false);
             validateDocument();
         } catch (Exception e) {
-            Assert.fail("Validation failed: " + e.getMessage());
+            Assertions.fail("Validation failed: " + e.getMessage());
         }
         
         checkInvalidResult();
     }
+
+    @Test
+
 
     public void testSetTrue() {
         try {
             fValidator.setFeature(USE_CODE_POINT_COUNT_FOR_STRING_LENGTH, true);
             validateDocument();
         } catch (Exception e) {
-            Assert.fail("Validation failed: " + e.getMessage());
+            Assertions.fail("Validation failed: " + e.getMessage());
         }
         
         checkValidResult();

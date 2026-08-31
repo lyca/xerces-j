@@ -17,7 +17,11 @@
 
 package schema.config;
 
-import junit.framework.Assert;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
+
+import org.junit.jupiter.api.Assertions;
 
 import org.apache.xerces.dom.PSVIElementNSImpl;
 import org.apache.xerces.xs.ItemPSVI;
@@ -49,45 +53,52 @@ public class IdentityConstraintCheckingTest extends BaseTest {
         return new String[] { DUPLICATE_UNIQUE, DUPLICATE_KEY, INVALID_KEYREF };
     }
     
-    public IdentityConstraintCheckingTest(String name) {
-        super(name);
-    }
+    public IdentityConstraintCheckingTest() {}
+    
+    @Test
+
     
     public void testDefault() {
         try {
             validateDocument();
         } catch (Exception e) {
-            Assert.fail("Validation failed: " + e.getMessage());
+            Assertions.fail("Validation failed: " + e.getMessage());
         }
         
         checkDefault();
     }
     
+    @Test
+
+    
     public void testSetFalse() {
         try {
             fValidator.setFeature(IDC_CHECKING, false);
         } catch (SAXException e) {
-            Assert.fail("Error setting feature.");
+            Assertions.fail("Error setting feature.");
         }
         try {
             validateDocument();
         } catch (Exception e) {
-            Assert.fail("Validation failed: " + e.getMessage());
+            Assertions.fail("Validation failed: " + e.getMessage());
         }
         
         checkValidResult();
     }
     
+    @Test
+
+    
     public void testSetTrue() {
         try {
             fValidator.setFeature(IDC_CHECKING, true);
         } catch (SAXException e) {
-            Assert.fail("Error setting feature.");
+            Assertions.fail("Error setting feature.");
         }
         try {
             validateDocument();
         } catch (Exception e) {
-            Assert.fail("Validation failed: " + e.getMessage());
+            Assertions.fail("Validation failed: " + e.getMessage());
         }
         
         checkDefault();

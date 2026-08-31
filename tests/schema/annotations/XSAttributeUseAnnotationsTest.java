@@ -17,6 +17,10 @@
 
 package schema.annotations;
 
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
+
 import org.apache.xerces.xs.XSAnnotation;
 import org.apache.xerces.xs.XSAttributeUse;
 import org.apache.xerces.xs.XSComplexTypeDefinition;
@@ -50,6 +54,7 @@ public class XSAttributeUseAnnotationsTest extends TestCase {
      * This method is called before every test case method, to set up the test
      * fixture.
      */
+    @BeforeEach
     protected void setUp() {
         try {
             // get DOM Implementation using DOM Registry
@@ -78,6 +83,7 @@ public class XSAttributeUseAnnotationsTest extends TestCase {
      * This method is called before every test case method, to tears down the
      * test fixture.
      */
+    @AfterEach
     protected void tearDown() {
         fConfig
                 .setParameter(
@@ -88,6 +94,8 @@ public class XSAttributeUseAnnotationsTest extends TestCase {
     /**
      * Test #1.
      */
+    @Test
+
     public void testAttrUseNoAnnotations() {
         XSModel model = fSchemaLoader
                 .loadURI(getResourceURL("XSAttributeUseAnnotationsTest01.xsd"));
@@ -116,6 +124,8 @@ public class XSAttributeUseAnnotationsTest extends TestCase {
     /**
      * Test #2.
      */
+    @Test
+
     public void testAttrUseNoSynthAnnotations() {
         fConfig
                 .setParameter(
@@ -149,6 +159,8 @@ public class XSAttributeUseAnnotationsTest extends TestCase {
     /**
      * Test #3
      */
+    @Test
+
     public void testAttrUseSynthAnnotations() {
         fConfig
                 .setParameter(
@@ -183,6 +195,8 @@ public class XSAttributeUseAnnotationsTest extends TestCase {
     /**
      * Test #4.
      */
+    @Test
+
     public void testAttrUseAnnotations() {
         fConfig
                 .setParameter(
@@ -217,6 +231,8 @@ public class XSAttributeUseAnnotationsTest extends TestCase {
     /**
      * Test #5.
      */
+    @Test
+
     public void testAttrUseAnnotationsSynthetic() {
         fConfig
                 .setParameter(
@@ -251,6 +267,8 @@ public class XSAttributeUseAnnotationsTest extends TestCase {
     /**
      * Test #6.
      */
+    @Test
+
     public void testWildAttrUseAnnotationsSynthetic() {
         fConfig
                 .setParameter(

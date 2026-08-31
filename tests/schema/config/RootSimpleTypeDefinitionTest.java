@@ -17,10 +17,14 @@
 
 package schema.config;
 
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
+
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
-import junit.framework.Assert;
+import org.junit.jupiter.api.Assertions;
 
 import org.apache.xerces.xs.ItemPSVI;
 import org.xml.sax.SAXException;
@@ -49,27 +53,25 @@ public class RootSimpleTypeDefinitionTest extends BaseTest {
         return new String[] { INVALID_TYPE_ERROR, MININCLUSIVE_DERIVATION_ERROR };
     }
     
-    public RootSimpleTypeDefinitionTest(String name) {
-        super(name);
-        // This is a roundabout way of making sure that we're not using an
-        // interned string (so that == doesn't work)
-        String ns = "x" + XMLConstants.W3C_XML_SCHEMA_NS_URI;
-        ns = ns.substring(1);
-        typeString = new QName(ns, "string", "xsd");
-        typeNonNegInt = new QName(ns, "nonNegativeInteger", "xsd");
+    public RootSimpleTypeDefinitionTest() {
+        typeString = new QName(XMLConstants.W3C_XML_SCHEMA_NS_URI, "string", "xsd");
+        typeNonNegInt = new QName(XMLConstants.W3C_XML_SCHEMA_NS_URI, "nonNegativeInteger", "xsd");
     }
+    
+    @Test
+
     
     public void testSettingSimpleType() throws Exception {
         try {
             fValidator.setProperty(ROOT_TYPE, typeString);
         } catch (SAXException e1) {
-            Assert.fail("Problem setting property: " + e1.getMessage());
+            Assertions.fail("Problem setting property: " + e1.getMessage());
         }
         
         try {
             validateDocument();
         } catch (Exception e) {
-            Assert.fail("Validation failed: " + e.getMessage());
+            Assertions.fail("Validation failed: " + e.getMessage());
         }
         
         assertValidity(ItemPSVI.VALIDITY_VALID, fRootNode.getValidity());
@@ -79,17 +81,20 @@ public class RootSimpleTypeDefinitionTest extends BaseTest {
         assertTypeName("string", fRootNode.getTypeDefinition().getName());
     }
     
+    @Test
+
+    
     public void testSettingInvalidSimpleType() throws Exception {
         try {
             fValidator.setProperty(ROOT_TYPE, typeNonNegInt);
         } catch (SAXException e1) {
-            Assert.fail("Problem setting property: " + e1.getMessage());
+            Assertions.fail("Problem setting property: " + e1.getMessage());
         }
         
         try {
             validateDocument();
         } catch (Exception e) {
-            Assert.fail("Validation failed: " + e.getMessage());
+            Assertions.fail("Validation failed: " + e.getMessage());
         }
         
         assertError(INVALID_TYPE_ERROR);
