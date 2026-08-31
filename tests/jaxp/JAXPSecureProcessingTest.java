@@ -17,9 +17,9 @@
 
 package jaxp;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.util.Locale;
@@ -30,9 +30,9 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.validation.SchemaFactory;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -63,7 +63,7 @@ public class JAXPSecureProcessingTest {
     
     private static final Locale DEFAULT_LOCALE = Locale.getDefault();
     
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         System.setProperty("javax.xml.parsers.SAXParserFactory", "org.apache.xerces.jaxp.SAXParserFactoryImpl");
         System.setProperty("javax.xml.parsers.DocumentBuilderFactory", "org.apache.xerces.jaxp.DocumentBuilderFactoryImpl");
@@ -81,7 +81,7 @@ public class JAXPSecureProcessingTest {
         Locale.setDefault(Locale.ENGLISH);
     }
     
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         System.clearProperty("javax.xml.parsers.SAXParserFactory");
         System.clearProperty("javax.xml.parsers.DocumentBuilderFactory");
@@ -711,7 +711,5 @@ public class JAXPSecureProcessingTest {
         return dbf.newDocumentBuilder();
     }
 
-    public static junit.framework.Test suite() {
-        return new junit.framework.JUnit4TestAdapter(JAXPSecureProcessingTest.class);
-    }
+    
 }

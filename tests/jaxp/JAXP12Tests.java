@@ -17,16 +17,16 @@
 
 package jaxp;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
@@ -88,7 +88,7 @@ public class JAXP12Tests implements JAXPConstants {
         }
     }
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         dbf = DocumentBuilderFactory.newInstance();
         db = dbf.newDocumentBuilder();  // non-namespaceAware version
@@ -136,8 +136,8 @@ public class JAXP12Tests implements JAXPConstants {
             xr.parse(new InputData("personal-schema-err.xml"));
             fail("ErrorHandler.error() should have thrown a SAXParseException");
         } catch (SAXException x) {
-            assertEquals("Should have caused validation error.",
-                         Boolean.TRUE, meh.getStatus());
+            assertEquals(Boolean.TRUE, meh.getStatus(),
+                         "Should have caused validation error.");
         }
     }
 
@@ -168,8 +168,8 @@ public class JAXP12Tests implements JAXPConstants {
             xr.parse(new InputData("personal-schema.xml"));
             fail("ErrorHandler.error() should have thrown a SAXParseException");
         } catch (SAXException x) {
-            assertEquals("Should have caused validation error.",
-                         Boolean.TRUE, meh.getStatus());
+            assertEquals(Boolean.TRUE, meh.getStatus(),
+                         "Should have caused validation error.");
         }
     }
 
@@ -207,8 +207,8 @@ public class JAXP12Tests implements JAXPConstants {
             mydb.parse(new InputData("personal-schema-err.xml"));
             fail("ErrorHandler.error() should have thrown a SAXParseException");
         } catch (SAXException x) {
-            assertEquals("Should have caused validation error.",
-                         Boolean.TRUE, meh.getStatus());
+            assertEquals(Boolean.TRUE, meh.getStatus(),
+                         "Should have caused validation error.");
         }
     }
 
@@ -243,12 +243,10 @@ public class JAXP12Tests implements JAXPConstants {
             mydb.parse(new InputData("personal-schema.xml"));
             fail("ErrorHandler.error() should have thrown a SAXParseException");
         } catch (SAXException x) {
-            assertEquals("Should have caused validation error.",
-                         Boolean.TRUE, meh.getStatus());
+            assertEquals(Boolean.TRUE, meh.getStatus(),
+                         "Should have caused validation error.");
         }
     }
 
-    public static junit.framework.Test suite() {
-        return new junit.framework.JUnit4TestAdapter(JAXP12Tests.class);
-    }
+    
 }

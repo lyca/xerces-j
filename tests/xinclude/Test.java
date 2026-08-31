@@ -16,9 +16,9 @@
  */
 package xinclude;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -34,7 +34,7 @@ import org.apache.xerces.xni.parser.XMLErrorHandler;
 import org.apache.xerces.xni.parser.XMLInputSource;
 import org.apache.xerces.xni.parser.XMLParseException;
 import org.apache.xerces.xni.parser.XMLParserConfiguration;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 
 import xni.Writer;
 
@@ -73,11 +73,9 @@ public class Test implements XMLErrorHandler {
     private Writer fWriter;
     private PrintWriter fOutputWriter;
 
-    public static junit.framework.Test suite() {
-        return new junit.framework.JUnit4TestAdapter(Test.class);
-    }
+    
 
-    @Before
+    @BeforeEach
     public void setUp() {
         XMLParserConfiguration parserConfig = new XIncludeParserConfiguration();
         parserConfig.setFeature(NAMESPACES_FEATURE_ID, true);
@@ -115,7 +113,7 @@ public class Test implements XMLErrorHandler {
 
         String expectedContent = normalizeLineEndings(readFile(expectedOutputFile));
         String actualContent = normalizeLineEndings(results);
-        assertEquals("Test " + testnum + " output mismatch", expectedContent, actualContent);
+        assertEquals(expectedContent, actualContent, "Test " + testnum + " output mismatch");
     }
 
     private String readFile(String filename) throws IOException {
@@ -203,45 +201,45 @@ public class Test implements XMLErrorHandler {
         return origPath;
     }
 
-    @org.junit.Test public void test01() throws Exception { runTest(1); }
-    @org.junit.Test public void test02() throws Exception { runTest(2); }
-    @org.junit.Test public void test03() throws Exception { runTest(3); }
-    @org.junit.Test public void test04() throws Exception { runTest(4); }
-    @org.junit.Test public void test05() throws Exception { runTest(5); }
-    @org.junit.Test public void test06() throws Exception { runTest(6); }
-    @org.junit.Test public void test07() throws Exception { runTest(7); }
-    @org.junit.Test public void test08() throws Exception { runTest(8); }
-    @org.junit.Test public void test09() throws Exception { runTest(9); }
-    @org.junit.Test public void test10() throws Exception { runTest(10); }
-    @org.junit.Test public void test11() throws Exception { runTest(11); }
-    @org.junit.Test public void test12() throws Exception { runTest(12); }
-    @org.junit.Test public void test13() throws Exception { runTest(13); }
-    @org.junit.Test public void test14() throws Exception { runTest(14); }
-    @org.junit.Test public void test15() throws Exception { runTest(15); }
-    @org.junit.Test public void test16() throws Exception { runTest(16); }
-    @org.junit.Test public void test17() throws Exception { runTest(17); }
-    @org.junit.Test public void test18() throws Exception { runTest(18); }
-    @org.junit.Test public void test19() throws Exception { runTest(19); }
-    @org.junit.Test public void test20() throws Exception { runTest(20); }
-    @org.junit.Test public void test21() throws Exception { runTest(21); }
-    @org.junit.Test public void test22() throws Exception { runTest(22); }
-    @org.junit.Test public void test23() throws Exception { runTest(23); }
-    @org.junit.Test public void test24() throws Exception { runTest(24); }
-    @org.junit.Test public void test25() throws Exception { runTest(25); }
-    @org.junit.Test public void test26() throws Exception { runTest(26); }
-    @org.junit.Test public void test27() throws Exception { runTest(27); }
-    @org.junit.Test public void test28() throws Exception { runTest(28); }
-    @org.junit.Test public void test29() throws Exception { runTest(29); }
-    @org.junit.Test public void test30() throws Exception { runTest(30); }
-    @org.junit.Test public void test31() throws Exception { runTest(31); }
-    @org.junit.Test public void test32() throws Exception { runTest(32); }
-    @org.junit.Test public void test33() throws Exception { runTest(33); }
-    @org.junit.Test public void test34() throws Exception { runTest(34); }
-    @org.junit.Test public void test35() throws Exception { runTest(35); }
-    @org.junit.Test public void test36() throws Exception { runTest(36); }
-    @org.junit.Test public void test37() throws Exception { runTest(37); }
-    @org.junit.Test public void test38() throws Exception { runTest(38); }
-    @org.junit.Test public void test39() throws Exception { runTest(39); }
-    @org.junit.Test public void test40() throws Exception { runTest(40); }
-    @org.junit.Test public void test41() throws Exception { runTest(41); }
+    @org.junit.jupiter.api.Test public void test01() throws Exception { runTest(1); }
+    @org.junit.jupiter.api.Test public void test02() throws Exception { runTest(2); }
+    @org.junit.jupiter.api.Test public void test03() throws Exception { runTest(3); }
+    @org.junit.jupiter.api.Test public void test04() throws Exception { runTest(4); }
+    @org.junit.jupiter.api.Test public void test05() throws Exception { runTest(5); }
+    @org.junit.jupiter.api.Test public void test06() throws Exception { runTest(6); }
+    @org.junit.jupiter.api.Test public void test07() throws Exception { runTest(7); }
+    @org.junit.jupiter.api.Test public void test08() throws Exception { runTest(8); }
+    @org.junit.jupiter.api.Test public void test09() throws Exception { runTest(9); }
+    @org.junit.jupiter.api.Test public void test10() throws Exception { runTest(10); }
+    @org.junit.jupiter.api.Test public void test11() throws Exception { runTest(11); }
+    @org.junit.jupiter.api.Test public void test12() throws Exception { runTest(12); }
+    @org.junit.jupiter.api.Test public void test13() throws Exception { runTest(13); }
+    @org.junit.jupiter.api.Test public void test14() throws Exception { runTest(14); }
+    @org.junit.jupiter.api.Test public void test15() throws Exception { runTest(15); }
+    @org.junit.jupiter.api.Test public void test16() throws Exception { runTest(16); }
+    @org.junit.jupiter.api.Test public void test17() throws Exception { runTest(17); }
+    @org.junit.jupiter.api.Test public void test18() throws Exception { runTest(18); }
+    @org.junit.jupiter.api.Test public void test19() throws Exception { runTest(19); }
+    @org.junit.jupiter.api.Test public void test20() throws Exception { runTest(20); }
+    @org.junit.jupiter.api.Test public void test21() throws Exception { runTest(21); }
+    @org.junit.jupiter.api.Test public void test22() throws Exception { runTest(22); }
+    @org.junit.jupiter.api.Test public void test23() throws Exception { runTest(23); }
+    @org.junit.jupiter.api.Test public void test24() throws Exception { runTest(24); }
+    @org.junit.jupiter.api.Test public void test25() throws Exception { runTest(25); }
+    @org.junit.jupiter.api.Test public void test26() throws Exception { runTest(26); }
+    @org.junit.jupiter.api.Test public void test27() throws Exception { runTest(27); }
+    @org.junit.jupiter.api.Test public void test28() throws Exception { runTest(28); }
+    @org.junit.jupiter.api.Test public void test29() throws Exception { runTest(29); }
+    @org.junit.jupiter.api.Test public void test30() throws Exception { runTest(30); }
+    @org.junit.jupiter.api.Test public void test31() throws Exception { runTest(31); }
+    @org.junit.jupiter.api.Test public void test32() throws Exception { runTest(32); }
+    @org.junit.jupiter.api.Test public void test33() throws Exception { runTest(33); }
+    @org.junit.jupiter.api.Test public void test34() throws Exception { runTest(34); }
+    @org.junit.jupiter.api.Test public void test35() throws Exception { runTest(35); }
+    @org.junit.jupiter.api.Test public void test36() throws Exception { runTest(36); }
+    @org.junit.jupiter.api.Test public void test37() throws Exception { runTest(37); }
+    @org.junit.jupiter.api.Test public void test38() throws Exception { runTest(38); }
+    @org.junit.jupiter.api.Test public void test39() throws Exception { runTest(39); }
+    @org.junit.jupiter.api.Test public void test40() throws Exception { runTest(40); }
+    @org.junit.jupiter.api.Test public void test41() throws Exception { runTest(41); }
 }

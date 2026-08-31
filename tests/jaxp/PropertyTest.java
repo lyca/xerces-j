@@ -17,13 +17,13 @@
 
 package jaxp;
 
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
@@ -33,7 +33,7 @@ public class PropertyTest extends DefaultHandler {
 
     private SAXParserFactory spf;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         spf = SAXParserFactory.newInstance();
         spf.setValidating(true);
@@ -88,7 +88,5 @@ public class PropertyTest extends DefaultHandler {
         }
     }
 
-    public static junit.framework.Test suite() {
-        return new junit.framework.JUnit4TestAdapter(PropertyTest.class);
-    }
+    
 }
