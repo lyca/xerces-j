@@ -251,15 +251,15 @@ public class SymbolTable {
         final int bucket = hash(buffer, offset, length) % fTableSize;
         final Entry[] buckets = fBuckets;
         OUTER: for (Entry entry = buckets[bucket]; entry != null; entry = entry.next) {
-            final char[] ech = entry.characters;
-            if (length == ech.length) {
+            final String symbol = entry.symbol;
+            if (length == symbol.length()) {
                 if (length > 0) {
-                    if (buffer[offset] != ech[0] || buffer[offset + length - 1] != ech[length - 1]) {
+                    if (buffer[offset] != symbol.charAt(0) || buffer[offset + length - 1] != symbol.charAt(length - 1)) {
                         ++collisionCount;
                         continue;
                     }
                     for (int i = 1; i < length - 1; i++) {
-                        if (buffer[offset + i] != ech[i]) {
+                        if (buffer[offset + i] != symbol.charAt(i)) {
                             ++collisionCount;
                             continue OUTER;
                         }
@@ -435,14 +435,14 @@ public class SymbolTable {
         int bucket = hash(buffer, offset, length) % fTableSize;
         final Entry[] buckets = fBuckets;
         OUTER: for (Entry entry = buckets[bucket]; entry != null; entry = entry.next) {
-            final char[] ech = entry.characters;
-            if (length == ech.length) {
+            final String symbol = entry.symbol;
+            if (length == symbol.length()) {
                 if (length > 0) {
-                    if (buffer[offset] != ech[0] || buffer[offset + length - 1] != ech[length - 1]) {
+                    if (buffer[offset] != symbol.charAt(0) || buffer[offset + length - 1] != symbol.charAt(length - 1)) {
                         continue;
                     }
                     for (int i = 1; i < length - 1; i++) {
-                        if (buffer[offset + i] != ech[i]) {
+                        if (buffer[offset + i] != symbol.charAt(i)) {
                             continue OUTER;
                         }
                     }
@@ -472,12 +472,6 @@ public class SymbolTable {
         /** Symbol. */
         public final String symbol;
 
-        /**
-         * Symbol characters. This information is duplicated here for
-         * comparison performance.
-         */
-        public final char[] characters;
-
         /** The next entry. */
         public Entry next;
 
@@ -491,8 +485,7 @@ public class SymbolTable {
          */
         public Entry(String symbol, Entry next) {
             this.symbol = symbol.intern();
-            characters = new char[symbol.length()];
-            symbol.getChars(0, characters.length, characters, 0);
+
             this.next = next;
         }
 
@@ -501,9 +494,7 @@ public class SymbolTable {
          * next entry reference.
          */
         public Entry(char[] ch, int offset, int length, Entry next) {
-            characters = new char[length];
-            System.arraycopy(ch, offset, characters, 0, length);
-            symbol = new String(characters).intern();
+            symbol = new String(ch, offset, length).intern();
             this.next = next;
         }
 
