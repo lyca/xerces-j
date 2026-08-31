@@ -131,7 +131,9 @@ public class NamedNodeMapImpl
      * null if no value has been assigned to that name.
      */
     public Node getNamedItem(String name) {
-
+        if (nodes == null || name == null) {
+            return null;
+        }
     	int i = findNamePoint(name,0);
         return (i < 0) ? null : (Node)(nodes.get(i));
 
@@ -149,7 +151,9 @@ public class NamedNodeMapImpl
      *                      name did not identify any node in the map.
      */
     public Node getNamedItemNS(String namespaceURI, String localName) {
-
+        if (nodes == null || localName == null) {
+            return null;
+        }
     	int i = findNamePoint(namespaceURI, localName);
         return (i < 0) ? null : (Node)(nodes.get(i));
 
@@ -388,7 +392,7 @@ public class NamedNodeMapImpl
      */
     boolean getReadOnly() {
     	return isReadOnly();
-    } // getReadOnly()
+    } // getReadOnly()\
     
 
     //
@@ -458,8 +462,9 @@ public class NamedNodeMapImpl
             int last  = nodes.size() - 1;
 
             while (first <= last) {
-                i = (first + last) / 2;
-                int test = name.compareTo(((Node)(nodes.get(i))).getNodeName());
+                i = (first + last) >>> 1;
+                String nodeName = ((Node)(nodes.get(i))).getNodeName();
+                int test = (name == nodeName) ? 0 : name.compareTo(nodeName);
                 if (test == 0) {
                     return i; // Name found
                 }
@@ -490,8 +495,7 @@ public class NamedNodeMapImpl
      */
     protected int findNamePoint(String namespaceURI, String name) {
         
-        if (nodes == null) return -1;
-        if (name == null) return -1;
+        if (nodes == null || name == null) return -1;
         
         // This is a linear search through the same nodes ArrayList.
         // The ArrayList is sorted on the DOM Level 1 nodename.
@@ -508,14 +512,14 @@ public class NamedNodeMapImpl
             if (namespaceURI == null) {
               if (aNamespaceURI == null
                   &&
-                  (name.equals(aLocalName)
+                  ((name == aLocalName || name.equals(aLocalName))
                    ||
-                   (aLocalName == null && name.equals(a.getNodeName()))))
+                   (aLocalName == null && (name == a.getNodeName() || name.equals(a.getNodeName())))))
                 return i;
             } else {
-              if (namespaceURI.equals(aNamespaceURI)
+              if ((namespaceURI == aNamespaceURI || (aNamespaceURI != null && namespaceURI.equals(aNamespaceURI)))
                   &&
-                  name.equals(aLocalName))
+                  (name == aLocalName || name.equals(aLocalName)))
                 return i;
             }
         }
@@ -618,5 +622,4 @@ public class NamedNodeMapImpl
     }
     
 
-    
 } // class NamedNodeMapImpl

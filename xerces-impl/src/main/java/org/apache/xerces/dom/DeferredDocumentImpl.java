@@ -131,7 +131,7 @@ public class DeferredDocumentImpl
     //
     // private data
     //
-    private transient final StringBuffer fBufferStr = new StringBuffer();
+    private transient final StringBuilder fBufferStr = new StringBuilder();
     private transient final ArrayList<String> fStrChunks = new ArrayList<>();
 
     //
@@ -683,7 +683,7 @@ public class DeferredDocumentImpl
             oachunk = oldAttrIndex >> CHUNK_SHIFT;
             oaindex = oldAttrIndex & CHUNK_MASK;
             String oldAttrName = getChunkValue(fNodeName, oachunk, oaindex);
-            if (oldAttrName.equals(attrName)) {
+            if (oldAttrName == attrName || (oldAttrName != null && oldAttrName.equals(attrName))) {
                 break;
             }
             nextIndex = oldAttrIndex;
@@ -1240,10 +1240,11 @@ public class DeferredDocumentImpl
         int index = nodeIndex & CHUNK_MASK;
         
         
-        Object value = fNodeValue[chunk] != null ? fNodeValue[chunk][index] : null;
+        Object[] dataChunk = fNodeValue[chunk];
+        Object value = dataChunk != null ? dataChunk[index] : null;
         if (value != null) {
-            fNodeValue[chunk][index] = null;
-            RefCount c = (RefCount) fNodeValue[chunk][CHUNK_SIZE];
+            dataChunk[index] = null;
+            RefCount c = (RefCount) dataChunk[CHUNK_SIZE];
             c.fCount--;
             if (c.fCount == 0) {
                 fNodeValue[chunk] = null;
@@ -1327,7 +1328,8 @@ public class DeferredDocumentImpl
         while (attrIndex != -1) {
             int achunk = attrIndex >> CHUNK_SHIFT;
             int aindex = attrIndex & CHUNK_MASK;
-            if (getChunkValue(fNodeName, achunk, aindex) == name) {
+            String attrName = getChunkValue(fNodeName, achunk, aindex);
+            if (attrName == name || (attrName != null && attrName.equals(name))) {
                 return getChunkValue(fNodeValue, achunk, aindex);
             }
             attrIndex = getChunkIndex(fNodePrevSib, achunk, aindex);
@@ -1956,7 +1958,7 @@ public class DeferredDocumentImpl
         if (value == -1) {
             return clearChunkIndex(data, chunk, index);
         }
-        int [] dataChunk = data[chunk];
+        int[] dataChunk = data[chunk];
         // Re-create chunk if it was deleted.
         if (dataChunk == null) {
             createChunk(data, chunk);
@@ -1974,7 +1976,7 @@ public class DeferredDocumentImpl
         if (value == null) {
             return clearChunkValue(data, chunk, index);
         }
-        Object [] dataChunk = data[chunk];
+        Object[] dataChunk = data[chunk];
         // Re-create chunk if it was deleted.
         if (dataChunk == null) {
             createChunk(data, chunk);
@@ -1993,13 +1995,19 @@ public class DeferredDocumentImpl
      * Returns the specified value in the given data at the chunk and index.
      */
     private final int getChunkIndex(int data[][], int chunk, int index) {
-        return data[chunk] != null ? data[chunk][index] : -1;
+        int[] dataChunk = data[chunk];
+        return dataChunk != null ? dataChunk[index] : -1;
     }
     private final String getChunkValue(Object data[][], int chunk, int index) {
-        return data[chunk] != null ? (String) data[chunk][index] : null;
+        Object[] dataChunk = data[chunk];
+        return dataChunk != null ? (String) dataChunk[index] : null;
     }
     private final String getNodeValue(int chunk, int index) {
-        Object data = fNodeValue[chunk][index];
+        Object[] dataChunk = fNodeValue[chunk];
+        if (dataChunk == null) {
+            return null;
+        }
+        Object data = dataChunk[index];
         if (data == null){
             return null;
         }
@@ -2021,28 +2029,36 @@ public class DeferredDocumentImpl
      * @return Returns the old value.
      */
     private final int clearChunkIndex(int data[][], int chunk, int index) {
-        int value = data[chunk] != null ? data[chunk][index] : -1;
-        if (value != -1) {
-            data[chunk][CHUNK_SIZE]--;
-            data[chunk][index] = -1;
-            if (data[chunk][CHUNK_SIZE] == 0) {
-                data[chunk] = null;
+        int[] dataChunk = data[chunk];
+        if (dataChunk != null) {
+            int value = dataChunk[index];
+            if (value != -1) {
+                dataChunk[CHUNK_SIZE]--;
+                dataChunk[index] = -1;
+                if (dataChunk[CHUNK_SIZE] == 0) {
+                    data[chunk] = null;
+                }
+                return value;
             }
         }
-        return value;
+        return -1;
     }
     private final String clearChunkValue(Object data[][],
                                          int chunk, int index) {
-        String value = data[chunk] != null ? (String)data[chunk][index] : null;
-        if (value != null) {
-            data[chunk][index] = null;
-            RefCount c = (RefCount) data[chunk][CHUNK_SIZE];
-            c.fCount--;
-            if (c.fCount == 0) {
-                data[chunk] = null;
+        Object[] dataChunk = data[chunk];
+        if (dataChunk != null) {
+            String value = (String) dataChunk[index];
+            if (value != null) {
+                dataChunk[index] = null;
+                RefCount c = (RefCount) dataChunk[CHUNK_SIZE];
+                c.fCount--;
+                if (c.fCount == 0) {
+                    data[chunk] = null;
+                }
+                return value;
             }
         }
-        return value;
+        return null;
     }
 
     /**
