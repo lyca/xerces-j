@@ -84,7 +84,7 @@ public class XMLAttributesImpl
     protected int fLength;
 
     /** Attribute information. */
-    protected Attribute[] fAttributes = new Attribute[4];
+    protected Attribute[] fAttributes = new Attribute[16];
     
     /** 
      * Hashtable of attribute information. 
@@ -194,7 +194,7 @@ public class XMLAttributesImpl
             if (index == -1) {
                 index = fLength;
                 if (fLength++ == fAttributes.length) {
-                    Attribute[] attributes = new Attribute[fAttributes.length + 4];
+                    Attribute[] attributes = new Attribute[fAttributes.length << 1];
                     System.arraycopy(fAttributes, 0, attributes, 0, fAttributes.length);
                     for (int i = fAttributes.length; i < attributes.length; i++) {
                         attributes[i] = new Attribute();
@@ -849,7 +849,7 @@ public class XMLAttributesImpl
         if (fLength++ == fAttributes.length) {
             Attribute[] attributes;
             if (fLength < SIZE_LIMIT) {
-                attributes = new Attribute[fAttributes.length + 4];
+                attributes = new Attribute[fAttributes.length << 1];
             }
             else {
                 attributes = new Attribute[fAttributes.length << 1];
