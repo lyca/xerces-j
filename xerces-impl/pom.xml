@@ -1,16 +1,85 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    
     <parent>
         <groupId>xerces</groupId>
         <artifactId>xerces-j</artifactId>
         <version>2.12.3-SNAPSHOT</version>
     </parent>
+    
     <artifactId>xerces-impl</artifactId>
+
     <dependencies>
         <dependency>
             <groupId>xml-resolver</groupId>
             <artifactId>xml-resolver</artifactId>
             <version>1.2</version>
         </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>download-conformance-suites</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <mkdir dir="${project.build.directory}/xmlconf-suite"/>
+                                <get src="https://www.w3.org/XML/Test/xmlts20130923.tar.gz" dest="${project.build.directory}/xmlconf-suite/xmlts20130923.tar.gz" skipexisting="true"/>
+                                <untar src="${project.build.directory}/xmlconf-suite/xmlts20130923.tar.gz" dest="${project.build.directory}/xmlconf-suite" compression="gzip"/>
+
+                                <mkdir dir="${project.build.directory}/xinclude-suite"/>
+                                <get src="https://www.w3.org/XML/Test/XInclude/XIncl20060927.tar.gz" dest="${project.build.directory}/xinclude-suite/XIncl20060927.tar.gz" skipexisting="true"/>
+                                <untar src="${project.build.directory}/xinclude-suite/XIncl20060927.tar.gz" dest="${project.build.directory}/xinclude-suite" compression="gzip"/>
+
+                                <mkdir dir="${project.build.directory}/xsts-suite"/>
+                                <get src="https://www.w3.org/XML/2004/xml-schema-test-suite/xmlschema2002-01-16/xsts-2002-01-16.tar.gz" dest="${project.build.directory}/xsts-suite/xsts-2002-01-16.tar.gz" skipexisting="true"/>
+                                <untar src="${project.build.directory}/xsts-suite/xsts-2002-01-16.tar.gz" dest="${project.build.directory}/xsts-suite" compression="gzip"/>
+
+                                <mkdir dir="${project.build.directory}/domts-suite"/>
+                                <get src="https://www.w3.org/2004/04/dom1-core-tests-20040405.jar" dest="${project.build.directory}/domts-suite/dom1-core-tests-20040405.jar" skipexisting="true"/>
+                                <get src="https://www.w3.org/2004/04/dom2-core-tests-20040405.jar" dest="${project.build.directory}/domts-suite/dom2-core-tests-20040405.jar" skipexisting="true"/>
+                                <get src="https://www.w3.org/2004/04/dom3-core-tests-20040405.jar" dest="${project.build.directory}/domts-suite/dom3-core-tests-20040405.jar" skipexisting="true"/>
+                                <get src="https://www.w3.org/2004/04/dom3-ls-tests-20040405.jar" dest="${project.build.directory}/domts-suite/dom3-ls-tests-20040405.jar" skipexisting="true"/>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.2.5</version>
+                <configuration>
+                    <systemPropertyVariables>
+                        <xmlconf.dir>${project.build.directory}/xmlconf-suite/xmlconf</xmlconf.dir>
+                        <xinclude.dir>${project.build.directory}/xinclude-suite/XIncl20060927</xinclude.dir>
+                        <xmlschema.dir>${project.build.directory}/xsts-suite/xmlschema2002-01-16</xmlschema.dir>
+                        <domts.dir>${project.build.directory}/domts-suite</domts.dir>
+                    </systemPropertyVariables>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
