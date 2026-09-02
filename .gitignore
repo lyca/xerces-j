@@ -1,5 +1,4 @@
 /bin/
-build/
 out.xml
 /out/
 *.iml
@@ -10,6 +9,8 @@ out.xml
 .project
 junit*.properties
 
-# Gradle
-.gradle/
-gradle/wrapper/gradle-wrapper.jar
+# Maven
+target/
+*.versionsBackup
+release.properties
+.mvn/wrapper/maven-wrapper.jar
