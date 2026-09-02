@@ -20,6 +20,7 @@ package dom.dom3;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
@@ -359,13 +360,9 @@ public class Test implements DOMErrorHandler, LSResourceResolver {
         text = text.replaceWholeText("Data");
         assertEquals("Data", text.getNodeValue());
 
-        test = (Element) doc.getElementsByTagName("elem").item(1);
-        try {
-            ((Text) test.getFirstChild()).replaceWholeText("can't replace");
-        }
-        catch (DOMException e) {
-            // caught if thrown
-        }
+        final Element finalTest = (Element) doc.getElementsByTagName("elem").item(1);
+        assertThrows(DOMException.class, () -> ((Text)finalTest.getFirstChild()).replaceWholeText("can't replace"),
+                "Expected DOMException (NO_MODIFICATION_ALLOWED_ERR) due to read-only element constraint inside nested entity.");
     }
 
     @org.junit.jupiter.api.Test

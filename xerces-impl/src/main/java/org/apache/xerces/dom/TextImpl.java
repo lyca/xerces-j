@@ -423,7 +423,7 @@ public class TextImpl
                             || lType == Node.CDATA_SECTION_NODE) {
                         textLastChild = true;
                     } else if (lType == Node.ENTITY_REFERENCE_NODE) {
-                        if (!canModifyPrev(lastChild)) {
+                        if (!internalContentReplaceable(lastChild, false)) {
                             return false;
                         } else {
                             //If the EntityReference child contains
@@ -478,6 +478,35 @@ public class TextImpl
      * @return true - can replace text false - can't replace exception must be
      *         raised
      */
+    
+    private boolean internalContentReplaceable(Node entRef, boolean isNext) {
+        Node child = isNext ? entRef.getFirstChild() : entRef.getLastChild();
+        if (child == null) {
+            return false;
+        }
+        boolean textChild = false;
+        while (child != null) {
+            short type = child.getNodeType();
+            if (type == Node.TEXT_NODE || type == Node.CDATA_SECTION_NODE) {
+                textChild = true;
+            } else if (type == Node.ENTITY_REFERENCE_NODE) {
+                if (!internalContentReplaceable(child, isNext)) {
+                    return false;
+                } else {
+                    textChild = true;
+                }
+            } else {
+                if (textChild) {
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+            child = isNext ? child.getNextSibling() : child.getPreviousSibling();
+        }
+        return true;
+    }
+
     private boolean canModifyNext(Node node) {
         boolean textFirstChild = false;
 
@@ -507,7 +536,7 @@ public class TextImpl
                             || lType == Node.CDATA_SECTION_NODE) {
                         textFirstChild = true;
                     } else if (lType == Node.ENTITY_REFERENCE_NODE) {
-                        if (!canModifyNext(firstChild)) {
+                        if (!internalContentReplaceable(firstChild, true)) {
                             return false;
                         } else {
                             //If the EntityReference child contains
