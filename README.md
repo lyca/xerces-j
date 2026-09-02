@@ -7,7 +7,7 @@ Apache Xerces-J is a high-performance, fully compliant XML parser written in Jav
 ## Build Prerequisites
 
 * **Java Development Kit (JDK)**: Version 8 or higher (Xerces-J targets Java 8 bytecode compatibility).
-* **Build System**: [Gradle Wrapper](https://gradle.org/) is included (`./gradlew` on Unix/macOS, `gradlew.bat` on Windows). No separate Ant or Gradle installation is required.
+* **Build System**: [Maven Wrapper](https://maven.apache.org/) is included (`./mvnw` on Unix/macOS, `mvnw.cmd` on Windows). No separate Maven installation is required.
 
 ---
 
@@ -17,35 +17,21 @@ Apache Xerces-J is a high-performance, fully compliant XML parser written in Jav
 To compile all modules, run unit tests, and assemble the JARs:
 
 ```bash
-./gradlew build
+./mvnw clean install
 ```
 
 ### 2. Run Tests Only
 To run the full JUnit 5 test suite:
 
 ```bash
-./gradlew test
+./mvnw clean test
 ```
 
-### 3. Run W3C XML Conformance Test Suite
-To download and execute the official W3C XML Conformance Test Suite:
+### 3. Generate Javadocs
+To generate the API Javadocs under `target/site/apidocs/`:
 
 ```bash
-./gradlew :xerces-impl:conformanceTest
-```
-
-### 4. Generate Documentation & Javadocs
-To generate the static HTML documentation and API Javadocs under `build/docs/`:
-
-```bash
-./gradlew docs
-```
-
-### 5. Build Release Distributions
-To package ASF-compliant source and binary distribution archives (`.zip`, `.tar.gz`) along with their cryptographic **SHA-512** checksums into `build/distributions/`:
-
-```bash
-./gradlew dist
+./mvnw javadoc:javadoc
 ```
 
 ---

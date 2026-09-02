@@ -1,0 +1,37 @@
+name: Maven CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+    types:
+      - opened
+      - reopened
+      - synchronize
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Maven Build with Java ${{ matrix.jdk }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        jdk: ['8', '11', '17', '21', '25']
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up JDK ${{ matrix.jdk }}
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: ${{ matrix.jdk }}
+        cache: 'maven'
+
+    - name: Make mvnw executable
+      run: chmod +x mvnw
+
+    - name: Maven Build & Test
+      run: ./mvnw clean verify -B
