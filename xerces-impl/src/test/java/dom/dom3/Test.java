@@ -57,7 +57,6 @@ import org.w3c.dom.ls.LSSerializer;
 public class Test implements DOMErrorHandler, LSResourceResolver {
 
     private int errorCounter = 0;
-    private String savedRegistryProp;
 
     private static String resolveResourceURI(String path) {
         if (path.startsWith("tests/")) {
@@ -77,20 +76,8 @@ public class Test implements DOMErrorHandler, LSResourceResolver {
     @BeforeEach
     public void setUp() {
         errorCounter = 0;
-        savedRegistryProp = System.getProperty(DOMImplementationRegistry.PROPERTY);
-        System.setProperty(DOMImplementationRegistry.PROPERTY,
-            "org.apache.xerces.dom.DOMImplementationSourceImpl org.apache.xerces.dom.DOMXSImplementationSourceImpl");
     }
 
-    @AfterEach
-    public void tearDown() {
-        if (savedRegistryProp != null) {
-            System.setProperty(DOMImplementationRegistry.PROPERTY, savedRegistryProp);
-        }
-        else {
-            System.clearProperty(DOMImplementationRegistry.PROPERTY);
-        }
-    }
 
     private DOMImplementationLS getDOMImplementationLS() throws Exception {
         DOMImplementationLS impl = (DOMImplementationLS) DOMImplementationRegistry.newInstance().getDOMImplementation("LS");

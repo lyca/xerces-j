@@ -20,8 +20,6 @@ package dom.registry;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 
 import org.apache.xerces.dom.CoreDOMImplementationImpl;
 import org.apache.xerces.dom.DOMImplementationImpl;
@@ -30,24 +28,6 @@ import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 
 public class Test {
 
-    private String fOrigProp;
-
-    @BeforeEach
-    public void setUp() {
-        fOrigProp = System.getProperty(DOMImplementationRegistry.PROPERTY);
-        System.setProperty(DOMImplementationRegistry.PROPERTY,
-                "org.apache.xerces.dom.DOMImplementationSourceImpl " +
-                "org.apache.xerces.dom.DOMXSImplementationSourceImpl");
-    }
-
-    @AfterEach
-    public void tearDown() {
-        if (fOrigProp != null) {
-            System.setProperty(DOMImplementationRegistry.PROPERTY, fOrigProp);
-        } else {
-            System.clearProperty(DOMImplementationRegistry.PROPERTY);
-        }
-    }
 
     @org.junit.jupiter.api.Test
     public void testRegistryBootstrap() throws Exception {
