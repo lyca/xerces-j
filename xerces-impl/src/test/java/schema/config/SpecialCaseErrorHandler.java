@@ -29,7 +29,6 @@ import org.xml.sax.SAXParseException;
  * @version $Id$
  */
 public class SpecialCaseErrorHandler implements ErrorHandler {
-    
     public static final boolean DEBUG = false;
     
     private HashMap errors;
@@ -41,7 +40,7 @@ public class SpecialCaseErrorHandler implements ErrorHandler {
         }
     }
     
-    public void reset() {
+    public void reset() throws Exception {
         for (Iterator iter = errors.keySet().iterator(); iter.hasNext();) {
             String error = (String) iter.next();
             errors.put(error, Boolean.FALSE);

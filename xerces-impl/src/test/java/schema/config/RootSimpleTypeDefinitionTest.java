@@ -20,18 +20,15 @@ package schema.config;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import org.apache.xerces.xs.ItemPSVI;
-import org.xml.sax.SAXException;
 
 /**
  * @author Peter McCracken, IBM
  * @version $Id$
  */
 public class RootSimpleTypeDefinitionTest extends BaseTest {
-    
     private QName typeString;
     private QName typeNonNegInt;
     
@@ -56,49 +53,29 @@ public class RootSimpleTypeDefinitionTest extends BaseTest {
     }
     
     @Test
-
-    
     public void testSettingSimpleType() throws Exception {
-        try {
-            fValidator.setProperty(ROOT_TYPE, typeString);
-        } catch (SAXException e1) {
-            Assertions.fail("Problem setting property: " + e1.getMessage());
-        }
+        fValidator.setProperty(ROOT_TYPE, typeString);
         
-        try {
-            validateDocument();
-        } catch (Exception e) {
-            Assertions.fail("Validation failed: " + e.getMessage());
-        }
+        validateDocument();
         
         assertValidity(ItemPSVI.VALIDITY_VALID, fRootNode.getValidity());
         assertValidationAttempted(ItemPSVI.VALIDATION_FULL, fRootNode
-                .getValidationAttempted());
+            .getValidationAttempted());
         assertElementNull(fRootNode.getElementDeclaration());
         assertTypeName("string", fRootNode.getTypeDefinition().getName());
     }
     
     @Test
-
-    
     public void testSettingInvalidSimpleType() throws Exception {
-        try {
-            fValidator.setProperty(ROOT_TYPE, typeNonNegInt);
-        } catch (SAXException e1) {
-            Assertions.fail("Problem setting property: " + e1.getMessage());
-        }
+        fValidator.setProperty(ROOT_TYPE, typeNonNegInt);
         
-        try {
-            validateDocument();
-        } catch (Exception e) {
-            Assertions.fail("Validation failed: " + e.getMessage());
-        }
+        validateDocument();
         
         assertError(INVALID_TYPE_ERROR);
         assertError(MININCLUSIVE_DERIVATION_ERROR);
         assertValidity(ItemPSVI.VALIDITY_INVALID, fRootNode.getValidity());
         assertValidationAttempted(ItemPSVI.VALIDATION_FULL, fRootNode
-                .getValidationAttempted());
+            .getValidationAttempted());
         assertElementNull(fRootNode.getElementDeclaration());
         assertTypeName("nonNegativeInteger", fRootNode.getTypeDefinition().getName());
     }

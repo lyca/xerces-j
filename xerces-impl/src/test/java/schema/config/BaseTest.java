@@ -103,7 +103,6 @@ public abstract class BaseTest {
     
     @BeforeEach
     protected void setUp() throws Exception {
-                
         DocumentBuilderFactory docFactory = DocumentBuilderFactory
         .newInstance();
         docFactory.setAttribute(DOCUMENT_CLASS_NAME,

@@ -27,7 +27,6 @@ import org.apache.xerces.xs.ItemPSVI;
  * @version $Id$
  */
 public class UseGrammarPoolOnly_False_Test extends BaseTest {
-    
     private final static String UNKNOWN_TYPE_ERROR = "cvc-type.1";
     private final static String INVALID_DERIVATION_ERROR = "cvc-elt.4.3";
     
@@ -58,23 +57,17 @@ public class UseGrammarPoolOnly_False_Test extends BaseTest {
      * -PM
      */
     @Test
+    public void testUsingOnlyGrammarPool() throws Exception {
+        validateDocument();
 
-    public void testUsingOnlyGrammarPool() {
-        try {
-            validateDocument();
-        } 
-        catch (Exception e) {
-            Assertions.fail("Validation failed: " + e.getMessage());
-        }
-        
         assertValidity(ItemPSVI.VALIDITY_VALID, fRootNode.getValidity());
         assertValidationAttempted(ItemPSVI.VALIDATION_FULL, fRootNode
-                .getValidationAttempted());
+            .getValidationAttempted());
         assertElementName("A", fRootNode.getElementDeclaration().getName());
         assertElementNamespace("xslt.unittests", fRootNode
-                .getElementDeclaration().getNamespace());
+            .getElementDeclaration().getNamespace());
         assertTypeName("W", fRootNode.getTypeDefinition().getName());
         assertTypeNamespace("xslt.unittests", fRootNode.getTypeDefinition()
-                .getNamespace());
+            .getNamespace());
     }
 }

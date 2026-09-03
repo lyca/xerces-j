@@ -27,7 +27,6 @@ import org.apache.xerces.xs.ItemPSVI;
  * @version $Id$
  */
 public class UseGrammarPoolOnly_True_Test extends BaseTest {
-    
     protected String getXMLDocument() {
         return "otherNamespace.xml";
     }
@@ -51,18 +50,12 @@ public class UseGrammarPoolOnly_True_Test extends BaseTest {
      * -PM
      */
     @Test
+    public void testUsingOnlyGrammarPool() throws Exception {
+        validateDocument();
 
-    public void testUsingOnlyGrammarPool() {
-        try {
-            validateDocument();
-        } 
-        catch (Exception e) {
-            Assertions.fail("Validation failed: " + e.getMessage());
-        }
-        
         assertValidity(ItemPSVI.VALIDITY_NOTKNOWN, fRootNode.getValidity());
         assertValidationAttempted(ItemPSVI.VALIDATION_PARTIAL, fRootNode
-                .getValidationAttempted());
+            .getValidationAttempted());
         assertElementNull(fRootNode.getElementDeclaration());
         assertAnyType(fRootNode.getTypeDefinition());
     }

@@ -18,7 +18,6 @@
 package schema.config;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -34,7 +33,6 @@ import org.apache.xerces.xs.ItemPSVI;
  * @version $Id$
  */
 public class FixedAttrTest extends BaseTest {
-    
     protected String getXMLDocument() {
         return "fixedAttr.xml";
     }
@@ -56,30 +54,24 @@ public class FixedAttrTest extends BaseTest {
     }
     
     @Test
-
-    
-    public void testDefault() {
-        try {
-            validateDocument();
-        } catch (Exception e) {
-            Assertions.fail("Validation failed: " + e.getMessage());
-        }
+    public void testDefault() throws Exception {
+        validateDocument();
         
         assertValidity(ItemPSVI.VALIDITY_VALID, fRootNode.getValidity());
         assertValidationAttempted(ItemPSVI.VALIDATION_FULL, fRootNode
-                .getValidationAttempted());
+            .getValidationAttempted());
         assertElementName("A", fRootNode.getElementDeclaration().getName());
         
         PSVIElementNSImpl child = super.getChild(1);
         assertValidity(ItemPSVI.VALIDITY_VALID, child.getValidity());
         assertValidationAttempted(ItemPSVI.VALIDATION_FULL, child
-                .getValidationAttempted());
+            .getValidationAttempted());
         assertElementName("B", child.getElementDeclaration().getName());
         
         child = super.getChild(2);
         assertValidity(ItemPSVI.VALIDITY_VALID, child.getValidity());
         assertValidationAttempted(ItemPSVI.VALIDATION_FULL, child
-                .getValidationAttempted());
+            .getValidationAttempted());
         assertElementName("D", child.getElementDeclaration().getName());
     }
 }

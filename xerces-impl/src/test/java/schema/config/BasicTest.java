@@ -17,7 +17,6 @@
 
 package schema.config;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import org.apache.xerces.dom.PSVIElementNSImpl;
@@ -28,7 +27,6 @@ import org.apache.xerces.xs.ItemPSVI;
  * @version $Id$
  */
 public class BasicTest extends BaseTest {
-    
     protected String getXMLDocument() {
         return "base.xml";
     }
@@ -40,28 +38,16 @@ public class BasicTest extends BaseTest {
     public BasicTest() {}
     
     @Test
-
-    
-    public void testSimpleValidation() {
-        try {
-            validateDocument();
-        } catch (Exception e) {
-            Assertions.fail("Validation failed: " + e.getMessage());
-        }
+    public void testSimpleValidation() throws Exception {
+        validateDocument();
         doValidityAsserts();
     }
     
     @Test
-
-    
-    public void testSimpleValidationWithTrivialXSIType() {
+    public void testSimpleValidationWithTrivialXSIType() throws Exception {
         ((PSVIElementNSImpl) fRootNode).setAttributeNS(
-                "http://www.w3.org/2001/XMLSchema-instance", "type", "X");
-        try {
-            validateDocument();
-        } catch (Exception e) {
-            Assertions.fail("Validation failed: " + e.getMessage());
-        }
+            "http://www.w3.org/2001/XMLSchema-instance", "type", "X");
+        validateDocument();
         doValidityAsserts();
     }
     

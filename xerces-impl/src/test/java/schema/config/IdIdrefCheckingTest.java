@@ -18,13 +18,11 @@
 package schema.config;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.apache.xerces.dom.PSVIElementNSImpl;
 import org.apache.xerces.xs.ItemPSVI;
-import org.xml.sax.SAXException;
 
 //duplicate IDs
 //reference to non-existent ID
@@ -62,50 +60,24 @@ public class IdIdrefCheckingTest extends BaseTest {
     }
     
     @Test
-
-    
-    public void testDefault() {
-        try {
-            validateDocument();
-        } catch (Exception e) {
-            Assertions.fail("Validation failed: " + e.getMessage());
-        }
+    public void testDefault() throws Exception {
+        validateDocument();
         
         checkDefault();
     }
     
     @Test
-
-    
-    public void testSetFalse() {
-        try {
-            fValidator.setFeature(ID_IDREF_CHECKING, false);
-        } catch (SAXException e) {
-            Assertions.fail("Error setting feature.");
-        }
-        try {
-            validateDocument();
-        } catch (Exception e) {
-            Assertions.fail("Validation failed: " + e.getMessage());
-        }
+    public void testSetFalse() throws Exception {
+        fValidator.setFeature(ID_IDREF_CHECKING, false);
+        validateDocument();
         
         checkValidResult();
     }
     
     @Test
-
-    
-    public void testSetTrue() {
-        try {
-            fValidator.setFeature(ID_IDREF_CHECKING, true);
-        } catch (SAXException e) {
-            Assertions.fail("Error setting feature.");
-        }
-        try {
-            validateDocument();
-        } catch (Exception e) {
-            Assertions.fail("Validation failed: " + e.getMessage());
-        }
+    public void testSetTrue() throws Exception {
+        fValidator.setFeature(ID_IDREF_CHECKING, true);
+        validateDocument();
         
         checkDefault();
     }

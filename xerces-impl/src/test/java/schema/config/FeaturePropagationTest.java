@@ -43,7 +43,6 @@ import org.xml.sax.SAXNotSupportedException;
  * @version $Id$
  */
 public class FeaturePropagationTest {
-    
     public final String FEATURE_STRING_DEFAULT_FALSE = "http://apache.org/xml/features/honour-all-schemaLocations";
     public final String FEATURE_STRING_DEFAULT_TRUE = "http://apache.org/xml/features/validation/schema-full-checking";
     public final String SECURITY_MANAGER = "http://apache.org/xml/properties/security-manager";
@@ -51,8 +50,6 @@ public class FeaturePropagationTest {
     public FeaturePropagationTest() {}
     
     @Test
-
-    
     public void testPropertyReset() throws Exception {
         SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
         Schema schema = makeSchema(factory, null);
@@ -67,8 +64,6 @@ public class FeaturePropagationTest {
     }
     
     @Test
-
-    
     public void testFeatureReset() throws Exception {
         SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
         Schema schema = makeSchema(factory, null);
@@ -83,8 +78,6 @@ public class FeaturePropagationTest {
     }
     
     @Test
-
-    
     public void testSecureProcessingFeaturePropagationAndReset() throws Exception {
         SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
         boolean value;
@@ -110,29 +103,21 @@ public class FeaturePropagationTest {
      */
     
     @Test
-
-    
     public void testFeaturePropagationNull() throws Exception {
         checkFeaturesOnValidator(null);
     }
     
     @Test
-
-    
     public void testFeaturePropagationEmpty() throws Exception {
         checkFeaturesOnValidator(new Source[] {});
     }
     
     @Test
-
-    
     public void testFeaturePropagationSingle() throws Exception {
         checkFeaturesOnValidator(new Source[] {makeSource("base.xsd")});
     }
     
     @Test
-
-    
     public void testFeaturePropagationMultiple() throws Exception {
         checkFeaturesOnValidator(new Source[] {makeSource("base.xsd"), makeSource("idc.xsd")});
     }

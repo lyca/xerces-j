@@ -17,19 +17,16 @@
 
 package schema.config;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import org.apache.xerces.dom.PSVIElementNSImpl;
 import org.apache.xerces.xs.ItemPSVI;
-import org.xml.sax.SAXException;
 
 /**
  * @author Peter McCracken, IBM
  * @version $Id$
  */
 public class UnparsedEntityCheckingTest extends BaseTest {
-    
     public static final String UNDECLARED_ENTITY = "UndeclaredEntity";
     
     protected String getXMLDocument() {
@@ -47,105 +44,53 @@ public class UnparsedEntityCheckingTest extends BaseTest {
     public UnparsedEntityCheckingTest() {}
     
     @Test
-
-    
-    public void testDefaultValid() {
-        try {
-            validateDocument();
-        } catch (Exception e) {
-            Assertions.fail("Validation failed: " + e.getMessage());
-        }
+    public void testDefaultValid() throws Exception {
+        validateDocument();
         
         checkDefault();
     }
     
     @Test
-
-    
-    public void testSetFalseValid() {
-        try {
-            fValidator.setFeature(UNPARSED_ENTITY_CHECKING, false);
-        } catch (SAXException e) {
-            Assertions.fail("Error setting feature.");
-        }
-        try {
-            validateDocument();
-        } catch (Exception e) {
-            Assertions.fail("Validation failed: " + e.getMessage());
-        }
+    public void testSetFalseValid() throws Exception {
+        fValidator.setFeature(UNPARSED_ENTITY_CHECKING, false);
+        validateDocument();
         
         checkDefault();
     }
     
     @Test
-
-    
-    public void testSetTrueValid() {
-        try {
-            fValidator.setFeature(UNPARSED_ENTITY_CHECKING, true);
-        } catch (SAXException e) {
-            Assertions.fail("Error setting feature.");
-        }
-        try {
-            validateDocument();
-        } catch (Exception e) {
-            Assertions.fail("Validation failed: " + e.getMessage());
-        }
+    public void testSetTrueValid() throws Exception {
+        fValidator.setFeature(UNPARSED_ENTITY_CHECKING, true);
+        validateDocument();
         
         checkDefault();
     }
     
     @Test
-
-    
-    public void testDefaultInvalid() {
+    public void testDefaultInvalid() throws Exception {
         ((PSVIElementNSImpl) fRootNode).setAttributeNS(null,
-                "unparsedEntityAttr", "invalid");
-        try {
-            validateDocument();
-        } catch (Exception e) {
-            Assertions.fail("Validation failed: " + e.getMessage());
-        }
+            "unparsedEntityAttr", "invalid");
+        validateDocument();
         
         checkInvalid();
     }
     
     @Test
-
-    
-    public void testSetFalseInvalid() {
+    public void testSetFalseInvalid() throws Exception {
         ((PSVIElementNSImpl) fRootNode).setAttributeNS(null,
-                "unparsedEntityAttr", "invalid");
-        try {
-            fValidator.setFeature(UNPARSED_ENTITY_CHECKING, false);
-        } catch (SAXException e) {
-            Assertions.fail("Error setting feature.");
-        }
-        try {
-            validateDocument();
-        } catch (Exception e) {
-            Assertions.fail("Validation failed: " + e.getMessage());
-        }
+            "unparsedEntityAttr", "invalid");
+        fValidator.setFeature(UNPARSED_ENTITY_CHECKING, false);
+        validateDocument();
         
         checkDefault();
     }
     
     @Test
-
-    
-    public void testSetTrueInvalid() {
+    public void testSetTrueInvalid() throws Exception {
         ((PSVIElementNSImpl) fRootNode).setAttributeNS(null,
-                "unparsedEntityAttr", "invalid");
-        try {
-            fValidator.setFeature(UNPARSED_ENTITY_CHECKING, true);
-        } catch (SAXException e) {
-            Assertions.fail("Error setting feature.");
-        }
-        try {
-            validateDocument();
-        } catch (Exception e) {
-            Assertions.fail("Validation failed: " + e.getMessage());
-        }
+            "unparsedEntityAttr", "invalid");
+        fValidator.setFeature(UNPARSED_ENTITY_CHECKING, true);
+        validateDocument();
         
         checkInvalid();
     }

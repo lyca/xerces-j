@@ -17,7 +17,6 @@
 
 package schema.config;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import org.apache.xerces.xs.ElementPSVI;
@@ -27,7 +26,6 @@ import org.apache.xerces.xs.ItemPSVI;
  * @version $Id$
  */
 public class SurrogatePairLengthTest extends BaseTest {
-
     private static final String LENGTH_ERROR = "cvc-length-valid";
     
     protected String getXMLDocument() {
@@ -45,42 +43,24 @@ public class SurrogatePairLengthTest extends BaseTest {
     public SurrogatePairLengthTest() {}
     
     @Test
-
-    
-    public void testDefault() {
-        try {
-            validateDocument();
-        } catch (Exception e) {
-            Assertions.fail("Validation failed: " + e.getMessage());
-        }
+    public void testDefault() throws Exception {
+        validateDocument();
         
         checkInvalidResult();
     }
 
     @Test
-
-
-    public void testSetFalse() {
-        try {
-            fValidator.setFeature(USE_CODE_POINT_COUNT_FOR_STRING_LENGTH, false);
-            validateDocument();
-        } catch (Exception e) {
-            Assertions.fail("Validation failed: " + e.getMessage());
-        }
+    public void testSetFalse() throws Exception {
+        fValidator.setFeature(USE_CODE_POINT_COUNT_FOR_STRING_LENGTH, false);
+        validateDocument();
         
         checkInvalidResult();
     }
 
     @Test
-
-
-    public void testSetTrue() {
-        try {
-            fValidator.setFeature(USE_CODE_POINT_COUNT_FOR_STRING_LENGTH, true);
-            validateDocument();
-        } catch (Exception e) {
-            Assertions.fail("Validation failed: " + e.getMessage());
-        }
+    public void testSetTrue() throws Exception {
+        fValidator.setFeature(USE_CODE_POINT_COUNT_FOR_STRING_LENGTH, true);
+        validateDocument();
         
         checkValidResult();
     }
