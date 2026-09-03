@@ -23,5 +23,5 @@
 - **License**: Insert ASF 2.0 header in ALL new `.java`/`.xml` files.
 - **Attribution**: Autonomous agent PRs MUST append footer: `\n---\nGenerated-by: <Agent>`
 - **Authorship**: NO AI in `Co-Authored-By`. Humans act as authors.
-- **Commits**: USE Conventional Commits (`feat:`, `fix:`, `chore:`, etc.). Imperative mood. Explain *why*, not just *what*.
+- **Commits**: USE Conventional Commits (`feat:`, `fix:`, etc.). Keep messages COMPACT. Imperative mood. Explain *why*.
 - **Security**: NO secrets. NO new external dependencies outside `test` scope without user consent.
